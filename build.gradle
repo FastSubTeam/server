@@ -21,6 +21,11 @@ repositories {
     mavenCentral()
 }
 
+bootJar {
+    archiveFileName = "popple_serverV0.0.0.jar"
+    destinationDirectory = file("/home/ubuntu")
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
