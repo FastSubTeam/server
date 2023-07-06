@@ -1,11 +1,18 @@
 package com.popple.server.domain.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.popple.server.domain.survey.SurveyStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
 import java.sql.Timestamp;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
 @Entity
 public class Survey {
     @Id
@@ -15,6 +22,8 @@ public class Survey {
     private String title;
     private Timestamp startDate;
     private Timestamp endDate;
-    private String status; // TODO: Enum
+
+    @Enumerated(EnumType.STRING)
+    private SurveyStatus status;
     private Timestamp createdAt;
 }
