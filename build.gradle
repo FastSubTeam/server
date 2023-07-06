@@ -21,9 +21,14 @@ repositories {
     mavenCentral()
 }
 
-bootJar {
-    archiveFileName = "popple_serverV0.0.0.jar"
-    destinationDirectory = file("/home/ubuntu")
+import org.gradle.internal.os.OperatingSystem
+OperatingSystem os = OperatingSystem.current();
+
+if (os.isLinux()) {
+    bootJar {
+        archiveFileName = "popple_serverV0.0.0.jar"
+        destinationDirectory = file("/home/ubuntu")
+    }
 }
 
 dependencies {
