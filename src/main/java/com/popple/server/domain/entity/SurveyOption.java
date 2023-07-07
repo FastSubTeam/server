@@ -22,6 +22,9 @@ public class SurveyOption {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
+    @Column(nullable = false, length = 300)
     private String content;
+
+    @Column(nullable = false, updatable = false)
     private Timestamp createdAt;
 }
