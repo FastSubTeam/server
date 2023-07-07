@@ -1,13 +1,24 @@
 package com.popple.server.domain.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@DynamicInsert
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,14 +44,14 @@ public class User {
 
     //TODO 이후 디폴트 이미지를 정하고, 해당 이미지의 주소로 디폴트 값 변경 필요
     @ColumnDefault(value = "'profileDefaultImageUrl'")
-    @NotNull
+    @Column(nullable = false)
     private String profileImgUrl;
 
     @ColumnDefault(value = "false")
-    @NotNull
+    @Column(nullable = false)
     private Boolean inactive;
 
     @CreatedDate
     @NotNull
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 }
