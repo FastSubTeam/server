@@ -19,11 +19,19 @@ public class Survey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false, length = 100)
     private String title;
+
+    @Column(nullable = false)
     private Timestamp startDate;
+
+    @Column(nullable = false)
     private Timestamp endDate;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
     private SurveyStatus status;
+
+    @Column(nullable = false, updatable = false)
     private Timestamp createdAt;
 }
