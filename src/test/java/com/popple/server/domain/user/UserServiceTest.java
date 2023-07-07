@@ -64,5 +64,23 @@ class UserServiceTest {
         then(userRepository).should(times(1)).save(any());
     }
 
+    @Test
+    @DisplayName("유저 생성 예외 테스트 - 이미 존재하는 이메일")
+    void createUserThrowAlreadyExistExceptionTest() {
+        // Given
+        User user = CREATE_USER_REQUEST_DTO.toEntity();
+        user.setId(1L);
+        given(userRepository.findByEmail(anyString())).willReturn(user);
+
+        // When
+        Throwable throwable = catchThrowable(() -> userService.create(CREATE_USER_REQUEST_DTO));
+
+        // Then
+        assertThat(throwable)
+                .isInstanceOf(AlreadyExistException.class)
+                .hasMessage(UserErrorCode.EXIST_EMAIL.getErrorMessage());
+
+    }
+
 
 }
