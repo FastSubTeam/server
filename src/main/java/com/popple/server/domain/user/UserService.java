@@ -2,6 +2,8 @@ package com.popple.server.domain.user;
 
 import com.popple.server.domain.entity.User;
 import com.popple.server.domain.user.dto.CreateUserRequestDto;
+import com.popple.server.domain.user.exception.AlreadyExistException;
+import com.popple.server.domain.user.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +21,13 @@ public class UserService {
 
     @Transactional
     public CreateUserResponseDto create(final CreateUserRequestDto createUserRequestDto) {
+
+        String email = createUserRequestDto.getEmail();
+        User findUser = userRepository.findByEmail(email);
+        if (findUser != null) {
+            throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
+        }
+
         String encodedPassword = bCryptPasswordEncoder.encode(createUserRequestDto.getPassword());
 
         createUserRequestDto.setPassword(encodedPassword);
