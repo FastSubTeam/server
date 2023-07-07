@@ -3,10 +3,7 @@ package com.popple.server.domain.entity;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
@@ -17,6 +14,7 @@ public class User {
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     private String email;
 
     @NotNull
@@ -29,6 +27,7 @@ public class User {
     private String district;
 
     @NotNull
+    @Column(unique = true)
     private String nickname;
 
 
