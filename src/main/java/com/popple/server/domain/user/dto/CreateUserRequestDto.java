@@ -1,18 +1,20 @@
 package com.popple.server.domain.user.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import com.popple.server.domain.entity.User;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class CreateUserRequestDto {
 
     private static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
@@ -34,5 +36,16 @@ public class CreateUserRequestDto {
     @NotNull
     @Pattern(regexp = NICKNAME_REGEX, message = "닉네임은 영어, 숫자, 특수문자('.', '_', '-')로 구성되며 2글자 이상 10글자 이하입니다.")
     private String nickname;
+
+    public User toEntity() {
+        return User.builder()
+                .nickname(nickname)
+                .city(city)
+                .district(district)
+                .email(email)
+                .password(password)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
 
 }
