@@ -22,6 +22,6 @@ public class SurveyAdminController {
         Survey survey = surveyService.save(dto);
         SurveyRespDto respDto = SurveyRespDto.fromEntity(survey);
 
-        return APIDataResponse.of(HttpStatus.CREATED.value(), respDto);
+        return APIDataResponse.of(HttpStatus.CREATED, respDto);
     }
 }

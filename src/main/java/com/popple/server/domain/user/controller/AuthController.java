@@ -25,13 +25,13 @@ public class AuthController {
 
         authService.checkProceedEmail(checkEmailRequestDto.getEmail());
 
-        return APIDataResponse.empty(200);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @PostMapping("/auth/regenerate-token")
     public APIDataResponse<?> regenerateRegisterToken(@Valid @RequestBody CheckEmailRequestDto checkEmailRequestDto) {
         authService.generateRegisterTokenAndSendEmail(checkEmailRequestDto.getEmail());
-        return APIDataResponse.empty(200);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @PostMapping("/auth/signup")
@@ -39,7 +39,7 @@ public class AuthController {
 
         AddressStore.validate(createUserRequestDto.getCity(), createUserRequestDto.getDistrict());
         CreateUserResponseDto createUserResponseDto = authService.register(createUserRequestDto);
-        return APIDataResponse.of(HttpStatus.OK.value(), createUserResponseDto);
+        return APIDataResponse.of(HttpStatus.OK, createUserResponseDto);
     }
 
     //TODO TokenProvider 구현 후 완성
@@ -55,7 +55,7 @@ public class AuthController {
         authService.generateAccessAndRefreshToken(email);
 
 
-        return APIDataResponse.empty(200);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
 
@@ -68,6 +68,6 @@ public class AuthController {
 
         authService.checkDuplicationNicknameAndEmail(nickname, email, role);
 
-        return APIDataResponse.empty(200);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 }
