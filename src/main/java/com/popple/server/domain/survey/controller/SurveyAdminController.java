@@ -2,6 +2,7 @@ package com.popple.server.domain.survey.controller;
 
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.Survey;
+import com.popple.server.domain.survey.exception.RequestInvalidException;
 import com.popple.server.domain.survey.service.SurveyService;
 import com.popple.server.domain.survey.dto.SurveyCreateReqDto;
 import com.popple.server.domain.survey.dto.SurveyRespDto;
@@ -23,6 +24,10 @@ public class SurveyAdminController {
     @PostMapping
     public APIDataResponse<SurveyRespDto> createSurvey(
             @Valid @RequestBody SurveyCreateReqDto dto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new RequestInvalidException("유효성 검사 실패", bindingResult.getAllErrors());
+        }
+
         Survey survey = surveyService.save(dto);
         SurveyRespDto respDto = SurveyRespDto.fromEntity(survey);
 
