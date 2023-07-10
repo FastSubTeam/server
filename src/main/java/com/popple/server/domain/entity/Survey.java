@@ -1,6 +1,6 @@
 package com.popple.server.domain.entity;
 
-import com.popple.server.domain.survey.SurveyStatus;
+import com.popple.server.domain.survey.type.SurveyStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
