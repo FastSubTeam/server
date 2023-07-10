@@ -23,4 +23,21 @@ public class AuthService {
     public void checkProceedEmail(String email) {
         userService.checkExistProceed(email);
     }
+
+    public void generateRegisterTokenAndSendEmail(String email) {
+
+        RegisterToken generateToken = registerTokenService.generateToken(email);
+        EmailSource emailSource = emailService.getEmailSource(email);
+
+        emailService.sendMail(emailSource, generateToken.getRegisterToken());
+    }
+
+
+    public CreateUserResponseDto register(CreateUserRequestDto createUserRequestDto) {
+        CreateUserResponseDto createUserResponseDto = userService.create(createUserRequestDto);
+        generateRegisterTokenAndSendEmail(createUserResponseDto.getEmail());
+
+        return createUserResponseDto;
+    }
+
 }
