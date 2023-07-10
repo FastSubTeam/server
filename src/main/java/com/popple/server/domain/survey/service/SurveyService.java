@@ -1,7 +1,9 @@
-package com.popple.server.domain.survey;
+package com.popple.server.domain.survey.service;
 
 import com.popple.server.domain.entity.Survey;
 import com.popple.server.domain.entity.SurveyOption;
+import com.popple.server.domain.survey.repository.SurveyOptionRepository;
+import com.popple.server.domain.survey.repository.SurveyRepository;
 import com.popple.server.domain.survey.dto.OptionCreateDto;
 import com.popple.server.domain.survey.dto.SurveyCreateReqDto;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import static com.popple.server.domain.survey.SurveyStatus.WAIT;
+import static com.popple.server.domain.survey.type.SurveyStatus.WAIT;
 
 @RequiredArgsConstructor
 @Service
