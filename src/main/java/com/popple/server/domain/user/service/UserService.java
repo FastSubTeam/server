@@ -1,4 +1,4 @@
-package com.popple.server.domain.user;
+package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.entity.User;
 import com.popple.server.domain.user.repository.UserRepository;
@@ -22,6 +22,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    public void checkExistProceed(String email) {
+        User findUser = userRepository.findByEmail(email);
+
+        if (findUser != null) {
+            throw new AlreadyExistException(UserErrorCode.PROCEEDING_EMAIL);
+        }
+    }
+
     @Transactional
     public CreateUserResponseDto create(final CreateUserRequestDto createUserRequestDto) {
 
@@ -38,5 +46,16 @@ public class UserService {
         userRepository.save(user);
 
         return CreateUserResponseDto.from(user);
+    }
+
+    public void checkDuplication(String nickname, String email) {
+
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException();
+        }
+
+        if (userRepository.existsByNickname(nickname)) {
+            throw new RuntimeException();
+        }
     }
 }
