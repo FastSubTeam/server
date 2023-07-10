@@ -1,4 +1,4 @@
-package com.popple.server.domain.user;
+package com.popple.server.domain.user.vo;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -2,8 +2,11 @@ package com.popple.server.domain.user;
 
 import com.popple.server.domain.entity.User;
 import com.popple.server.domain.user.dto.CreateUserRequestDto;
+import com.popple.server.domain.user.dto.CreateUserResponseDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.UserErrorCode;
+import com.popple.server.domain.user.repository.UserRepository;
+import com.popple.server.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;

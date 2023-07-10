@@ -1,4 +1,4 @@
-package com.popple.server.domain.user;
+package com.popple.server.domain.user.dto;
 
 import com.popple.server.domain.entity.User;
 import lombok.Builder;
