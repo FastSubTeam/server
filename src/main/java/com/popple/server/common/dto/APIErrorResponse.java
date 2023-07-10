@@ -1,8 +1,12 @@
 package com.popple.server.common.dto;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @RequiredArgsConstructor
+@Getter
+@Setter
 public class APIErrorResponse {
 
     private final Integer errorCode;
