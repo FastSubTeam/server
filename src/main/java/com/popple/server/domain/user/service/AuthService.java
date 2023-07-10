@@ -15,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AuthService {
     private final UserService userService;
-    private final SellerService sellerService;
+//    private final SellerService sellerService;
     private final EmailService emailService;
     private final RegisterTokenService registerTokenService;
-    private final TokenService tokenService;
+//    private final TokenService tokenService;
 
 
     public void checkProceedEmail(String email) {
@@ -52,7 +52,7 @@ public class AuthService {
 
         if (role.equals(Role.SELLER)) {
             // TODO Seller 완성하고 구현하기
-            sellerService.checkDuplication(nickname, email);
+//            sellerService.checkDuplication(nickname, email);
             return;
         }
 
