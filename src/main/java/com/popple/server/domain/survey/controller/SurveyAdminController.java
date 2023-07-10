@@ -7,7 +7,10 @@ import com.popple.server.domain.survey.dto.SurveyCreateReqDto;
 import com.popple.server.domain.survey.dto.SurveyRespDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
@@ -16,10 +19,10 @@ public class SurveyAdminController {
 
     private final SurveyService surveyService;
 
-    // TODO: 예외처리
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public APIDataResponse<SurveyRespDto> createSurvey(@RequestBody SurveyCreateReqDto dto) {
+    public APIDataResponse<SurveyRespDto> createSurvey(
+            @Valid @RequestBody SurveyCreateReqDto dto, BindingResult bindingResult) {
         Survey survey = surveyService.save(dto);
         SurveyRespDto respDto = SurveyRespDto.fromEntity(survey);
 
