@@ -1,5 +1,6 @@
 package com.popple.server.domain.user.service;
 
+import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.user.dto.CreateUserRequestDto;
 import com.popple.server.domain.user.dto.CreateUserResponseDto;
@@ -40,4 +41,24 @@ public class AuthService {
         return createUserResponseDto;
     }
 
+    public String verifyRegisterToken(String registerToken) {
+        return registerTokenService.verifyToken(registerToken);
+    }
+
+    public void checkDuplicationNicknameAndEmail(String nickname, String email, Role role) {
+        if (nickname == null && email == null) {
+            throw new RuntimeException("올바르지 않은 요청입니다.");
+        }
+
+        if (role.equals(Role.SELLER)) {
+            // TODO Seller 완성하고 구현하기
+            sellerService.checkDuplication(nickname, email);
+            return;
+        }
+
+        userService.checkDuplication(nickname, email);
+    }
+
+    public void generateAccessAndRefreshToken(String email) {
+    }
 }
