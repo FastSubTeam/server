@@ -2,6 +2,7 @@ package com.popple.server.domain.survey.controller;
 
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.Survey;
+import com.popple.server.domain.survey.dto.SurveyDetailRespDto;
 import com.popple.server.domain.survey.exception.RequestInvalidException;
 import com.popple.server.domain.survey.service.SurveyService;
 import com.popple.server.domain.survey.dto.SurveyCreateReqDto;
@@ -46,5 +47,13 @@ public class SurveyAdminController {
         List<SurveyRespDto> surveys = surveyService.findAll();
 
         return APIDataResponse.of(HttpStatus.OK, surveys);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
+    public APIDataResponse<SurveyDetailRespDto> surveyDetail(@PathVariable int id) {
+        SurveyDetailRespDto surveyDetailRespDto = surveyService.findById(id);
+
+        return APIDataResponse.of(HttpStatus.OK, surveyDetailRespDto);
     }
 }
