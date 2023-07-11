@@ -28,13 +28,10 @@ public class SurveyAdminController {
         if (bindingResult.hasErrors()) {
             throw new RequestInvalidException("유효성 검사 실패", bindingResult.getAllErrors());
         }
-
         if (!checkEndDateAfterStartDate(dto)) {
             throw new RequestInvalidException("수요조사 종료 날짜가 시작 날짜와 같거나 과거일 수 없습니다.");
         }
-
-        Survey survey = surveyService.save(dto);
-        SurveyRespDto respDto = SurveyRespDto.fromEntity(survey);
+        SurveyRespDto respDto = surveyService.save(dto);
 
         return APIDataResponse.of(HttpStatus.CREATED, respDto);
     }

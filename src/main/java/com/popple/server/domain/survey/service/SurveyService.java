@@ -25,7 +25,7 @@ public class SurveyService {
     private final SurveyOptionRepository surveyOptionRepository;
 
     @Transactional
-    public Survey save(SurveyCreateReqDto dto) {
+    public SurveyRespDto save(SurveyCreateReqDto dto) {
         Survey survey = Survey.builder()
                 .title(dto.getTitle())
                 .startDate(dto.getStartDate())
@@ -46,7 +46,7 @@ public class SurveyService {
             surveyOptionRepository.save(option);
         }
 
-        return survey;
+        return SurveyRespDto.fromEntity(survey);
     }
 
     @Transactional(readOnly = true)
