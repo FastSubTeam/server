@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -40,5 +41,13 @@ public class SurveyAdminController {
 
     private boolean checkEndDateAfterStartDate(SurveyCreateReqDto dto) {
         return dto.getEndDate().after(dto.getStartDate());
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public APIDataResponse<List<SurveyRespDto>> surveyList() {
+        List<SurveyRespDto> surveys = surveyService.findAll();
+
+        return APIDataResponse.of(HttpStatus.OK, surveys);
     }
 }
