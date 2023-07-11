@@ -4,7 +4,7 @@ import com.popple.server.domain.entity.RegisterToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RegisterTokenRepository extends JpaRepository<RegisterToken, Integer> {
-    RegisterToken findByRegisterToken(String registerToken);
+    RegisterToken findByEmailAndRegisterToken(String email, String registerToken);
 
     RegisterToken findByEmail(String email);
 }

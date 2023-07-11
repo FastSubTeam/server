@@ -35,11 +35,10 @@ public class RegisterTokenService {
     }
 
     @Transactional
-    public String verifyToken(String registerToken) {
-        RegisterToken findRegisterToken = registerTokenRepository.findByRegisterToken(registerToken);
-
-        if (registerToken == null) {
-            throw new RuntimeException("유효하지 않은 토큰입니다.");
+    public String verifyToken(String email, String registerToken) {
+        RegisterToken findRegisterToken = registerTokenRepository.findByEmailAndRegisterToken(email, registerToken);
+        if (findRegisterToken == null) {
+            throw new RuntimeException("유효하지 않은 인증토큰입니다.");
         }
 
 
