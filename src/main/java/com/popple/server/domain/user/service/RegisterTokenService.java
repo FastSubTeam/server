@@ -18,6 +18,14 @@ public class RegisterTokenService {
     private final UserRepository userRepository;
     private final RegisterTokenRepository registerTokenRepository;
 
+    public void checkRegisteredEmail(String email) {
+        RegisterToken findRegisterToken = registerTokenRepository.findByEmail(email);
+
+        if (findRegisterToken != null) {
+            throw new RuntimeException("아직 인증이 완료되지 않은 이메일입니다.");
+        }
+    }
+
     @Transactional
     public RegisterToken generateToken(String email) {
         User findUser = userRepository.findByEmail(email);

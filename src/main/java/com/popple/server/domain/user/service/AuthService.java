@@ -78,6 +78,9 @@ public class AuthService {
     public LoginResponseDto login(String email, String password, Role role) {
 
         if (role.equals(Role.USER)) {
+
+            registerTokenService.checkRegisteredEmail(email);
+
             User user = userService.getUser(email, password);
 
             TokenPayload tokenPayload = user.toPayload();
