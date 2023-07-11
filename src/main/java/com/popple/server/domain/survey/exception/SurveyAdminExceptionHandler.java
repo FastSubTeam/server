@@ -3,6 +3,7 @@ package com.popple.server.domain.survey.exception;
 import com.popple.server.common.dto.APIErrorResponse;
 import com.popple.server.domain.survey.controller.SurveyAdminController;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,9 +18,16 @@ public class SurveyAdminExceptionHandler {
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public APIErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        return APIErrorResponse.of(HttpStatus.BAD_REQUEST, "올바르지 않은 Body 데이터입니다.");
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public APIErrorResponse handleAllException(Exception e) {
+        System.out.println(">>> " + e.getClass() + " ==> " + e.getMessage());
         return APIErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
     }
 }
