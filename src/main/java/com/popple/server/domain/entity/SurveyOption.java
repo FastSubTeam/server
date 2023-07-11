@@ -18,8 +18,7 @@ public class SurveyOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "survey_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
 
     @Column(nullable = false, length = 300)
