@@ -56,4 +56,12 @@ public class SurveyAdminController {
 
         return APIDataResponse.of(HttpStatus.OK, surveyDetailRespDto);
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/{id}")
+    public APIDataResponse<?> deleteSurvey(@PathVariable int id) {
+        surveyService.deleteById(id);
+
+        return APIDataResponse.of(HttpStatus.OK, null);
+    }
 }
