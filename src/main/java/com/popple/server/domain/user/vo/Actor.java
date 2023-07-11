@@ -8,6 +8,5 @@ import lombok.Getter;
 public class Actor {
 
     private Long id;
-    private String email;
     private Role role;
 }
