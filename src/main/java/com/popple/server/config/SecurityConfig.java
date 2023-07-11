@@ -1,21 +1,45 @@
 package com.popple.server.config;
 
+import com.popple.server.common.filter.JwtRequestFilter;
+import com.popple.server.domain.user.jwt.TokenManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final TokenManager tokenManager;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public JwtRequestFilter jwtRequestFilter() {
+        return new JwtRequestFilter(tokenManager);
     }
 
     @Bean
@@ -26,6 +50,14 @@ public class SecurityConfig {
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // JSessionId가 응답되면 세션 영역에서 사라짐 (Stateless)
         httpSecurity.formLogin().disable(); // form 로그인 해제 (UsernamePasswordAuthenticationFilter 비활성화)
         httpSecurity.httpBasic().disable(); // 로그인 인증창이 뜨지 않도록 비활성화
+        httpSecurity.authorizeRequests()
+                //TODO 추후 모든 기능 완성되면 로그인 필요 없는 API들만 permit 시켜주기 ( => JWT Filter에 적용한 URL과 동일 )
+                .antMatchers("/**").permitAll()
+                .anyRequest().authenticated();
+        httpSecurity.exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler);
+        httpSecurity.addFilterBefore(jwtRequestFilter(), BasicAuthenticationFilter.class);
 
         return httpSecurity.build();
 
