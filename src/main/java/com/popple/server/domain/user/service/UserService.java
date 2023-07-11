@@ -58,6 +58,16 @@ public class UserService {
         }
     }
 
+    public User getUser(String email) {
+        User findUser = userRepository.findByEmail(email);
+
+        if (findUser == null) {
+            throw new RuntimeException();
+        }
+
+        return findUser;
+    }
+
     public User getUser(String email, String password) {
         User findUser = userRepository.findByEmail(email);
 
@@ -70,6 +80,5 @@ public class UserService {
         }
 
         return findUser;
-
     }
 }

@@ -1,5 +1,7 @@
 package com.popple.server.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.popple.server.common.filter.JwtExceptionFilter;
 import com.popple.server.common.filter.JwtRequestFilter;
 import com.popple.server.domain.user.jwt.TokenManager;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final TokenManager tokenManager;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -43,6 +45,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtExceptionFilter jwtExceptionFilter() {
+        return new JwtExceptionFilter(objectMapper);
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable(); // CSRF 해제
         httpSecurity.headers().frameOptions().disable(); // iframe 거부
@@ -57,7 +64,8 @@ public class SecurityConfig {
         httpSecurity.exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler);
-        httpSecurity.addFilterBefore(jwtRequestFilter(), BasicAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtExceptionFilter(), jwtRequestFilter().getClass());
 
         return httpSecurity.build();
 

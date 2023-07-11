@@ -11,6 +11,5 @@ import lombok.Getter;
 public class TokenPayload {
 
     private Long id;
-    private String email;
     private Role role;
 }

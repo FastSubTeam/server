@@ -3,6 +3,7 @@ package com.popple.server.domain.user.service;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.User;
 import com.popple.server.domain.user.dto.*;
+import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
 import com.popple.server.domain.user.vo.Role;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +43,8 @@ public class AuthService {
         return createUserResponseDto;
     }
 
-    public String verifyRegisterToken(String registerToken) {
-        return registerTokenService.verifyToken(registerToken);
+    public String verifyRegisterToken(String email, String registerToken) {
+        return registerTokenService.verifyToken(email, registerToken);
     }
 
     public void checkDuplicationNicknameAndEmail(String nickname, String email, Role role) {
@@ -60,7 +61,18 @@ public class AuthService {
         userService.checkDuplication(nickname, email);
     }
 
-    public void generateAccessAndRefreshToken(String email) {
+    public Token generateAccessAndRefreshToken(String email) {
+
+        User user = userService.getUser(email);
+        TokenPayload tokenPayload = user.toPayload();
+        String accessToken = tokenService.generateAccessToken(tokenPayload);
+        String refreshToken = tokenService.generateRefreshToken(tokenPayload);
+
+        return Token.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+
     }
 
     public LoginResponseDto login(String email, String password, Role role) {
@@ -73,7 +85,7 @@ public class AuthService {
             String refreshToken = tokenService.generateRefreshToken(tokenPayload);
 
             return LoginResponseDto.builder()
-                    .id(user.getId())
+                    .userId(user.getId())
                     .email(user.getEmail())
                     .profileImgUrl(user.getProfileImgUrl())
                     .accessToken(accessToken)

@@ -9,6 +9,6 @@ import java.util.List;
 
 public class UserAdapter extends User {
     public UserAdapter(com.popple.server.domain.entity.User user) {
-        super(user.getEmail(), user.getPassword(), List.of(new SimpleGrantedAuthority(Role.USER.name())));
+        super(user.getId().toString(), user.getPassword(), List.of(new SimpleGrantedAuthority(Role.USER.name())));
     }
 }

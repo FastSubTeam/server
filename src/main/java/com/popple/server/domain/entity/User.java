@@ -57,7 +57,6 @@ public class User {
     public TokenPayload toPayload() {
         return TokenPayload.builder()
                 .id(id)
-                .email(email)
                 .role(Role.USER)
                 .build();
     }
