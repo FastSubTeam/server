@@ -2,6 +2,7 @@ package com.popple.server.domain.survey.service;
 
 import com.popple.server.domain.entity.Survey;
 import com.popple.server.domain.entity.SurveyOption;
+import com.popple.server.domain.survey.dto.SurveyRespDto;
 import com.popple.server.domain.survey.repository.SurveyOptionRepository;
 import com.popple.server.domain.survey.repository.SurveyRepository;
 import com.popple.server.domain.survey.dto.OptionCreateDto;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.popple.server.domain.survey.type.SurveyStatus.WAIT;
 
@@ -44,5 +47,14 @@ public class SurveyService {
         }
 
         return survey;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SurveyRespDto> findAll() {
+        List<Survey> surveys = surveyRepository.findAll();
+
+        return surveys.stream()
+                .map(SurveyRespDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }
