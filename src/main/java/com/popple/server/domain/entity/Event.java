@@ -1,9 +1,17 @@
 package com.popple.server.domain.entity;
 
+import com.popple.server.domain.event.EventApproval;
+import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Event {
     @Id
@@ -33,7 +41,7 @@ public class Event {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String approval; // TODO: Enum으로 교체
+    private EventApproval approval; // TODO: Enum으로 교체
 
 
     @Column(nullable = false)
