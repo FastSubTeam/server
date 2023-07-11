@@ -1,7 +1,7 @@
 package com.popple.server.domain.board.repository;
 
-import org.springframework.stereotype.Repository;
+import com.popple.server.domain.entity.Post;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public class BoardRepository {
+public interface BoardRepository extends JpaRepository<Post, Long> {
 }
