@@ -10,4 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
+
+    @RequestMapping("/board")
+    //1페이지 표시
+    public String board(){
+        return null;
+    }
 }
