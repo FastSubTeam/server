@@ -2,7 +2,9 @@ package com.popple.server.domain.survey.service;
 
 import com.popple.server.domain.entity.Survey;
 import com.popple.server.domain.entity.SurveyOption;
+import com.popple.server.domain.survey.dto.SurveyDetailRespDto;
 import com.popple.server.domain.survey.dto.SurveyRespDto;
+import com.popple.server.domain.survey.exception.RequestInvalidException;
 import com.popple.server.domain.survey.repository.SurveyOptionRepository;
 import com.popple.server.domain.survey.repository.SurveyRepository;
 import com.popple.server.domain.survey.dto.OptionCreateDto;
@@ -56,5 +58,15 @@ public class SurveyService {
         return surveys.stream()
                 .map(SurveyRespDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public SurveyDetailRespDto findById(int id) {
+        Survey survey = surveyRepository.findById(id)
+                .orElseThrow(() -> new RequestInvalidException("찾고자하는 수요조사 정보가 존재하지 않습니다. : " + id));
+
+        List<SurveyOption> options = surveyOptionRepository.findBySurveyId(survey.getId());
+
+        return SurveyDetailRespDto.fromEntity(survey, options);
     }
 }
