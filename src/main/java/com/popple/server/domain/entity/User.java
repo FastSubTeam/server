@@ -1,5 +1,7 @@
 package com.popple.server.domain.entity;
 
+import com.popple.server.domain.user.vo.TokenPayload;
+import com.popple.server.domain.user.vo.Role;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
@@ -7,7 +9,6 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -52,4 +53,12 @@ public class User {
     @CreatedDate
     @NotNull
     private LocalDateTime createdAt;
+
+    public TokenPayload toPayload() {
+        return TokenPayload.builder()
+                .id(id)
+                .email(email)
+                .role(Role.USER)
+                .build();
+    }
 }

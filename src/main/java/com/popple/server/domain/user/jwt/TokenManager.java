@@ -1,6 +1,6 @@
 package com.popple.server.domain.user.jwt;
 
-import com.popple.server.domain.user.vo.AccessTokenPayload;
+import com.popple.server.domain.user.vo.TokenPayload;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -17,8 +16,6 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 
 @Component
@@ -53,14 +50,14 @@ public class TokenManager {
 
     }
 
-    public String generateAccessToken(AccessTokenPayload accessTokenPayload) {
+    public String generateAccessToken(TokenPayload tokenPayload) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + accessTokenExpires);
         return Jwts.builder()
                 .signWith(secretKey)
-                .claim("id", accessTokenPayload.getUserId())
-                .claim("email", accessTokenPayload.getEmail())
-                .claim("role", accessTokenPayload.getRole())
+                .claim("id", tokenPayload.getId())
+                .claim("email", tokenPayload.getEmail())
+                .claim("role", tokenPayload.getRole())
                 .setIssuedAt(now)
                 .setExpiration(expiration)
                 .setHeaderParam("type", "jwt")
@@ -83,7 +80,6 @@ public class TokenManager {
     public boolean validateToken(String token) {
 
         try {
-            log.info(token);
             Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
@@ -102,8 +98,18 @@ public class TokenManager {
         return false;
     }
 
-    public String generateRefreshToken(Long userId) {
-        return null;
+    public String generateRefreshToken(TokenPayload tokenPayload) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + refreshTokenExpires);
+        return Jwts.builder()
+                .signWith(secretKey)
+                .claim("id", tokenPayload.getId())
+                .claim("role", tokenPayload.getRole())
+                .setIssuedAt(now)
+                .setExpiration(expiration)
+                .setHeaderParam("type", "jwt")
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String extractBearerToken(HttpServletRequest request) {

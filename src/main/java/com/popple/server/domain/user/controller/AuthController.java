@@ -44,8 +44,12 @@ public class AuthController {
 
     //TODO TokenProvider 구현 후 완성
     @PostMapping("/auth/signin")
-    public APIDataResponse<?> login(@RequestBody LoginRequestDto loginRequestDto) {
-        return null;
+    public APIDataResponse<?> login(
+            @RequestBody LoginRequestDto loginRequestDto,
+            @RequestParam(defaultValue = "USER") Role role
+    ) {
+        LoginResponseDto loginResponseDto = authService.login(loginRequestDto.getEmail(), loginRequestDto.getPassword(), role);
+        return APIDataResponse.of(HttpStatus.OK, loginResponseDto);
     }
 
     @PostMapping("/auth/verify-email")

@@ -1,24 +1,25 @@
 package com.popple.server.domain.user.service;
 
-import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
-import com.popple.server.domain.user.dto.CreateUserRequestDto;
-import com.popple.server.domain.user.dto.CreateUserResponseDto;
-import com.popple.server.domain.user.dto.EmailSource;
+import com.popple.server.domain.entity.User;
+import com.popple.server.domain.user.dto.*;
+import com.popple.server.domain.user.vo.TokenPayload;
 import com.popple.server.domain.user.vo.Role;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AuthService {
     private final UserService userService;
-//    private final SellerService sellerService;
+    private final SellerService sellerService;
     private final EmailService emailService;
     private final RegisterTokenService registerTokenService;
-//    private final TokenService tokenService;
+    private final TokenService tokenService;
 
 
     public void checkProceedEmail(String email) {
@@ -60,5 +61,26 @@ public class AuthService {
     }
 
     public void generateAccessAndRefreshToken(String email) {
+    }
+
+    public LoginResponseDto login(String email, String password, Role role) {
+
+        if (role.equals(Role.USER)) {
+            User user = userService.getUser(email, password);
+
+            TokenPayload tokenPayload = user.toPayload();
+            String accessToken = tokenService.generateAccessToken(tokenPayload);
+            String refreshToken = tokenService.generateRefreshToken(tokenPayload);
+
+            return LoginResponseDto.builder()
+                    .id(user.getId())
+                    .email(user.getEmail())
+                    .profileImgUrl(user.getProfileImgUrl())
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        }
+        //TODO Seller 로그인 구현 후 User 로그인과 하나로 합칠 것
+        return null;
     }
 }

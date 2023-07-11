@@ -8,9 +8,9 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class AccessTokenPayload {
+public class TokenPayload {
 
-    private Long userId;
+    private Long id;
     private String email;
     private Role role;
 }

@@ -6,7 +6,6 @@ import com.popple.server.domain.user.dto.CreateUserRequestDto;
 import com.popple.server.domain.user.dto.CreateUserResponseDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.UserErrorCode;
-import com.popple.server.domain.user.repository.RegisterTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -57,5 +56,20 @@ public class UserService {
         if (userRepository.existsByNickname(nickname)) {
             throw new RuntimeException();
         }
+    }
+
+    public User getUser(String email, String password) {
+        User findUser = userRepository.findByEmail(email);
+
+        if (findUser == null) {
+            throw new RuntimeException();
+        }
+
+        if (!bCryptPasswordEncoder.matches(password, findUser.getPassword())) {
+            throw new RuntimeException();
+        }
+
+        return findUser;
+
     }
 }
