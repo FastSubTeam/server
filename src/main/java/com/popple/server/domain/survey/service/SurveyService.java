@@ -2,13 +2,10 @@ package com.popple.server.domain.survey.service;
 
 import com.popple.server.domain.entity.Survey;
 import com.popple.server.domain.entity.SurveyOption;
-import com.popple.server.domain.survey.dto.SurveyDetailRespDto;
-import com.popple.server.domain.survey.dto.SurveyRespDto;
+import com.popple.server.domain.survey.dto.*;
 import com.popple.server.domain.survey.exception.RequestInvalidException;
 import com.popple.server.domain.survey.repository.SurveyOptionRepository;
 import com.popple.server.domain.survey.repository.SurveyRepository;
-import com.popple.server.domain.survey.dto.OptionCreateDto;
-import com.popple.server.domain.survey.dto.SurveyCreateReqDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,5 +74,50 @@ public class SurveyService {
 
         surveyOptionRepository.deleteBySurveyId(survey.getId());
         surveyRepository.deleteById(survey.getId());
+    }
+
+    @Transactional
+    public void updateSurvey(SurveyUpdateReqDto dto, int id) {
+        Survey survey = surveyRepository.findById(id)
+                .orElseThrow(() -> new RequestInvalidException("수정하려는 수요조사 정보가 존재하지 않습니다. : " + id));
+
+        List<SurveyUpdateReqDto.OptionUpdateReqDto> options = dto.getOptions();
+        findDeleteOptions(options, id);
+        updateOptions(options, survey);
+
+        survey.setTitle(dto.getTitle());
+        survey.setStartDate(dto.getStartDate());
+        survey.setEndDate(dto.getEndDate());
+    }
+
+    /** 삭제된 Options 탐색하여 제거: UpdateDto에 없는 optionId는 삭제 */
+    private void findDeleteOptions(List<SurveyUpdateReqDto.OptionUpdateReqDto> options, int surveyId) {
+        List<Integer> optionDtoIds = options.stream()
+                .map(SurveyUpdateReqDto.OptionUpdateReqDto::getId).collect(Collectors.toList());
+
+        List<SurveyOption> surveyOptions = surveyOptionRepository.findBySurveyId(surveyId);
+        for (SurveyOption surveyOption : surveyOptions) {
+            if (!optionDtoIds.contains(surveyOption.getId())) {
+                surveyOptionRepository.delete(surveyOption);
+            }
+        }
+    }
+
+    private void updateOptions(List<SurveyUpdateReqDto.OptionUpdateReqDto> options, Survey survey) {
+        for (SurveyUpdateReqDto.OptionUpdateReqDto optionDto : options) {
+            if (optionDto.getId() != null) {
+                int optionId = optionDto.getId();
+                SurveyOption optionPS = surveyOptionRepository.findById(optionId)
+                        .orElseThrow(() -> new RequestInvalidException("수정하려는 옵션 정보가 존재하지 않습니다. : " + optionId));
+                optionPS.setContent(optionDto.getContent());
+            } else {
+                SurveyOption surveyOption = SurveyOption.builder()
+                        .content(optionDto.getContent())
+                        .survey(survey)
+                        .createdAt(Timestamp.valueOf(LocalDateTime.now())) // TODO: Auditing 변경
+                        .build();
+                surveyOptionRepository.save(surveyOption);
+            }
+        }
     }
 }
