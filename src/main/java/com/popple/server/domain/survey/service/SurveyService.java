@@ -69,4 +69,13 @@ public class SurveyService {
 
         return SurveyDetailRespDto.fromEntity(survey, options);
     }
+
+    @Transactional
+    public void deleteById(int id) {
+        Survey survey = surveyRepository.findById(id)
+                .orElseThrow(() -> new RequestInvalidException("삭제하려는 수요조사 정보가 존재하지 않습니다. : " + id));
+
+        surveyOptionRepository.deleteBySurveyId(survey.getId());
+        surveyRepository.deleteById(survey.getId());
+    }
 }
