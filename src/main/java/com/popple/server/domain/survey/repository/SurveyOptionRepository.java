@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface SurveyOptionRepository extends JpaRepository<SurveyOption, Integer> {
     List<SurveyOption> findBySurveyId(int surveyId);
+
+    void deleteBySurveyId(int surveyId);
 }
