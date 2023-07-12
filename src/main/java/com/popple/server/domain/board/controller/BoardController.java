@@ -30,7 +30,7 @@ public class BoardController {
             List<Comment> comments = boardService.getAllCommentsByPostId(post.getId());
             int commentCount = comments.size();
             BoardListRespDto boardListRespDto = new BoardListRespDto(
-                    post.getUser().getNickname(),
+                    post.getMember().getNickname(),
                     post.getTitle(),
                     post.getContent(),
                     post.getCreatedAt(),
