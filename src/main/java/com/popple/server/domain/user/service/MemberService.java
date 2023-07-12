@@ -1,7 +1,8 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.entity.Member;
-import com.popple.server.domain.user.repository.UserRepository;
+import com.popple.server.domain.user.dto.KakaoLoginRequestDto;
+import com.popple.server.domain.user.repository.MemberRepository;
 import com.popple.server.domain.user.dto.CreateUserRequestDto;
 import com.popple.server.domain.user.dto.CreateUserResponseDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
@@ -12,17 +13,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class UserService {
+public class MemberService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void checkExistProceed(String email) {
-        Member findMember = userRepository.findByEmail(email);
+        Member findMember = memberRepository.findByEmail(email);
 
         if (findMember != null) {
             throw new AlreadyExistException(UserErrorCode.PROCEEDING_EMAIL);
@@ -30,10 +34,22 @@ public class UserService {
     }
 
     @Transactional
-    public CreateUserResponseDto create(final CreateUserRequestDto createUserRequestDto) {
+    public Member createKakaoMember(KakaoLoginRequestDto kakaoLoginRequestDto) {
+        Member kakaoMember = Member.builder()
+                .email(kakaoLoginRequestDto.getEmail())
+                .nickname(kakaoLoginRequestDto.getNickname())
+                .password(UUID.randomUUID().toString())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        return memberRepository.save(kakaoMember);
+    }
+
+    @Transactional
+    public CreateUserResponseDto createWithPassword(final CreateUserRequestDto createUserRequestDto) {
 
         String email = createUserRequestDto.getEmail();
-        Member findMember = userRepository.findByEmail(email);
+        Member findMember = memberRepository.findByEmail(email);
         if (findMember != null) {
             throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
         }
@@ -42,24 +58,28 @@ public class UserService {
 
         createUserRequestDto.setPassword(encodedPassword);
         Member member = createUserRequestDto.toEntity();
-        userRepository.save(member);
+        memberRepository.save(member);
 
         return CreateUserResponseDto.from(member);
     }
 
     public void checkDuplication(String nickname, String email) {
 
-        if (userRepository.existsByEmail(email)) {
+        if (memberRepository.existsByEmail(email)) {
             throw new RuntimeException();
         }
 
-        if (userRepository.existsByNickname(nickname)) {
+        if (memberRepository.existsByNickname(nickname)) {
             throw new RuntimeException();
         }
     }
 
+    public Member getOptionalUserByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
+
     public Member getUser(String email) {
-        Member findMember = userRepository.findByEmail(email);
+        Member findMember = memberRepository.findByEmail(email);
 
         if (findMember == null) {
             throw new RuntimeException();
@@ -69,7 +89,7 @@ public class UserService {
     }
 
     public Member getUser(String email, String password) {
-        Member findMember = userRepository.findByEmail(email);
+        Member findMember = memberRepository.findByEmail(email);
 
         if (findMember == null) {
             throw new RuntimeException();

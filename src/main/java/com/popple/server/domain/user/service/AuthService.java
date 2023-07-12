@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Slf4j
 public class AuthService {
-    private final UserService userService;
+    private final MemberService memberService;
     private final SellerService sellerService;
     private final EmailService emailService;
     private final RegisterTokenService registerTokenService;
@@ -24,7 +24,7 @@ public class AuthService {
 
 
     public void checkProceedEmail(String email) {
-        userService.checkExistProceed(email);
+        memberService.checkExistProceed(email);
     }
 
     public void generateRegisterTokenAndSendEmail(String email) {
@@ -37,7 +37,7 @@ public class AuthService {
 
 
     public CreateUserResponseDto register(CreateUserRequestDto createUserRequestDto) {
-        CreateUserResponseDto createUserResponseDto = userService.create(createUserRequestDto);
+        CreateUserResponseDto createUserResponseDto = memberService.createWithPassword(createUserRequestDto);
         generateRegisterTokenAndSendEmail(createUserResponseDto.getEmail());
 
         return createUserResponseDto;
@@ -58,12 +58,12 @@ public class AuthService {
             return;
         }
 
-        userService.checkDuplication(nickname, email);
+        memberService.checkDuplication(nickname, email);
     }
 
     public Token generateAccessAndRefreshToken(String email) {
 
-        Member member = userService.getUser(email);
+        Member member = memberService.getUser(email);
         TokenPayload tokenPayload = member.toPayload();
         String accessToken = tokenService.generateAccessToken(tokenPayload);
         String refreshToken = tokenService.generateRefreshToken(tokenPayload);
@@ -81,7 +81,7 @@ public class AuthService {
 
             registerTokenService.checkRegisteredEmail(email);
 
-            Member member = userService.getUser(email, password);
+            Member member = memberService.getUser(email, password);
 
             TokenPayload tokenPayload = member.toPayload();
             String accessToken = tokenService.generateAccessToken(tokenPayload);
