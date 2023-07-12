@@ -10,11 +10,9 @@ public class Comment {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "post_id")
     private Post post;
     private String content;
     private Timestamp createdAt;

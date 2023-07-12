@@ -1,12 +1,11 @@
 package com.popple.server.domain.user.service;
 
-import com.popple.server.domain.entity.User;
+import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.repository.UserRepository;
 import com.popple.server.domain.user.dto.CreateUserRequestDto;
 import com.popple.server.domain.user.dto.CreateUserResponseDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.UserErrorCode;
-import com.popple.server.domain.user.repository.RegisterTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,9 +22,9 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void checkExistProceed(String email) {
-        User findUser = userRepository.findByEmail(email);
+        Member findMember = userRepository.findByEmail(email);
 
-        if (findUser != null) {
+        if (findMember != null) {
             throw new AlreadyExistException(UserErrorCode.PROCEEDING_EMAIL);
         }
     }
@@ -34,18 +33,18 @@ public class UserService {
     public CreateUserResponseDto create(final CreateUserRequestDto createUserRequestDto) {
 
         String email = createUserRequestDto.getEmail();
-        User findUser = userRepository.findByEmail(email);
-        if (findUser != null) {
+        Member findMember = userRepository.findByEmail(email);
+        if (findMember != null) {
             throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
         }
 
         String encodedPassword = bCryptPasswordEncoder.encode(createUserRequestDto.getPassword());
 
         createUserRequestDto.setPassword(encodedPassword);
-        User user = createUserRequestDto.toEntity();
-        userRepository.save(user);
+        Member member = createUserRequestDto.toEntity();
+        userRepository.save(member);
 
-        return CreateUserResponseDto.from(user);
+        return CreateUserResponseDto.from(member);
     }
 
     public void checkDuplication(String nickname, String email) {
@@ -57,5 +56,29 @@ public class UserService {
         if (userRepository.existsByNickname(nickname)) {
             throw new RuntimeException();
         }
+    }
+
+    public Member getUser(String email) {
+        Member findMember = userRepository.findByEmail(email);
+
+        if (findMember == null) {
+            throw new RuntimeException();
+        }
+
+        return findMember;
+    }
+
+    public Member getUser(String email, String password) {
+        Member findMember = userRepository.findByEmail(email);
+
+        if (findMember == null) {
+            throw new RuntimeException();
+        }
+
+        if (!bCryptPasswordEncoder.matches(password, findMember.getPassword())) {
+            throw new RuntimeException();
+        }
+
+        return findMember;
     }
 }

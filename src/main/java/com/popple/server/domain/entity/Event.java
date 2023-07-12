@@ -10,7 +10,6 @@ public class Event {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "host_id")
     private Seller host;
     private String name;
     private String description;

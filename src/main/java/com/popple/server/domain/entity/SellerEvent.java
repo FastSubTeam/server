@@ -10,11 +10,9 @@ public class SellerEvent {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id")
     private Seller seller;
 
     @ManyToOne
-    @JoinColumn(name = "event_id")
     private Event event;
     private String approval; // TODO: Enum으로 교체
     private Timestamp createdAt;

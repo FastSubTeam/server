@@ -1,24 +1,26 @@
 package com.popple.server.domain.user.service;
 
-import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
-import com.popple.server.domain.user.dto.CreateUserRequestDto;
-import com.popple.server.domain.user.dto.CreateUserResponseDto;
-import com.popple.server.domain.user.dto.EmailSource;
+import com.popple.server.domain.entity.Member;
+import com.popple.server.domain.user.dto.*;
+import com.popple.server.domain.user.vo.Token;
+import com.popple.server.domain.user.vo.TokenPayload;
 import com.popple.server.domain.user.vo.Role;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class AuthService {
     private final UserService userService;
-//    private final SellerService sellerService;
+    private final SellerService sellerService;
     private final EmailService emailService;
     private final RegisterTokenService registerTokenService;
-//    private final TokenService tokenService;
+    private final TokenService tokenService;
 
 
     public void checkProceedEmail(String email) {
@@ -41,8 +43,8 @@ public class AuthService {
         return createUserResponseDto;
     }
 
-    public String verifyRegisterToken(String registerToken) {
-        return registerTokenService.verifyToken(registerToken);
+    public String verifyRegisterToken(String email, String registerToken) {
+        return registerTokenService.verifyToken(email, registerToken);
     }
 
     public void checkDuplicationNicknameAndEmail(String nickname, String email, Role role) {
@@ -59,6 +61,41 @@ public class AuthService {
         userService.checkDuplication(nickname, email);
     }
 
-    public void generateAccessAndRefreshToken(String email) {
+    public Token generateAccessAndRefreshToken(String email) {
+
+        Member member = userService.getUser(email);
+        TokenPayload tokenPayload = member.toPayload();
+        String accessToken = tokenService.generateAccessToken(tokenPayload);
+        String refreshToken = tokenService.generateRefreshToken(tokenPayload);
+
+        return Token.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+
+    }
+
+    public LoginResponseDto login(String email, String password, Role role) {
+
+        if (role.equals(Role.USER)) {
+
+            registerTokenService.checkRegisteredEmail(email);
+
+            Member member = userService.getUser(email, password);
+
+            TokenPayload tokenPayload = member.toPayload();
+            String accessToken = tokenService.generateAccessToken(tokenPayload);
+            String refreshToken = tokenService.generateRefreshToken(tokenPayload);
+
+            return LoginResponseDto.builder()
+                    .userId(member.getId())
+                    .email(member.getEmail())
+                    .profileImgUrl(member.getProfileImgUrl())
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        }
+        //TODO Seller 로그인 구현 후 User 로그인과 하나로 합칠 것
+        return null;
     }
 }

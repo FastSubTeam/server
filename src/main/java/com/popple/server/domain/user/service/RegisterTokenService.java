@@ -1,7 +1,7 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.entity.RegisterToken;
-import com.popple.server.domain.entity.User;
+import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.RegisterTokenRepository;
@@ -18,10 +18,18 @@ public class RegisterTokenService {
     private final UserRepository userRepository;
     private final RegisterTokenRepository registerTokenRepository;
 
+    public void checkRegisteredEmail(String email) {
+        RegisterToken findRegisterToken = registerTokenRepository.findByEmail(email);
+
+        if (findRegisterToken != null) {
+            throw new RuntimeException("아직 인증이 완료되지 않은 이메일입니다.");
+        }
+    }
+
     @Transactional
     public RegisterToken generateToken(String email) {
-        User findUser = userRepository.findByEmail(email);
-        if (findUser == null) {
+        Member findMember = userRepository.findByEmail(email);
+        if (findMember == null) {
             throw new AlreadyExistException(UserErrorCode.NOT_FOUND);
         }
 
@@ -35,11 +43,10 @@ public class RegisterTokenService {
     }
 
     @Transactional
-    public String verifyToken(String registerToken) {
-        RegisterToken findRegisterToken = registerTokenRepository.findByRegisterToken(registerToken);
-
-        if (registerToken == null) {
-            throw new RuntimeException("유효하지 않은 토큰입니다.");
+    public String verifyToken(String email, String registerToken) {
+        RegisterToken findRegisterToken = registerTokenRepository.findByEmailAndRegisterToken(email, registerToken);
+        if (findRegisterToken == null) {
+            throw new RuntimeException("유효하지 않은 인증토큰입니다.");
         }
 
 

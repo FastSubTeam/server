@@ -20,4 +20,10 @@ public enum Role {
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
+
+
+    @Override
+    public String toString() {
+        return name();
+    }
 }
