@@ -3,23 +3,20 @@ package com.popple.server.domain.user.controller;
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.user.annotation.LoginActor;
 import com.popple.server.domain.user.dto.*;
-import com.popple.server.domain.user.service.*;
+import com.popple.server.domain.user.service.AuthService;
+import com.popple.server.domain.user.service.OAuthService;
 import com.popple.server.domain.user.vo.Actor;
 import com.popple.server.domain.user.vo.AddressStore;
 import com.popple.server.domain.user.vo.Role;
 import com.popple.server.domain.user.vo.Token;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.security.Principal;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +24,7 @@ import java.security.Principal;
 public class AuthController {
 
     private final AuthService authService;
+    private final OAuthService oAuthService;
 
     @GetMapping("/test")
     public Actor test(@LoginActor Actor actor) {
@@ -107,4 +105,22 @@ public class AuthController {
 
         return APIDataResponse.empty(HttpStatus.OK);
     }
+
+    @GetMapping("/auth/kakaologin")
+    public void kakaoSignIn(HttpServletResponse httpServletResponse) throws IOException {
+        oAuthService.redirectToKakaoLoginPage(httpServletResponse);
+    }
+
+    @GetMapping("/auth/kakaologin/callback")
+    public void kakaoSignInCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
+        LoginResponseDto loginResponseDto = oAuthService.loginWithKakaoCode(code);
+        Token token = Token.builder()
+                .accessToken(loginResponseDto.getAccessToken())
+                .refreshToken(loginResponseDto.getRefreshToken())
+                .build();
+
+        addTokenAtCookie(response, token);
+        response.sendRedirect("http://localhost:3000");
+    }
+
 }
