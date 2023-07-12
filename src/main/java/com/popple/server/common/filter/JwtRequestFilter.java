@@ -32,32 +32,38 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        List<String> permittedUrls = new ArrayList<>();
+//        List<String> permittedUrls = new ArrayList<>();
+
 
 //        if (request.getRequestURI().contains("/api/auth")) {
 //            filterChain.doFilter(request, response);
 //            return;
 //        }
 
-        if (request.getMethod().equals(HttpMethod.GET.name())) {
-            permittedUrls.add("/api/events");
-            permittedUrls.add("/api/auth/check-duplication");
-            permittedUrls.add("/api/auth/kakaologin/callback");
-            permittedUrls.add("/api/auth/kakaologin");
+//        if (request.getMethod().equals(HttpMethod.GET.name())) {
+//            permittedUrls.add("/api/events");
+//            permittedUrls.add("/api/auth/check-duplication");
+//            permittedUrls.add("/api/auth/kakaologin/callback");
+//            permittedUrls.add("/api/auth/kakaologin");
+//            permittedUrls.add("/api/admin/survey");
+//            permittedUrls.add("/api/auth/kakaologin");
+//            permittedUrls.add("/api/auth/kakaologin");
+//
+//
+//        } else if (request.getMethod().equals(HttpMethod.POST.name())) {
+//            permittedUrls.add("/api/auth/regenerate-token");
+//            permittedUrls.add("/api/auth/check-proceed");
+//            permittedUrls.add("/api/auth/password");
+//            permittedUrls.add("/api/auth/signup");
+//            permittedUrls.add("/api/auth/signup/seller");
+//            permittedUrls.add("/api/auth/verify-email");
+//            permittedUrls.add("/api/auth/signin");
+//            permittedUrls.add("/api/auth/validate-business-number");
+//
+//        }
 
-        } else if (request.getMethod().equals(HttpMethod.POST.name())) {
-            permittedUrls.add("/api/auth/regenerate-token");
-            permittedUrls.add("/api/auth/check-proceed");
-            permittedUrls.add("/api/auth/password");
-            permittedUrls.add("/api/auth/signup");
-            permittedUrls.add("/api/auth/signup/seller");
-            permittedUrls.add("/api/auth/verify-email");
-            permittedUrls.add("/api/auth/signin");
-            permittedUrls.add("/api/auth/validate-business-number");
-        }
 
-
-        if (permittedUrls.contains(request.getRequestURI())) {
+        if (true) {
             filterChain.doFilter(request, response);
             return;
         }
