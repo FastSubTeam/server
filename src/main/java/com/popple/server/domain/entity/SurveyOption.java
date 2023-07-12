@@ -1,9 +1,6 @@
 package com.popple.server.domain.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -18,9 +15,10 @@ public class SurveyOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
 
+    @Setter
     @Column(nullable = false, length = 300)
     private String content;
 
