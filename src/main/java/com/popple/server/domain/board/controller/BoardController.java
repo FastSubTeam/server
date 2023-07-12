@@ -29,13 +29,15 @@ public class BoardController {
         for (Post post : posts) {
             List<Comment> comments = boardService.getAllCommentsByPostId(post.getId());
             int commentCount = comments.size();
-            BoardListRespDto boardListRespDto = new BoardListRespDto(
-                    post.getMember().getNickname(),
-                    post.getTitle(),
-                    post.getContent(),
-                    post.getCreatedAt(),
-                    post.getUpdatedAt(),
-                    commentCount);
+            BoardListRespDto boardListRespDto = BoardListRespDto.builder()
+                    .id(post.getId())
+                    .nickname(post.getMember().getNickname())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
+                    .commentCount(commentCount)
+                    .build();
             boardListRespDtoList.add(boardListRespDto);
         }
         return APIDataResponse.of(HttpStatus.OK, boardListRespDtoList);
