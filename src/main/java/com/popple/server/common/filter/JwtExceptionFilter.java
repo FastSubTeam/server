@@ -5,6 +5,7 @@ import com.popple.server.common.dto.APIErrorResponse;
 import com.popple.server.domain.user.exception.InvalidJwtTokenException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -30,6 +31,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             APIErrorResponse errorResponse = APIErrorResponse.of(e.getErrorCode().getHttpStatus(), e.getMessage());
             String apiErrorResponse = objectMapper.writeValueAsString(errorResponse);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(apiErrorResponse);
         }
 
