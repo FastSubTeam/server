@@ -1,6 +1,6 @@
 package com.popple.server.domain.user.service;
 
-import com.popple.server.domain.entity.User;
+import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.repository.UserRepository;
 import com.popple.server.domain.user.vo.UserAdapter;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-        User findUser = userRepository.findById(Long.parseLong(id))
+        Member findMember = userRepository.findById(Long.parseLong(id))
                 .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
-        return new UserAdapter(findUser);
+        return new UserAdapter(findMember);
     }
 }

@@ -9,15 +9,12 @@ public class SurveyResult {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "survey_id")
     private Survey survey;
 
     @ManyToOne
-    @JoinColumn(name = "survey_option_id")
     private SurveyOption surveyOption;
 
     private Integer age;

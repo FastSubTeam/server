@@ -1,12 +1,10 @@
 package com.popple.server.domain.user.repository;
 
-import com.popple.server.domain.entity.User;
+import com.popple.server.domain.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByEmail(String email);
+public interface UserRepository extends JpaRepository<Member, Long> {
+    Member findByEmail(String email);
 
     boolean existsByEmail(String email);
 

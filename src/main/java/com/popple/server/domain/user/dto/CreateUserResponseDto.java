@@ -1,6 +1,6 @@
 package com.popple.server.domain.user.dto;
 
-import com.popple.server.domain.entity.User;
+import com.popple.server.domain.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,13 +17,13 @@ public class CreateUserResponseDto {
     private String district;
 
 
-    public static CreateUserResponseDto from(User user) {
+    public static CreateUserResponseDto from(Member member) {
         return CreateUserResponseDto.builder()
-                .city(user.getCity())
-                .email(user.getEmail())
-                .nickname(user.getNickname())
-                .district(user.getDistrict())
-                .id(user.getId())
+                .city(member.getCity())
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .district(member.getDistrict())
+                .id(member.getId())
                 .build();
     }
 }

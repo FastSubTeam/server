@@ -1,6 +1,6 @@
 package com.popple.server.domain.user;
 
-import com.popple.server.domain.entity.User;
+import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.CreateUserRequestDto;
 import com.popple.server.domain.user.dto.CreateUserResponseDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
@@ -24,7 +24,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class MemberServiceTest {
 
     private static final CreateUserRequestDto CREATE_USER_REQUEST_DTO = CreateUserRequestDto.builder()
             .city("서울특별시")
@@ -56,8 +56,8 @@ class UserServiceTest {
     @DisplayName("유저 생성 테스트")
     void createUserTest() {
         // Given
-        User user = CREATE_USER_REQUEST_DTO.toEntity();
-        user.setId(1L);
+        Member member = CREATE_USER_REQUEST_DTO.toEntity();
+        member.setId(1L);
 
         // When
         userService.create(CREATE_USER_REQUEST_DTO);
@@ -70,9 +70,9 @@ class UserServiceTest {
     @DisplayName("유저 생성 예외 테스트 - 이미 존재하는 이메일")
     void createUserThrowAlreadyExistExceptionTest() {
         // Given
-        User user = CREATE_USER_REQUEST_DTO.toEntity();
-        user.setId(1L);
-        given(userRepository.findByEmail(anyString())).willReturn(user);
+        Member member = CREATE_USER_REQUEST_DTO.toEntity();
+        member.setId(1L);
+        given(userRepository.findByEmail(anyString())).willReturn(member);
 
         // When
         Throwable throwable = catchThrowable(() -> userService.create(CREATE_USER_REQUEST_DTO));

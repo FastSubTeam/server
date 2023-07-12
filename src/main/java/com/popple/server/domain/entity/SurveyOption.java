@@ -19,7 +19,6 @@ public class SurveyOption {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "survey_id")
     private Survey survey;
 
     @Column(nullable = false, length = 300)

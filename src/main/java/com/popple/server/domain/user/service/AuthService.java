@@ -1,7 +1,7 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.entity.RegisterToken;
-import com.popple.server.domain.entity.User;
+import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
@@ -63,8 +63,8 @@ public class AuthService {
 
     public Token generateAccessAndRefreshToken(String email) {
 
-        User user = userService.getUser(email);
-        TokenPayload tokenPayload = user.toPayload();
+        Member member = userService.getUser(email);
+        TokenPayload tokenPayload = member.toPayload();
         String accessToken = tokenService.generateAccessToken(tokenPayload);
         String refreshToken = tokenService.generateRefreshToken(tokenPayload);
 
@@ -81,16 +81,16 @@ public class AuthService {
 
             registerTokenService.checkRegisteredEmail(email);
 
-            User user = userService.getUser(email, password);
+            Member member = userService.getUser(email, password);
 
-            TokenPayload tokenPayload = user.toPayload();
+            TokenPayload tokenPayload = member.toPayload();
             String accessToken = tokenService.generateAccessToken(tokenPayload);
             String refreshToken = tokenService.generateRefreshToken(tokenPayload);
 
             return LoginResponseDto.builder()
-                    .userId(user.getId())
-                    .email(user.getEmail())
-                    .profileImgUrl(user.getProfileImgUrl())
+                    .userId(member.getId())
+                    .email(member.getEmail())
+                    .profileImgUrl(member.getProfileImgUrl())
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build();

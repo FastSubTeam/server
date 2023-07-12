@@ -1,7 +1,7 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.entity.RegisterToken;
-import com.popple.server.domain.entity.User;
+import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.RegisterTokenRepository;
@@ -28,8 +28,8 @@ public class RegisterTokenService {
 
     @Transactional
     public RegisterToken generateToken(String email) {
-        User findUser = userRepository.findByEmail(email);
-        if (findUser == null) {
+        Member findMember = userRepository.findByEmail(email);
+        if (findMember == null) {
             throw new AlreadyExistException(UserErrorCode.NOT_FOUND);
         }
 

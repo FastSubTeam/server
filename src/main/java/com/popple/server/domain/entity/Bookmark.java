@@ -10,11 +10,9 @@ public class Bookmark {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private Member member;
 
     @ManyToOne
-    @JoinColumn(name = "event_id")
     private Event event;
     private Timestamp createdAt;
 }

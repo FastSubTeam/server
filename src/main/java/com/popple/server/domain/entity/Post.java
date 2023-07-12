@@ -11,7 +11,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Member member;
     private String title;
     private String content;
     private Timestamp createdAt;
