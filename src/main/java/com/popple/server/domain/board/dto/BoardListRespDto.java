@@ -1,9 +1,6 @@
 package com.popple.server.domain.board.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.sql.Timestamp;
 
@@ -11,6 +8,8 @@ import java.sql.Timestamp;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@ToString
 //@Todo 전체 리스트 조회 구현 후 페이지네이션 구현
 public class BoardListRespDto {
     private Long id;
