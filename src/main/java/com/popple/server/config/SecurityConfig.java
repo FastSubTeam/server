@@ -75,7 +75,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*"); // 모든 요청 허용, JS 요청 허용
-        configuration.addAllowedOrigin("http://localhost:3000");
+        //TODO 추후 배포시 수정 필요
+        configuration.addAllowedOrigin("*");
         configuration.setAllowCredentials(true); // 클라이언트에서 쿠키 요청하는 것을 허용
         configuration.addExposedHeader("Authorization"); // Authorization 헤더를 노출
 
