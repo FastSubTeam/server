@@ -8,6 +8,7 @@ import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 // TODO
@@ -30,18 +32,35 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        List<String> permittedUrls = List.of("/api/auth/signup", "/api/auth/signin", "/api/auth/verify-email");
+        List<String> permittedUrls = new ArrayList<>();
 
-        if (request.getRequestURI().contains("/api/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-
-//        if (permittedUrls.contains(request.getRequestURI())) {
+//        if (request.getRequestURI().contains("/api/auth")) {
 //            filterChain.doFilter(request, response);
 //            return;
 //        }
+
+        if (request.getMethod().equals(HttpMethod.GET.name())) {
+            permittedUrls.add("/api/events");
+            permittedUrls.add("/api/auth/check-duplication");
+            permittedUrls.add("/api/auth/kakaologin/callback");
+            permittedUrls.add("/api/auth/kakaologin");
+
+        } else if (request.getMethod().equals(HttpMethod.POST.name())) {
+            permittedUrls.add("/api/auth/regenerate-token");
+            permittedUrls.add("/api/auth/check-proceed");
+            permittedUrls.add("/api/auth/password");
+            permittedUrls.add("/api/auth/signup");
+            permittedUrls.add("/api/auth/signup/seller");
+            permittedUrls.add("/api/auth/verify-email");
+            permittedUrls.add("/api/auth/signin");
+            permittedUrls.add("/api/auth/validate-business-number");
+        }
+
+
+        if (permittedUrls.contains(request.getRequestURI())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         //TODO 추후 RTR로 수정하기 (Redis key값 = 유저 id, value값 = refreshtoken + accessToken 만료시마다 refreshtoken도 재발급 하기)
 
         Token token = tokenManager.extractBearerToken(request);
