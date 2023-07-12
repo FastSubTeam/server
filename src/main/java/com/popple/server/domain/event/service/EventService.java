@@ -2,6 +2,7 @@ package com.popple.server.domain.event.service;
 
 import com.popple.server.domain.entity.Event;
 import com.popple.server.domain.event.dto.EventCreateReqDto;
+import com.popple.server.domain.event.dto.EventRespDto;
 import com.popple.server.domain.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class EventService {
     private final EventRepository eventRepository;
 
     @Transactional
-    public Event save(EventCreateReqDto dto) {
+    public EventRespDto save(EventCreateReqDto dto) {
         Event event = Event.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
@@ -31,7 +32,7 @@ public class EventService {
 
         eventRepository.save(event);
 
-        return event;
+        return EventRespDto.fromEntity(event);
     }
 
 
