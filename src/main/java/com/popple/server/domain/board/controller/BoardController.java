@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +35,7 @@ public class BoardController {
     }
 
     @RequestMapping("/board")
-    public BoardAPIDataResponse<List<BoardListRespDto>> getPostsByPage(Pageable pageable) {
+    public BoardAPIDataResponse<List<BoardListRespDto>> getPostsByPage(@PageableDefault Pageable pageable) {
         Page<Post> postsByPage = boardService.getPostsByPage(pageable);
         List<Post> contents = postsByPage.getContent();
         List<BoardListRespDto> boardListRespDtoList = createListOfBoardListRespDto(contents);
