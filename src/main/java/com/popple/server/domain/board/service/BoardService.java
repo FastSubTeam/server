@@ -6,9 +6,11 @@ import com.popple.server.domain.entity.Comment;
 import com.popple.server.domain.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class BoardService {
