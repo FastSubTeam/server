@@ -26,10 +26,22 @@ public class BoardController {
     //전체 게시글
     @RequestMapping("/board/all")
     public APIDataResponse<List<BoardListRespDto>> getAllPosts() {
-        List<BoardListRespDto> boardListRespDtoList = new ArrayList<>();
-
         //서비스 메서드 호출
         List<Post> posts = boardService.getAllPosts();
+        List<BoardListRespDto> boardListRespDtoList = createListOfBoardListRespDto(posts);
+        return APIDataResponse.of(HttpStatus.OK, boardListRespDtoList);
+    }
+
+    @RequestMapping("/board")
+    public APIDataResponse<List<BoardListRespDto>> getPostsByPage(Pageable pageable) {
+        Page<Post> postsByPage = boardService.getPostsByPage(pageable);
+        List<Post> contents = postsByPage.getContent();
+        List<BoardListRespDto> boardListRespDtoList = createListOfBoardListRespDto(contents);
+        return APIDataResponse.of(HttpStatus.OK, boardListRespDtoList);
+    }
+
+    private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts){
+        List<BoardListRespDto> boardListRespDtoList = new ArrayList<>();
         for (Post post : posts) {
             List<Comment> comments = boardService.getAllCommentsByPostId(post.getId());
             int commentCount = comments.size();
@@ -44,28 +56,6 @@ public class BoardController {
                     .build();
             boardListRespDtoList.add(boardListRespDto);
         }
-        return APIDataResponse.of(HttpStatus.OK, boardListRespDtoList);
-    }
-
-    @RequestMapping("/board")
-    public APIDataResponse<List<BoardListRespDto>> getPostsByPage(Pageable pageable) {
-        Page<Post> postsByPage = boardService.getPostsByPage(pageable);
-        List<Post> contents = postsByPage.getContent();
-        List<BoardListRespDto> boardListRespDtoList = new ArrayList<>();
-        for (Post post : contents) {
-            List<Comment> comments = boardService.getAllCommentsByPostId(post.getId());
-            int commentCount = comments.size();
-            BoardListRespDto boardListRespDto = BoardListRespDto.builder()
-                    .id(post.getId())
-                    .nickname(post.getMember().getNickname())
-                    .title(post.getTitle())
-                    .content(post.getContent())
-                    .createdAt(post.getCreatedAt())
-                    .updatedAt(post.getUpdatedAt())
-                    .commentCount(commentCount)
-                    .build();
-            boardListRespDtoList.add(boardListRespDto);
-        }
-        return APIDataResponse.of(HttpStatus.OK, boardListRespDtoList);
+        return boardListRespDtoList;
     }
 }
