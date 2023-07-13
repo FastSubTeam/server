@@ -31,7 +31,7 @@ public class BoardController {
         //서비스 메서드 호출
         List<Post> posts = boardService.getAllPosts();
         List<BoardListRespDto> boardListRespDtoList = createListOfBoardListRespDto(posts);
-        return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, posts.size());
+        return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, (long) posts.size());
     }
 
     @RequestMapping("/board")
@@ -39,7 +39,7 @@ public class BoardController {
         Page<Post> postsByPage = boardService.getPostsByPage(pageable);
         List<Post> contents = postsByPage.getContent();
         List<BoardListRespDto> boardListRespDtoList = createListOfBoardListRespDto(contents);
-        return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, (int)postsByPage.getTotalElements());
+        return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, postsByPage.getTotalElements());
     }
 
     private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts){
