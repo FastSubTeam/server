@@ -5,6 +5,7 @@ import com.popple.server.domain.board.repository.CommentRepository;
 import com.popple.server.domain.entity.Comment;
 import com.popple.server.domain.entity.Post;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Transactional
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BoardService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;

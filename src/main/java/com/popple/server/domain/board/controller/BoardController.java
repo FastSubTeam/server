@@ -6,6 +6,7 @@ import com.popple.server.domain.board.service.BoardService;
 import com.popple.server.domain.entity.Comment;
 import com.popple.server.domain.entity.Post;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/api")
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
     private final BoardService boardService;
 
