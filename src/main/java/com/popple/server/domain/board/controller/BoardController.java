@@ -1,6 +1,7 @@
 package com.popple.server.domain.board.controller;
 
 import com.popple.server.common.dto.APIDataResponse;
+import com.popple.server.domain.board.dto.BoardAPIDataResponse;
 import com.popple.server.domain.board.dto.BoardListRespDto;
 import com.popple.server.domain.board.service.BoardService;
 import com.popple.server.domain.entity.Comment;
@@ -25,19 +26,19 @@ public class BoardController {
 
     //전체 게시글
     @RequestMapping("/board/all")
-    public APIDataResponse<List<BoardListRespDto>> getAllPosts() {
+    public BoardAPIDataResponse<List<BoardListRespDto>> getAllPosts() {
         //서비스 메서드 호출
         List<Post> posts = boardService.getAllPosts();
         List<BoardListRespDto> boardListRespDtoList = createListOfBoardListRespDto(posts);
-        return APIDataResponse.of(HttpStatus.OK, boardListRespDtoList);
+        return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, posts.size());
     }
 
     @RequestMapping("/board")
-    public APIDataResponse<List<BoardListRespDto>> getPostsByPage(Pageable pageable) {
+    public BoardAPIDataResponse<List<BoardListRespDto>> getPostsByPage(Pageable pageable) {
         Page<Post> postsByPage = boardService.getPostsByPage(pageable);
         List<Post> contents = postsByPage.getContent();
         List<BoardListRespDto> boardListRespDtoList = createListOfBoardListRespDto(contents);
-        return APIDataResponse.of(HttpStatus.OK, boardListRespDtoList);
+        return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, (int)postsByPage.getTotalElements());
     }
 
     private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts){
