@@ -10,14 +10,14 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 public class BoardAPIDataResponse<T> extends APIDataResponse<T> {
-    private int totalPosts;
+    private Long totalPosts;
 
-    public BoardAPIDataResponse(Integer statusCode, T data, int totalPosts) {
+    public BoardAPIDataResponse(Integer statusCode, T data, Long totalPosts) {
         super(statusCode, data);
         this.totalPosts = totalPosts;
     }
 
-    public static<T> BoardAPIDataResponse<T> of(HttpStatus httpStatus, T data, int totalPosts){
+    public static<T> BoardAPIDataResponse<T> of(HttpStatus httpStatus, T data, Long totalPosts){
         return new BoardAPIDataResponse<>(httpStatus.value(), data, totalPosts);
     }
 }
