@@ -22,7 +22,7 @@ public class BoardController {
     private final BoardService boardService;
 
     //전체 게시글
-    @RequestMapping("/board")
+    @RequestMapping("/board/all")
     public APIDataResponse<List<BoardListRespDto>> getAllPosts() {
         List<BoardListRespDto> boardListRespDtoList = new ArrayList<>();
 
