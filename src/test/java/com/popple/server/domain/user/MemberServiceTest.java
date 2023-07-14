@@ -5,8 +5,8 @@ import com.popple.server.domain.user.dto.CreateUserRequestDto;
 import com.popple.server.domain.user.dto.CreateUserResponseDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.UserErrorCode;
-import com.popple.server.domain.user.repository.UserRepository;
-import com.popple.server.domain.user.service.UserService;
+import com.popple.server.domain.user.repository.MemberRepository;
+import com.popple.server.domain.user.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,10 +43,10 @@ class MemberServiceTest {
             .build();
     @Spy
     @InjectMocks
-    private UserService userService;
+    private MemberService memberService;
 
     @Mock
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -60,10 +60,10 @@ class MemberServiceTest {
         member.setId(1L);
 
         // When
-        userService.create(CREATE_USER_REQUEST_DTO);
+        memberService.createWithPassword(CREATE_USER_REQUEST_DTO);
 
         // Then
-        then(userRepository).should(times(1)).save(any());
+        then(memberRepository).should(times(1)).save(any());
     }
 
     @Test
@@ -72,10 +72,10 @@ class MemberServiceTest {
         // Given
         Member member = CREATE_USER_REQUEST_DTO.toEntity();
         member.setId(1L);
-        given(userRepository.findByEmail(anyString())).willReturn(member);
+        given(memberRepository.findByEmail(anyString())).willReturn(member);
 
         // When
-        Throwable throwable = catchThrowable(() -> userService.create(CREATE_USER_REQUEST_DTO));
+        Throwable throwable = catchThrowable(() -> memberService.createWithPassword(CREATE_USER_REQUEST_DTO));
 
         // Then
         assertThat(throwable)

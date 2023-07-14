@@ -30,10 +30,8 @@ public class Member {
     @NotNull
     private String password;
 
-    @NotNull
     private String city;
 
-    @NotNull
     private String district;
 
     @NotNull

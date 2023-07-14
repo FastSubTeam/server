@@ -5,7 +5,7 @@ import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.RegisterTokenRepository;
-import com.popple.server.domain.user.repository.UserRepository;
+import com.popple.server.domain.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class RegisterTokenService {
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final RegisterTokenRepository registerTokenRepository;
 
     public void checkRegisteredEmail(String email) {
@@ -28,7 +28,7 @@ public class RegisterTokenService {
 
     @Transactional
     public RegisterToken generateToken(String email) {
-        Member findMember = userRepository.findByEmail(email);
+        Member findMember = memberRepository.findByEmail(email);
         if (findMember == null) {
             throw new AlreadyExistException(UserErrorCode.NOT_FOUND);
         }

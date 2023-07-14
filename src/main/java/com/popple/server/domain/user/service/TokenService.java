@@ -2,7 +2,7 @@ package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.user.jwt.RefreshToken;
 import com.popple.server.domain.user.jwt.TokenManager;
-import com.popple.server.domain.user.repository.UserRepository;
+import com.popple.server.domain.user.repository.MemberRepository;
 import com.popple.server.domain.user.repository.RefreshTokenRepository;
 import com.popple.server.domain.user.vo.TokenPayload;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class TokenService {
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenManager tokenManager;
 
