@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -29,9 +31,17 @@ public class BoardService {
         return commentRepository.findByPost_Id(postId);
     }
 
-
     public Page<Post> getPostsByPage(Pageable pageable) {
         log.info("service접근");
         return boardRepository.findAll(pageable);
     }
+
+    public Post getPostById(Long postId){
+        Optional<Post> post = boardRepository.findById(postId);
+        if(post.isPresent()){
+            return post.get();
+        }
+        throw new NoSuchElementException("게시물의 id가 존재하지 않습니다.");
+    }
+
 }
