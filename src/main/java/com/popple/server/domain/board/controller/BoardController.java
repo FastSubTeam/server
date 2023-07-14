@@ -69,8 +69,7 @@ public class BoardController {
     private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts) {
         List<BoardListRespDto> boardListRespDtoList = new ArrayList<>();
         for (Post post : posts) {
-            List<Comment> comments = boardService.getAllCommentsByPostId(post.getId());
-            int commentCount = comments.size();
+            int commentCount = boardService.getAllCommentsByPostId(post.getId()).size();
             BoardListRespDto boardListRespDto = BoardListRespDto.builder()
                     .id(post.getId())
                     .nickname(post.getMember().getNickname())
