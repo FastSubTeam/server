@@ -33,9 +33,9 @@ public class BoardService {
     }
 
     public List<CommentDto> getAllCommentsByPostId(Long postId) {
-        List<CommentTableProjection> byPost_id = commentRepository.findByPost_id(postId);
+        List<CommentTableProjection> commentProjections = commentRepository.findByPost_id(postId);
         List<CommentDto> commentDtos = new ArrayList<>();
-        for (CommentTableProjection c : byPost_id) {
+        for (CommentTableProjection c : commentProjections) {
             Optional<Member> member = userRepository.findById(c.getMemberId());
             if (member.isPresent()) {
                 CommentDto commentDto = CommentDto.builder()
