@@ -3,8 +3,9 @@ package com.popple.server.domain.board.controller;
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.board.dto.BoardAPIDataResponse;
 import com.popple.server.domain.board.dto.BoardListRespDto;
+import com.popple.server.domain.board.dto.CommentDto;
+import com.popple.server.domain.board.dto.PostRespDto;
 import com.popple.server.domain.board.service.BoardService;
-import com.popple.server.domain.entity.Comment;
 import com.popple.server.domain.entity.Post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +13,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RequestMapping("/api")
 @RestController
@@ -42,7 +45,28 @@ public class BoardController {
         return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, postsByPage.getTotalElements());
     }
 
-    private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts){
+    @RequestMapping("/board/{postId}")
+    public APIDataResponse<PostRespDto> getPostById(@PathVariable Long postId) {
+        try {
+            Post post = boardService.getPostById(postId);
+            List<CommentDto> commentDtos = boardService.getAllCommentsByPostId(postId);
+            PostRespDto postRespDto = PostRespDto.builder()
+                    .id(post.getId())
+                    .nickname(post.getMember().getNickname())
+                    .content(post.getContent())
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
+                    .comments(commentDtos)
+                    .build();
+            return APIDataResponse.of(HttpStatus.OK, postRespDto);
+        } catch (NoSuchElementException e) {
+            //Error응답
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts) {
         List<BoardListRespDto> boardListRespDtoList = new ArrayList<>();
         for (Post post : posts) {
             List<Comment> comments = boardService.getAllCommentsByPostId(post.getId());
