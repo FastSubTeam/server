@@ -37,28 +37,32 @@ public class BoardService {
         List<CommentDto> commentDtos = new ArrayList<>();
         for (CommentTableProjection c : commentProjections) {
             Optional<Member> member = userRepository.findById(c.getMemberId());
-            if (member.isPresent()) {
-                CommentDto commentDto = CommentDto.builder()
-                        .id(c.getId())
-                        .content(c.getContent())
-                        .createdAt(c.getCreatedAt())
-                        .updatedAt(c.getUpdatedAt())
-                        .member(member.get())
-                        .build();
-                commentDtos.add(commentDto);
-                continue;
-            }
+            addCommentDto(commentDtos, c, member);
+        }
+        return commentDtos;
+    }
+
+    private void addCommentDto(List<CommentDto> commentDtos, CommentTableProjection c, Optional<Member> member) {
+        if (member.isPresent()) {
             CommentDto commentDto = CommentDto.builder()
                     .id(c.getId())
                     .content(c.getContent())
                     .createdAt(c.getCreatedAt())
                     .updatedAt(c.getUpdatedAt())
-                    .member(null)// Todo 존재하지 않는 사용자에 대한 예외처리
+                    .member(member.get())
                     .build();
             commentDtos.add(commentDto);
-            log.error("comment_id = {}의 Member정보가 존재하지 않습니다.", c.getId());
+            return;
         }
-        return commentDtos;
+        CommentDto commentDto = CommentDto.builder()
+                .id(c.getId())
+                .content(c.getContent())
+                .createdAt(c.getCreatedAt())
+                .updatedAt(c.getUpdatedAt())
+                .member(null)// Todo 존재하지 않는 사용자에 대한 예외처리
+                .build();
+        commentDtos.add(commentDto);
+        log.error("comment_id = {}의 Member정보가 존재하지 않습니다.", c.getId());
     }
 
     public Page<Post> getPostsByPage(Pageable pageable) {
