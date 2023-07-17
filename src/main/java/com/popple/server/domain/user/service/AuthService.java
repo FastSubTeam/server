@@ -93,6 +93,7 @@ public class AuthService {
                     .profileImgUrl(member.getProfileImgUrl())
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
+                    .nickname(member.getNickname())
                     .build();
         }
         //TODO Seller 로그인 구현 후 User 로그인과 하나로 합칠 것
