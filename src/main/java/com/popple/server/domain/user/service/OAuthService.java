@@ -73,6 +73,7 @@ public class OAuthService {
                 .userId(findMember.getId())
                 .email(findMember.getEmail())
                 .profileImgUrl(findMember.getProfileImgUrl())
+                .nickname(findMember.getNickname())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
