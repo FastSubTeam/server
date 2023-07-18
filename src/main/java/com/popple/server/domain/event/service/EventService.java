@@ -51,11 +51,11 @@ public class EventService {
     }
     @Transactional
     public Page<EventRespDto> findAllByPage(Pageable pageable) {
-        List<Event> eventList = eventRepository.findAll();
-        List<EventRespDto> dtoList = eventList.stream().map(EventRespDto::fromEntity).collect(Collectors.toList());
+        Page<Event> eventPage = eventRepository.findAll(pageable);
+        List<EventRespDto> dtoList = eventPage.getContent().stream().map(EventRespDto::fromEntity).collect(Collectors.toList());
 
 
-        return new PageImpl<>(dtoList);
+        return new PageImpl<>(dtoList, pageable, eventPage.getTotalElements());
         //List -> Page
     }
 }
