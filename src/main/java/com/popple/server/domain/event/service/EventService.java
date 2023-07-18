@@ -5,6 +5,9 @@ import com.popple.server.domain.event.dto.EventCreateReqDto;
 import com.popple.server.domain.event.dto.EventRespDto;
 import com.popple.server.domain.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +49,13 @@ public class EventService {
 
 
     }
+    @Transactional
+    public Page<EventRespDto> findAllByPage(Pageable pageable) {
+        List<Event> eventList = eventRepository.findAll();
+        List<EventRespDto> dtoList = eventList.stream().map(EventRespDto::fromEntity).collect(Collectors.toList());
 
 
+        return new PageImpl<>(dtoList);
+        //List -> Page
+    }
 }
