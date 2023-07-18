@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.popple.server.domain.event.EventApproval.WAIT;
 @RequiredArgsConstructor
@@ -33,6 +35,16 @@ public class EventService {
         eventRepository.save(event);
 
         return EventRespDto.fromEntity(event);
+    }
+
+    @Transactional
+    public List<EventRespDto> findAll() {
+        List<Event> eventList = eventRepository.findAll();
+
+        return eventList.stream().map(EventRespDto::fromEntity).collect(Collectors.toList());
+
+
+
     }
 
 
