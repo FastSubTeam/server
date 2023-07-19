@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.popple.server.domain.event.EventApproval.WAIT;
@@ -57,5 +59,16 @@ public class EventService {
 
         return new PageImpl<>(dtoList, pageable, eventPage.getTotalElements());
         //List -> Page
+    }
+
+    @Transactional
+    public EventRespDto findById(Long id) {
+
+        Optional<Event> optionalEvent = eventRepository.findById(id);
+        if(optionalEvent.isPresent()) {
+            Event event = optionalEvent.orElse(null);
+            return EventRespDto.fromEntity(event);
+        }
+        throw new NoSuchElementException("id가 존재하지 않습니다.");
     }
 }
