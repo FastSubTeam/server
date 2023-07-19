@@ -9,6 +9,7 @@ public class LoginResponseDto {
 
     private Long userId;
     private String email;
+    private String nickname;
     private String profileImgUrl;
     private String accessToken;
     private String refreshToken;
