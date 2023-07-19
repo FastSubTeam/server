@@ -6,7 +6,7 @@ import com.popple.server.domain.board.repository.BoardRepository;
 import com.popple.server.domain.board.repository.CommentRepository;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Post;
-import com.popple.server.domain.user.repository.UserRepository;
+import com.popple.server.domain.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ import java.util.Optional;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     public List<Post> getAllPosts() {
         return boardRepository.findAll();
@@ -36,7 +36,7 @@ public class BoardService {
         List<CommentTableProjection> commentProjections = commentRepository.findByPost_id(postId);
         List<CommentDto> commentDtos = new ArrayList<>();
         for (CommentTableProjection c : commentProjections) {
-            Optional<Member> member = userRepository.findById(c.getMemberId());
+            Optional<Member> member = memberRepository.findById(c.getMemberId());
             addCommentDto(commentDtos, c, member);
         }
         return commentDtos;
