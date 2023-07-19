@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.awt.*;
 import java.util.List;
 
 
@@ -43,6 +44,14 @@ public class EventController {
 
         return APIDataResponse.of(HttpStatus.OK, eventPage);
     }
+
+    @GetMapping("/events/{id}")
+    public APIDataResponse<EventRespDto> eventById(@PathVariable Long id) {
+        EventRespDto eventRespDto = eventService.findById(id);
+
+        return APIDataResponse.of(HttpStatus.OK, eventRespDto);
+    }
+
 
 
 
