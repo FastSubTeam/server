@@ -13,15 +13,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-@RequestMapping("/api")
+@RequestMapping("/api/board")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -29,7 +27,7 @@ public class BoardController {
     private final BoardService boardService;
 
     //전체 게시글
-    @RequestMapping("/board/all")
+    @GetMapping("/all")
     public BoardAPIDataResponse<List<BoardListRespDto>> getAllPosts() {
         //서비스 메서드 호출
         List<Post> posts = boardService.getAllPosts();
@@ -37,7 +35,7 @@ public class BoardController {
         return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, (long) posts.size());
     }
 
-    @RequestMapping("/board")
+    @GetMapping()
     public BoardAPIDataResponse<List<BoardListRespDto>> getPostsByPage(@PageableDefault Pageable pageable) {
         Page<Post> postsByPage = boardService.getPostsByPage(pageable);
         List<Post> contents = postsByPage.getContent();
@@ -45,7 +43,7 @@ public class BoardController {
         return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, postsByPage.getTotalElements());
     }
 
-    @RequestMapping("/board/{postId}")
+    @GetMapping("/{postId}")
     public APIDataResponse<PostRespDto> getPostById(@PathVariable Long postId) {
         try {
             Post post = boardService.getPostById(postId);
