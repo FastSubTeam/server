@@ -20,6 +20,8 @@ public class EventRespDto {
     private String location;
     private String description;
     private String thumbnailUrl;
+
+    private EventApproval approval;
     private Timestamp startDate;
     private Timestamp endDate;
 
@@ -31,9 +33,11 @@ public class EventRespDto {
                 .location(event.getLocation())
                 .description(event.getDescription())
                 .thumbnailUrl(event.getThumbnailUrl())
+                .approval(event.getApproval())
                 .startDate(event.getStartDate())
                 .endDate(event.getEndDate())
                 .build();
     }
+
 
 }
