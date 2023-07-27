@@ -2,6 +2,7 @@ package com.popple.server.domain.event.dto;
 
 import com.popple.server.domain.entity.Event;
 import com.popple.server.domain.entity.Seller;
+import com.popple.server.domain.event.EventApproval;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
