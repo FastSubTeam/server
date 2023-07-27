@@ -2,6 +2,8 @@ package com.popple.server.domain.entity;
 
 import com.popple.server.domain.event.EventApproval;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@DynamicInsert
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +43,7 @@ public class Event {
     private Timestamp endDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(length = 20, nullable = false)
     private EventApproval approval; // TODO: Enum으로 교체
 
 

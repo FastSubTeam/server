@@ -35,9 +35,14 @@ public class EventService {
                 .endDate(dto.getEndDate())
                 .approval(WAIT)
                 .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+                .updatedAt(Timestamp.valueOf(LocalDateTime.now()))
                 .build();
 
+        System.out.println(event.getApproval());
+
         eventRepository.save(event);
+
+
 
         return EventRespDto.fromEntity(event);
     }
