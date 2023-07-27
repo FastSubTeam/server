@@ -31,19 +31,19 @@ public class EventController {
     }
 
 
-    @GetMapping("/events")
-    public APIDataResponse<List<EventRespDto>> EventList() {
-        List<EventRespDto> events = eventService.findAll();
-
-        return APIDataResponse.of(HttpStatus.OK, events);
-    }
-
-//    @GetMapping("/events")                             //한페이지당 최대게시글수 12
-//    public APIDataResponse<Page<EventRespDto>> EventList(@PageableDefault(size = 12) Pageable pageable) {
-//        Page<EventRespDto> eventPage = eventService.findAllByPage(pageable);
+//    @GetMapping("/events")
+//    public APIDataResponse<List<EventRespDto>> EventList() {
+//        List<EventRespDto> events = eventService.findAll();
 //
-//        return APIDataResponse.of(HttpStatus.OK, eventPage);
+//        return APIDataResponse.of(HttpStatus.OK, events);
 //    }
+
+    @GetMapping("/events")                             //한페이지당 최대게시글수 12
+    public APIDataResponse<Page<EventRespDto>> EventList(@PageableDefault(size = 12) Pageable pageable) {
+        Page<EventRespDto> eventPage = eventService.findAllByPage(pageable);
+
+        return APIDataResponse.of(HttpStatus.OK, eventPage);
+    }
 
     @GetMapping("/events/{id}")
     public APIDataResponse<EventRespDto> eventById(@PathVariable Long id) {
