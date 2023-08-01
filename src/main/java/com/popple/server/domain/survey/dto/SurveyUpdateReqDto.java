@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -22,11 +21,9 @@ public class SurveyUpdateReqDto {
     @NotBlank(message = "수요조사 제목이 빈 값입니다.")
     private String title;
 
-    @Future(message = "수요조사 시작일은 현재 시간보다 과거일 수 없습니다.")
     @NotNull(message = "수요조사 시작일은 필수 선택 값입니다.")
     private Timestamp startDate;
 
-    @Future(message = "설문조사 종료일은 현재 시간보다 과거일 수 없습니다.")
     @NotNull(message = "수요조사 종료일은 필수 선택 값입니다.")
     private Timestamp endDate;
 

@@ -27,7 +27,6 @@ public class SurveyAdminExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public APIErrorResponse handleAllException(Exception e) {
-        System.out.println(">>> " + e.getClass() + " ==> " + e.getMessage());
         return APIErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
     }
 }
