@@ -30,7 +30,7 @@ public class Survey {
 
     @Setter
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 20)
     private SurveyStatus status;
 
     @Column(nullable = false, updatable = false)
