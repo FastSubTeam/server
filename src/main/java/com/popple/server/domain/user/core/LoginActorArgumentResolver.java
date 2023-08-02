@@ -41,7 +41,7 @@ public class LoginActorArgumentResolver implements HandlerMethodArgumentResolver
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            throw new RuntimeException("인증 정보가 존재하지 않습니다");
+            return null;
         }
         Long id = Long.parseLong(authentication.getName());
         List<? extends GrantedAuthority> authorities = (List) authentication.getAuthorities();
