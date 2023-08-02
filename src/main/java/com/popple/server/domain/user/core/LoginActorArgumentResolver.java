@@ -28,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class LoginActorArgumentResolver implements HandlerMethodArgumentResolver {
+    private static final String ANONYMOUS_USER = "anonymousUser";
 
     private final TokenManager tokenManager;
 
@@ -40,7 +41,7 @@ public class LoginActorArgumentResolver implements HandlerMethodArgumentResolver
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
+        if (authentication == null || authentication.getName().equals(ANONYMOUS_USER)) {
             return null;
         }
         Long id = Long.parseLong(authentication.getName());
