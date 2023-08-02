@@ -19,4 +19,9 @@ public class SurveyController {
     public APIDataResponse<?> getActiveSurvey(Authentication authentication) {
         return this.surveyService.findActiveSurvey(authentication);
     }
+
+    @GetMapping("/result")
+    public APIDataResponse<?> getSurveyResults() {
+        return surveyService.getSurveyResults();
+    }
 }

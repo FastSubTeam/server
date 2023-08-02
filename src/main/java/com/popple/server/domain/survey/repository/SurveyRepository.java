@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface SurveyRepository extends JpaRepository<Survey, Integer> {
     List<Survey> findAllByStatusIsNot(SurveyStatus status);
     Optional<Survey> findFirstByStatusOrderByStartDate(SurveyStatus status);
+    List<Survey> findFirst10ByStatusOrderByEndDateDesc(SurveyStatus status);
 }
