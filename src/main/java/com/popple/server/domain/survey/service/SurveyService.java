@@ -6,6 +6,7 @@ import com.popple.server.domain.entity.Survey;
 import com.popple.server.domain.entity.SurveyOption;
 import com.popple.server.domain.entity.SurveyResult;
 import com.popple.server.domain.survey.dto.*;
+import com.popple.server.domain.survey.dto.SurveyResultDetailRespDto.*;
 import com.popple.server.domain.survey.exception.RequestInvalidException;
 import com.popple.server.domain.survey.exception.SurveyException;
 import com.popple.server.domain.survey.repository.SurveyOptionRepository;
@@ -16,7 +17,6 @@ import com.popple.server.domain.user.repository.MemberRepository;
 import com.popple.server.domain.user.vo.Actor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -187,6 +187,26 @@ public class SurveyService {
         surveyResultRepository.save(surveyResult);
 
         return APIDataResponse.of(HttpStatus.CREATED, null);
+    }
+
+    @Transactional(readOnly = true)
+    public APIDataResponse<?> getSurveyResultDetail(Integer surveyId) {
+        Survey survey = surveyRepository.findById(surveyId)
+                .orElseThrow(() -> new SurveyException("존재하지 않는 수요조사 정보입니다."));
+        checkEndSurvey(survey);
+
+        List<SurveyOption> options = surveyOptionRepository.findBySurveyId(survey.getId());
+        List<SurveyAnswer> answers = surveyResultRepository.findBySurveyId(survey.getId());
+        SurveyResultDetailRespDto responseBody = SurveyResultDetailRespDto.fromEntity(survey, options, answers);
+
+        return APIDataResponse.of(HttpStatus.OK, responseBody);
+    }
+
+    /** 종료된 수요조사 정보인지 확인 */
+    private void checkEndSurvey(Survey survey) {
+        if (survey.getStatus() != SurveyStatus.REVERT) {
+            throw new SurveyException("종료되지 않은 수요조사 정보입니다.");
+        }
     }
 
     /** 응답 제출한 수요조사가 현재 IN_PROGRESS 상태인지 검사 */
