@@ -2,12 +2,14 @@ package com.popple.server.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Builder
 @Entity
 public class SurveyResult {
@@ -15,13 +17,13 @@ public class SurveyResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private SurveyOption surveyOption;
 
     private Integer age;
