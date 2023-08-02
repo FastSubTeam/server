@@ -30,4 +30,9 @@ public class SurveyController {
             @RequestBody SurveyResultCreateReqDto dto, @LoginActor Actor loginMember) {
         return this.surveyService.createSurveyResult(dto, loginMember);
     }
+
+    @GetMapping("/result/{surveyId}")
+    public APIDataResponse<?> getSurveyResultDetail(@PathVariable Integer surveyId) {
+        return this.surveyService.getSurveyResultDetail(surveyId);
+    }
 }
