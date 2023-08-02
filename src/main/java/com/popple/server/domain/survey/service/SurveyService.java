@@ -4,13 +4,16 @@ import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Survey;
 import com.popple.server.domain.entity.SurveyOption;
+import com.popple.server.domain.entity.SurveyResult;
 import com.popple.server.domain.survey.dto.*;
 import com.popple.server.domain.survey.exception.RequestInvalidException;
+import com.popple.server.domain.survey.exception.SurveyException;
 import com.popple.server.domain.survey.repository.SurveyOptionRepository;
 import com.popple.server.domain.survey.repository.SurveyRepository;
 import com.popple.server.domain.survey.repository.SurveyResultRepository;
 import com.popple.server.domain.survey.type.SurveyStatus;
 import com.popple.server.domain.user.repository.MemberRepository;
+import com.popple.server.domain.user.vo.Actor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -131,18 +134,73 @@ public class SurveyService {
     }
 
     @Transactional(readOnly = true)
-    public APIDataResponse<?> findActiveSurvey(Authentication authentication) {
+    public APIDataResponse<?> findActiveSurvey(Actor loginMember) {
         Survey survey = getActiveSurvey();
         if (survey == null) {
             return APIDataResponse.of(HttpStatus.OK, "진행중인 수요조사가 존재하지 않습니다.");
         }
 
-        Member member = getLoginMember(authentication);
+        Member member = getLoginMember(loginMember);
         Boolean isDone = isParticipation(member, survey);
         List<SurveyOption> surveyOptions = surveyOptionRepository.findBySurveyId(survey.getId());
         ActiveSurveyRespDto responseBody = ActiveSurveyRespDto.fromEntity(survey, surveyOptions, isDone);
 
         return APIDataResponse.of(HttpStatus.OK, responseBody);
+    }
+
+    @Transactional(readOnly = true)
+    public APIDataResponse<?> getSurveyResults() {
+        List<SurveyResultRespDto> surveyResults =
+                surveyRepository.findFirst10ByStatusOrderByEndDateDesc(SurveyStatus.REVERT)
+                        .stream()
+                        .map(SurveyResultRespDto::fromEntity)
+                        .collect(Collectors.toList());
+
+        return APIDataResponse.of(HttpStatus.OK, surveyResults);
+    }
+
+    @Transactional
+    public APIDataResponse<?> createSurveyResult(SurveyResultCreateReqDto dto, Actor loginMember) {
+        Member member = getLoginMember(loginMember);
+        if (member == null) {
+            throw new SurveyException("존재하지 않는 유저입니다.");
+        }
+
+        Survey survey = surveyRepository.findById(dto.getSurveyId())
+                .orElseThrow(() -> new SurveyException("존재하지 않는 수요조사 정보입니다."));
+        checkValidSurvey(survey);
+
+        if (isParticipation(member, survey)) {
+            throw new SurveyException("이미 참여한 수요조사입니다.");
+        }
+
+        SurveyOption surveyOption = surveyOptionRepository.findById(dto.getSurveyOptionId())
+                .orElseThrow(() -> new SurveyException("존재하지 않는 선택지 정보입니다."));
+        checkValidSurveyOption(survey, surveyOption);
+
+        SurveyResult surveyResult = SurveyResult.builder()
+                .member(member)
+                .survey(survey)
+                .surveyOption(surveyOption)
+                .age(dto.getAge())
+                .build();
+        surveyResultRepository.save(surveyResult);
+
+        return APIDataResponse.of(HttpStatus.CREATED, null);
+    }
+
+    /** 응답 제출한 수요조사가 현재 IN_PROGRESS 상태인지 검사 */
+    private void checkValidSurvey(Survey survey) {
+        if (survey.getStatus() == SurveyStatus.REVERT || survey.getStatus() == WAIT) {
+            throw new SurveyException("아직 시작되지 않거나, 종료된 수요조사 정보입니다.");
+        }
+    }
+
+    /** 제출한 선택지가 요청된 수요조사 안에 있는 선택지인지 검사 */
+    private void checkValidSurveyOption(Survey survey, SurveyOption option) {
+        if (!option.getSurvey().getId().equals(survey.getId())) {
+            throw new SurveyException("해당 수요조사에 유효하지 않는 선택지 정보입니다.");
+        }
     }
 
     /** @return 현재 진행 중인 수요로사를 반환. 없으면 null 반환. */
@@ -152,12 +210,12 @@ public class SurveyService {
     }
 
     /** @return 현재 로그인되어 있는 유저를 반환. 없으면 null 반환 */
-    private Member getLoginMember(Authentication authentication) {
-        if (authentication == null || authentication.getName() == null) {
+    private Member getLoginMember(Actor loginMember) {
+        if (loginMember == null || loginMember.getId() == null) {
             return null;
         }
 
-        return memberRepository.findById(Long.valueOf(authentication.getName()))
+        return memberRepository.findById(loginMember.getId())
                 .orElse(null);
     }
 
@@ -173,16 +231,5 @@ public class SurveyService {
         }
 
         return surveyResultRepository.findByMemberAndSurvey(member, survey).isPresent();
-    }
-
-    @Transactional(readOnly = true)
-    public APIDataResponse<?> getSurveyResults() {
-        List<SurveyResultRespDto> surveyResults =
-                surveyRepository.findFirst10ByStatusOrderByEndDateDesc(SurveyStatus.REVERT)
-                        .stream()
-                        .map(SurveyResultRespDto::fromEntity)
-                        .collect(Collectors.toList());
-
-        return APIDataResponse.of(HttpStatus.OK, surveyResults);
     }
 }
