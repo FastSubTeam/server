@@ -174,4 +174,15 @@ public class SurveyService {
 
         return surveyResultRepository.findByMemberAndSurvey(member, survey).isPresent();
     }
+
+    @Transactional(readOnly = true)
+    public APIDataResponse<?> getSurveyResults() {
+        List<SurveyResultRespDto> surveyResults =
+                surveyRepository.findFirst10ByStatusOrderByEndDateDesc(SurveyStatus.REVERT)
+                        .stream()
+                        .map(SurveyResultRespDto::fromEntity)
+                        .collect(Collectors.toList());
+
+        return APIDataResponse.of(HttpStatus.OK, surveyResults);
+    }
 }
