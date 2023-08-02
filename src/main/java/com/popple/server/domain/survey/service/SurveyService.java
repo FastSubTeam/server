@@ -1,12 +1,19 @@
 package com.popple.server.domain.survey.service;
 
+import com.popple.server.common.dto.APIDataResponse;
+import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Survey;
 import com.popple.server.domain.entity.SurveyOption;
 import com.popple.server.domain.survey.dto.*;
 import com.popple.server.domain.survey.exception.RequestInvalidException;
 import com.popple.server.domain.survey.repository.SurveyOptionRepository;
 import com.popple.server.domain.survey.repository.SurveyRepository;
+import com.popple.server.domain.survey.repository.SurveyResultRepository;
+import com.popple.server.domain.survey.type.SurveyStatus;
+import com.popple.server.domain.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +29,8 @@ import static com.popple.server.domain.survey.type.SurveyStatus.WAIT;
 public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final SurveyOptionRepository surveyOptionRepository;
+    private final MemberRepository memberRepository;
+    private final SurveyResultRepository surveyResultRepository;
 
     @Transactional
     public SurveyRespDto save(SurveyCreateReqDto dto) {
@@ -119,5 +128,50 @@ public class SurveyService {
                 surveyOptionRepository.save(surveyOption);
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public APIDataResponse<?> findActiveSurvey(Authentication authentication) {
+        Survey survey = getActiveSurvey();
+        if (survey == null) {
+            return APIDataResponse.of(HttpStatus.OK, "진행중인 수요조사가 존재하지 않습니다.");
+        }
+
+        Member member = getLoginMember(authentication);
+        Boolean isDone = isParticipation(member, survey);
+        List<SurveyOption> surveyOptions = surveyOptionRepository.findBySurveyId(survey.getId());
+        ActiveSurveyRespDto responseBody = ActiveSurveyRespDto.fromEntity(survey, surveyOptions, isDone);
+
+        return APIDataResponse.of(HttpStatus.OK, responseBody);
+    }
+
+    /** @return 현재 진행 중인 수요로사를 반환. 없으면 null 반환. */
+    private Survey getActiveSurvey() {
+        return surveyRepository.findFirstByStatusOrderByStartDate(SurveyStatus.IN_PROGRESS)
+                .orElse(null);
+    }
+
+    /** @return 현재 로그인되어 있는 유저를 반환. 없으면 null 반환 */
+    private Member getLoginMember(Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            return null;
+        }
+
+        return memberRepository.findById(Long.valueOf(authentication.getName()))
+                .orElse(null);
+    }
+
+    /** @return 해당 수요조사에 등록된 선택지들을 반환 */
+    private List<SurveyOption> getSurveyOptions(Survey survey) {
+        return surveyOptionRepository.findBySurveyId(survey.getId());
+    }
+
+    /** @return 사용자가 해당 수요조사에 참여했는지 여부를 반환 */
+    private Boolean isParticipation(Member member, Survey survey) {
+        if (member == null) {
+            return false;
+        }
+
+        return surveyResultRepository.findByMemberAndSurvey(member, survey).isPresent();
     }
 }
