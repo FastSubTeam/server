@@ -1,5 +1,6 @@
 package com.popple.server.domain.user.service;
 
+import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.*;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -98,5 +101,9 @@ public class AuthService {
         }
         //TODO Seller 로그인 구현 후 User 로그인과 하나로 합칠 것
         return null;
+    }
+
+    public APIDataResponse<?> verifyBusinessNumber(ValidateBusinessNumberRequestDto validateBusinessNumberRequestDto) throws IOException {
+        return sellerService.checkExistBusinessNumberWithOpenAPI(validateBusinessNumberRequestDto);
     }
 }
