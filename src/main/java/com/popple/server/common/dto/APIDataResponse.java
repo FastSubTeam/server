@@ -20,4 +20,5 @@ public class APIDataResponse<T> {
 
     public static <T> APIDataResponse<T> empty(HttpStatus httpStatus) {
         return new APIDataResponse<>(httpStatus.value(), null);
+    }
 }
