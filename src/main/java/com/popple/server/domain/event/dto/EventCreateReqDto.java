@@ -1,6 +1,7 @@
 package com.popple.server.domain.event.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.popple.server.domain.entity.Seller;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

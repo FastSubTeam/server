@@ -36,6 +36,8 @@ public class RegisterTokenService {
         RegisterToken findRegisterToken = registerTokenRepository.findByEmail(email);
         if (findRegisterToken != null) {
             registerTokenRepository.delete(findRegisterToken);
+            // TODO if문 걸리는데 커밋 될 때 delete문이 안나감 flush 안쓰고 어케 해결?
+            registerTokenRepository.flush();
         }
 
         RegisterToken newRegisterToken = RegisterToken.of(email);

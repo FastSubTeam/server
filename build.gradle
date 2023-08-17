@@ -50,6 +50,10 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.7.0'
 
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+
+
 }
 
 tasks.named('test') {

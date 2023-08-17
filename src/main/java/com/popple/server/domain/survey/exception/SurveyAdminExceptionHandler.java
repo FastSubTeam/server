@@ -20,6 +20,12 @@ public class SurveyAdminExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
+    public APIErrorResponse handleSurveyException(SurveyException e) {
+        return APIErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
     public APIErrorResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, "올바르지 않은 Body 데이터입니다.");
     }
@@ -27,7 +33,6 @@ public class SurveyAdminExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public APIErrorResponse handleAllException(Exception e) {
-        System.out.println(">>> " + e.getClass() + " ==> " + e.getMessage());
         return APIErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류");
     }
 }

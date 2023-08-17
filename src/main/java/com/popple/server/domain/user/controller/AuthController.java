@@ -55,6 +55,17 @@ public class AuthController {
         return APIDataResponse.of(HttpStatus.OK, createUserResponseDto);
     }
 
+    @PostMapping("/auth/signup/seller")
+    public APIDataResponse<?> registerSeller(@RequestBody CreateSellerRequestDto createSellerRequestDto) {
+
+        return null;
+    }
+
+    @PostMapping("/auth/validate-business-number")
+    public APIDataResponse<?> validateBusinessNumber(@RequestBody @Valid ValidateBusinessNumberRequestDto validateBusinessNumberRequestDto) throws IOException {
+        return authService.verifyBusinessNumber(validateBusinessNumberRequestDto);
+    }
+
     //TODO TokenProvider 구현 후 완성
     @PostMapping("/auth/signin")
     public APIDataResponse<?> login(
