@@ -30,18 +30,24 @@ public class AuthService {
         memberService.checkExistProceed(email);
     }
 
-    public void generateRegisterTokenAndSendEmail(String email) {
+    public RegisterToken generateRegisterTokenAndSendEmail(String email) {
 
         RegisterToken generateToken = registerTokenService.generateToken(email);
         EmailSource emailSource = emailService.getEmailSource(email);
 
         emailService.sendMail(emailSource, generateToken.getRegisterToken());
+
+        return generateToken;
     }
 
 
     public CreateUserResponseDto register(CreateUserRequestDto createUserRequestDto) {
         CreateUserResponseDto createUserResponseDto = memberService.createWithPassword(createUserRequestDto);
-        generateRegisterTokenAndSendEmail(createUserResponseDto.getEmail());
+        RegisterToken registerToken = generateRegisterTokenAndSendEmail(createUserResponseDto.getEmail());
+
+        // =============== TODO 배포시에 지우기, 메소드 시그니처 void로 수정 ==================
+        createUserResponseDto.setRegisterToken(registerToken.getRegisterToken());
+        // =====================================================
 
         return createUserResponseDto;
     }
