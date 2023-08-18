@@ -31,8 +31,8 @@ public class TokenManager {
     private final SecretKey accessSecretKey;
     private final SecretKey refreshSecretKey;
 
-    private final int accessTokenExpires;
-    private final int refreshTokenExpires;
+    private final Long accessTokenExpires;
+    private final Long refreshTokenExpires;
     private final UserDetailsService userDetailsService;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -46,8 +46,8 @@ public class TokenManager {
     ) {
         this.accessSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
         this.refreshSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
-        this.accessTokenExpires = Integer.parseInt(accessTokenExpires);
-        this.refreshTokenExpires = Integer.parseInt(refreshTokenExpires);
+        this.accessTokenExpires = Long.parseLong(accessTokenExpires);
+        this.refreshTokenExpires = Long.parseLong(refreshTokenExpires);
         this.userDetailsService = userDetailsService;
         this.refreshTokenRepository = refreshTokenRepository;
     }
