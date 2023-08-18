@@ -4,11 +4,14 @@ import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.*;
+import com.popple.server.domain.user.exception.InvalidRequestParameterException;
+import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
 import com.popple.server.domain.user.vo.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +61,7 @@ public class AuthService {
 
     public void checkDuplicationNicknameAndEmail(String nickname, String email, Role role) {
         if (nickname == null && email == null) {
-            throw new RuntimeException("올바르지 않은 요청입니다.");
+            throw new InvalidRequestParameterException(UserErrorCode.INVALID_CHECK_DUPLICATION_PARAMETER);
         }
 
         if (role.equals(Role.SELLER)) {
