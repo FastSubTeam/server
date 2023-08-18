@@ -111,12 +111,11 @@ public class AuthController {
 
     @GetMapping("/auth/check-duplication")
     public APIDataResponse<?> duplicateNicknameAndEmail(
-            @RequestParam(required = false) String nickname,
-            @RequestParam(required = false) String email,
+            @ModelAttribute @Valid CheckValidateRequestDto checkValidateRequestDto,
             @RequestParam(defaultValue = "USER") Role role
     ) {
 
-        authService.checkDuplicationNicknameAndEmail(nickname, email, role);
+        authService.checkDuplicationNicknameAndEmail(checkValidateRequestDto.getNickname(), checkValidateRequestDto.getEmail(), role);
 
         return APIDataResponse.empty(HttpStatus.OK);
     }

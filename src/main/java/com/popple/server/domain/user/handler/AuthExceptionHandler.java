@@ -3,8 +3,10 @@ package com.popple.server.domain.user.handler;
 import com.popple.server.common.dto.APIErrorResponse;
 import com.popple.server.domain.user.controller.AuthController;
 import com.popple.server.domain.user.exception.AlreadyExistException;
+import com.popple.server.domain.user.exception.UserBusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -30,6 +32,22 @@ public class AuthExceptionHandler {
         // TODO 수정 필요, APIErrorResponse를 바꾸기
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
     }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public APIErrorResponse bindExceptionHandle(BindException e) {
+
+        return APIErrorResponse.of(HttpStatus.BAD_REQUEST, Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
+    }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public APIErrorResponse userBusinessExceptionHandle(UserBusinessException e) {
+        return APIErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
