@@ -84,12 +84,12 @@ public class AuthController {
     public void verifyEmail(@RequestBody @Valid VerifyEmailRequestDto verifyEmailRequestDto, HttpServletResponse response) throws IOException {
 
         String email = authService.verifyRegisterToken(verifyEmailRequestDto.getEmail(), verifyEmailRequestDto.getRegisterToken());
-        Token token = authService.generateAccessAndRefreshToken(email);
+//        Token token = authService.generateAccessAndRefreshToken(email);
 
-        addTokenAtCookie(response, token);
+//        addTokenAtCookie(response, token);
 
 
-        response.sendRedirect("http://localhost:3000");
+//        response.sendRedirect("http://localhost:3000");
     }
 
     private void addTokenAtCookie(HttpServletResponse response, Token token) {

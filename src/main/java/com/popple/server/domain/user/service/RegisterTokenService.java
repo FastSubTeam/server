@@ -3,6 +3,7 @@ package com.popple.server.domain.user.service;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.exception.AlreadyExistException;
+import com.popple.server.domain.user.exception.UserBusinessException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.RegisterTokenRepository;
 import com.popple.server.domain.user.repository.MemberRepository;
@@ -48,7 +49,7 @@ public class RegisterTokenService {
     public String verifyToken(String email, String registerToken) {
         RegisterToken findRegisterToken = registerTokenRepository.findByEmailAndRegisterToken(email, registerToken);
         if (findRegisterToken == null) {
-            throw new RuntimeException("유효하지 않은 인증토큰입니다.");
+            throw new UserBusinessException(UserErrorCode.NOT_FOUND_REGISTER_TOKEN);
         }
 
 
