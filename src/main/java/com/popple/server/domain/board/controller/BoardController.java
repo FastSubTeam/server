@@ -64,7 +64,7 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public APIDataResponse<?> savePost(PostReqDto postReqDto, BindingResult bindingResult){
+    public APIDataResponse<?> savePost(PostReqDto postReqDto, BindingResult bindingResult) {
         Member member = boardService.findMemberByEmail(postReqDto.getEmail());
         Post post = postReqDto.toEntity(member);
         boardService.savePost(post);
@@ -88,5 +88,11 @@ public class BoardController {
             boardListRespDtoList.add(boardListRespDto);
         }
         return boardListRespDtoList;
+    }
+
+    @DeleteMapping("/{postId}")
+    public APIDataResponse<?> deletePost(@PathVariable Long postId) throws IllegalArgumentException {
+        boardService.deletePost(postId);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 }
