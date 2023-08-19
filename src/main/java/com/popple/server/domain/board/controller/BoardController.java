@@ -95,4 +95,10 @@ public class BoardController {
         boardService.deletePost(postId);
         return APIDataResponse.empty(HttpStatus.OK);
     }
+
+    @DeleteMapping("/comment/{commentId}")
+    public APIDataResponse<?> deleteComment(@PathVariable Long commentId) throws IllegalArgumentException{
+        boardService.deleteComment(commentId);
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
 }
