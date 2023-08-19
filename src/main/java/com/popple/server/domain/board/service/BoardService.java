@@ -91,7 +91,15 @@ public class BoardService {
     }
 
     public void deletePost(Long postId) throws IllegalArgumentException{
+        if(!hasPost(postId)){
+            throw new NoSuchElementException("해당 게시물이 존재하지 않습니다.");
+        }
+        commentRepository.deleteAllByPost_id(postId);
         boardRepository.deleteById(postId);
     }
 
+    public boolean hasPost(Long postId) {
+        Optional<Post> post = boardRepository.findById(postId);
+        return post.isPresent();
+    }
 }
