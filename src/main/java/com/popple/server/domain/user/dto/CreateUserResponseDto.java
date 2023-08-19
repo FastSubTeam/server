@@ -16,6 +16,10 @@ public class CreateUserResponseDto {
     private String city;
     private String district;
 
+    // =============== TODO 배포시에 지우기 ==================
+    private String registerToken;
+    // =====================================================
+
 
     public static CreateUserResponseDto from(Member member) {
         return CreateUserResponseDto.builder()

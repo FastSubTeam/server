@@ -1,79 +1,63 @@
 package com.popple.server.domain.event.service;
 
 import com.popple.server.domain.entity.Event;
+import com.popple.server.domain.entity.Seller;
 import com.popple.server.domain.event.dto.EventCreateReqDto;
+import com.popple.server.domain.event.dto.EventDetailRespDto;
 import com.popple.server.domain.event.dto.EventRespDto;
+import com.popple.server.domain.event.exception.EventException;
 import com.popple.server.domain.event.repository.EventRepository;
+import com.popple.server.domain.user.repository.SellerRepository;
+import com.popple.server.domain.user.vo.Actor;
+import com.popple.server.domain.user.vo.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import static com.popple.server.domain.event.exception.EventExceptionMessage.*;
 
-import static com.popple.server.domain.event.EventApproval.WAIT;
 @RequiredArgsConstructor
 @Service
 public class EventService {
     private final EventRepository eventRepository;
+    private final SellerRepository sellerRepository;
 
     @Transactional
-    public EventRespDto save(EventCreateReqDto dto) {
-        Event event = Event.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .location(dto.getLocation())
-                .thumbnailUrl(dto.getThumbnailUrl())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
-                .approval(WAIT)
-                .createdAt(Timestamp.valueOf(LocalDateTime.now()))
-                .updatedAt(Timestamp.valueOf(LocalDateTime.now()))
-                .build();
+    public void save(EventCreateReqDto dto, Actor loginSeller) {
 
-        System.out.println(event.getApproval());
-
+        // TODO: 토큰 기능 완료되면 그때 활성화
+//        checkSeller(loginSeller);
+//        Seller seller = getSellerByLoginSeller(loginSeller);
+        Event event = dto.toEntity(null);
         eventRepository.save(event);
-
-
-
-        return EventRespDto.fromEntity(event);
     }
 
-    @Transactional
-    public List<EventRespDto> findAll() {
-        List<Event> eventList = eventRepository.findAll();
-
-        return eventList.stream().map(EventRespDto::fromEntity).collect(Collectors.toList());
-
-
-
+    private void checkSeller(Actor loginSeller) {
+        if (loginSeller == null || loginSeller.getRole() != Role.SELLER) {
+            throw new EventException(NONE_VALID_LOGIN_SELLER);
+        }
     }
-    @Transactional
+
+    private Seller getSellerByLoginSeller(Actor loginSeller) {
+
+        return sellerRepository.findById(loginSeller.getId())
+                .orElseThrow(() -> new EventException(NON_EXIST_SELLER));
+    }
+
+    @Transactional(readOnly = true)
     public Page<EventRespDto> findAllByPage(Pageable pageable) {
         Page<Event> eventPage = eventRepository.findAll(pageable);
-        List<EventRespDto> dtoList = eventPage.getContent().stream().map(EventRespDto::fromEntity).collect(Collectors.toList());
 
-
-        return new PageImpl<>(dtoList, pageable, eventPage.getTotalElements());
-        //List -> Page
+        return eventPage.map(EventRespDto::fromEntity);
     }
 
-    @Transactional
-    public EventRespDto findById(Long id) {
+    @Transactional(readOnly = true)
+    public EventDetailRespDto findEventDetail(Long id) {
+        Event event = eventRepository.findEventByIdJoinFetchSeller(id)
+                .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
 
-        Optional<Event> optionalEvent = eventRepository.findById(id);
-        if(optionalEvent.isPresent()) {
-            Event event = optionalEvent.orElse(null);
-            return EventRespDto.fromEntity(event);
-        }
-        throw new NoSuchElementException("id가 존재하지 않습니다.");
+        return EventDetailRespDto.fromEntity(event);
     }
 }

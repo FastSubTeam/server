@@ -7,6 +7,7 @@ import com.popple.server.domain.user.dto.CreateUserRequestDto;
 import com.popple.server.domain.user.dto.CreateUserResponseDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.UserErrorCode;
+import com.popple.server.domain.user.repository.RegisterTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,6 +24,7 @@ import java.util.UUID;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final RegisterTokenRepository registerTokenRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void checkExistProceed(String email) {
@@ -65,12 +67,20 @@ public class MemberService {
 
     public void checkDuplication(String nickname, String email) {
 
-        if (memberRepository.existsByEmail(email)) {
-            throw new RuntimeException();
+        if (email != null) {
+            if (memberRepository.existsByEmail(email) && registerTokenRepository.existsByEmail(email)) {
+                throw new AlreadyExistException(UserErrorCode.PROCEEDING_EMAIL);
+            }
+
+            if (memberRepository.existsByEmail(email)) {
+                throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
+            }
         }
 
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new RuntimeException();
+        if (nickname != null) {
+            if (memberRepository.existsByNickname(nickname)) {
+                throw new AlreadyExistException(UserErrorCode.EXIST_NICKNAME);
+            }
         }
     }
 

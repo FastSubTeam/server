@@ -7,4 +7,6 @@ public interface RegisterTokenRepository extends JpaRepository<RegisterToken, In
     RegisterToken findByEmailAndRegisterToken(String email, String registerToken);
 
     RegisterToken findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

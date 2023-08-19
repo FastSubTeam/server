@@ -1,6 +1,7 @@
 package com.popple.server.domain.user.controller;
 
 import com.popple.server.common.dto.APIDataResponse;
+import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.user.annotation.LoginActor;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.service.AuthService;
@@ -43,15 +44,18 @@ public class AuthController {
 
     @PostMapping("/auth/regenerate-token")
     public APIDataResponse<?> regenerateRegisterToken(@Valid @RequestBody CheckEmailRequestDto checkEmailRequestDto) {
-        authService.generateRegisterTokenAndSendEmail(checkEmailRequestDto.getEmail());
-        return APIDataResponse.empty(HttpStatus.OK);
+        RegisterToken registerToken = authService.generateRegisterTokenAndSendEmail(checkEmailRequestDto.getEmail());
+        return APIDataResponse.of(HttpStatus.OK, registerToken.getRegisterToken());
     }
 
     @PostMapping("/auth/signup")
     public APIDataResponse<?> registerUser(@RequestBody CreateUserRequestDto createUserRequestDto) {
 
         AddressStore.validate(createUserRequestDto.getCity(), createUserRequestDto.getDistrict());
+
+        // =============== TODO 배포시에 void로 수정 ==================
         CreateUserResponseDto createUserResponseDto = authService.register(createUserRequestDto);
+        // ==========================================================
         return APIDataResponse.of(HttpStatus.OK, createUserResponseDto);
     }
 
@@ -80,12 +84,12 @@ public class AuthController {
     public void verifyEmail(@RequestBody @Valid VerifyEmailRequestDto verifyEmailRequestDto, HttpServletResponse response) throws IOException {
 
         String email = authService.verifyRegisterToken(verifyEmailRequestDto.getEmail(), verifyEmailRequestDto.getRegisterToken());
-        Token token = authService.generateAccessAndRefreshToken(email);
+//        Token token = authService.generateAccessAndRefreshToken(email);
 
-        addTokenAtCookie(response, token);
+//        addTokenAtCookie(response, token);
 
 
-        response.sendRedirect("http://localhost:3000");
+//        response.sendRedirect("http://localhost:3000");
     }
 
     private void addTokenAtCookie(HttpServletResponse response, Token token) {
@@ -107,12 +111,11 @@ public class AuthController {
 
     @GetMapping("/auth/check-duplication")
     public APIDataResponse<?> duplicateNicknameAndEmail(
-            @RequestParam(required = false) String nickname,
-            @RequestParam(required = false) String email,
+            @ModelAttribute @Valid CheckValidateRequestDto checkValidateRequestDto,
             @RequestParam(defaultValue = "USER") Role role
     ) {
 
-        authService.checkDuplicationNicknameAndEmail(nickname, email, role);
+        authService.checkDuplicationNicknameAndEmail(checkValidateRequestDto.getNickname(), checkValidateRequestDto.getEmail(), role);
 
         return APIDataResponse.empty(HttpStatus.OK);
     }

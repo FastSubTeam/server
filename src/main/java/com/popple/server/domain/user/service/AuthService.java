@@ -4,11 +4,14 @@ import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.*;
+import com.popple.server.domain.user.exception.InvalidRequestParameterException;
+import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
 import com.popple.server.domain.user.vo.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,18 +33,24 @@ public class AuthService {
         memberService.checkExistProceed(email);
     }
 
-    public void generateRegisterTokenAndSendEmail(String email) {
+    public RegisterToken generateRegisterTokenAndSendEmail(String email) {
 
         RegisterToken generateToken = registerTokenService.generateToken(email);
         EmailSource emailSource = emailService.getEmailSource(email);
 
         emailService.sendMail(emailSource, generateToken.getRegisterToken());
+
+        return generateToken;
     }
 
 
     public CreateUserResponseDto register(CreateUserRequestDto createUserRequestDto) {
         CreateUserResponseDto createUserResponseDto = memberService.createWithPassword(createUserRequestDto);
-        generateRegisterTokenAndSendEmail(createUserResponseDto.getEmail());
+        RegisterToken registerToken = generateRegisterTokenAndSendEmail(createUserResponseDto.getEmail());
+
+        // =============== TODO 배포시에 지우기, 메소드 시그니처 void로 수정 ==================
+        createUserResponseDto.setRegisterToken(registerToken.getRegisterToken());
+        // =====================================================
 
         return createUserResponseDto;
     }
@@ -52,7 +61,7 @@ public class AuthService {
 
     public void checkDuplicationNicknameAndEmail(String nickname, String email, Role role) {
         if (nickname == null && email == null) {
-            throw new RuntimeException("올바르지 않은 요청입니다.");
+            throw new InvalidRequestParameterException(UserErrorCode.INVALID_CHECK_DUPLICATION_PARAMETER);
         }
 
         if (role.equals(Role.SELLER)) {
