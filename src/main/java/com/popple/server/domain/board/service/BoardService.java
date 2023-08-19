@@ -102,4 +102,8 @@ public class BoardService {
         Optional<Post> post = boardRepository.findById(postId);
         return post.isPresent();
     }
+
+    public void deleteComment(Long commentId) throws IllegalArgumentException{
+        commentRepository.deleteById(commentId);
+    }
 }
