@@ -1,6 +1,8 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.user.dto.EmailSource;
+import com.popple.server.domain.user.exception.UserBadRequestException;
+import com.popple.server.domain.user.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -26,7 +28,7 @@ public class EmailService {
             mimeMessageHelper.setText(getJoinAuthenticationHtmlFormat(token), true);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new UserBadRequestException(UserErrorCode.SEND_MAIL_ERROR);
         }
 
     }

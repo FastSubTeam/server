@@ -1,5 +1,8 @@
 package com.popple.server.domain.user.vo;
 
+import com.popple.server.domain.user.exception.UserBusinessException;
+import com.popple.server.domain.user.exception.UserErrorCode;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -111,7 +114,7 @@ public enum AddressStore {
                 .orElseThrow(RuntimeException::new);
 
         if (!findAddress.district.contains(district)) {
-            throw new RuntimeException();
+            throw new UserBusinessException(UserErrorCode.INVALID_ADDRESS);
         }
     }
 }

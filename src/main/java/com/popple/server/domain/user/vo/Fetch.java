@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.user.dto.ValidateBusinessNumberRequestDto;
 import com.popple.server.domain.user.dto.ValidateBusinessNumberResponseDto;
+import com.popple.server.domain.user.exception.UserBadRequestException;
+import com.popple.server.domain.user.exception.UserErrorCode;
 import io.jsonwebtoken.io.IOException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -60,7 +62,7 @@ public interface Fetch {
         ValidateBusinessNumberResponseDto result = objectMapper.readValue(responseBody, ValidateBusinessNumberResponseDto.class);
 
         if (result.getMatchCount() == null) {
-            throw new RuntimeException("올바르지 않은 사업자 번호입니다");
+            throw new UserBadRequestException(UserErrorCode.INVALID_BUSINESS_NUMBER);
         }
 
 

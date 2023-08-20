@@ -12,7 +12,13 @@ public enum UserErrorCode implements ErrorCode {
     PROCEEDING_EMAIL(HttpStatus.BAD_REQUEST, "이미 회원가입을 진행중인 이메일입니다"),
     NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다"),
     INVALID_CHECK_DUPLICATION_PARAMETER(HttpStatus.BAD_REQUEST, "중복 확인을 하려는 파라미터를 입력해주세요"),
-    NOT_FOUND_REGISTER_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 인증토큰입니다.");
+    NOT_FOUND_REGISTER_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 인증토큰입니다."),
+    NOT_PROCEEDING_REGISTERED_EMAIL(HttpStatus.BAD_REQUEST, "아직 인증이 완료되지 않은 이메일입니다."),
+    INVALID_ADDRESS(HttpStatus.BAD_REQUEST, "올바르지 않은 주소입니다."),
+    SEND_MAIL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 과정에서 오류가 발생하였습니다."),
+    INVALID_BUSINESS_NUMBER(HttpStatus.BAD_REQUEST, "올바르지 않은 사업자 번호입니다"),
+    INVALID_LOGIN_PAYLOAD(HttpStatus.BAD_REQUEST, "로그인 정보가 올바르지 않습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final String errorMessage;

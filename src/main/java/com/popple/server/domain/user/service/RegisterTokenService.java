@@ -23,7 +23,7 @@ public class RegisterTokenService {
         RegisterToken findRegisterToken = registerTokenRepository.findByEmail(email);
 
         if (findRegisterToken != null) {
-            throw new RuntimeException("아직 인증이 완료되지 않은 이메일입니다.");
+            throw new UserBusinessException(UserErrorCode.NOT_PROCEEDING_REGISTERED_EMAIL);
         }
     }
 
