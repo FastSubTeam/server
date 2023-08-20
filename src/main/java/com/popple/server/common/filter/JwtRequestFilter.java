@@ -69,42 +69,52 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 //        }
         //TODO 추후 RTR로 수정하기 (Redis key값 = 유저 id, value값 = refreshtoken + accessToken 만료시마다 refreshtoken도 재발급 하기)
 
-        Token token = tokenManager.extractBearerToken(request);
+        ArrayList<String> permittedUrl = new ArrayList<>(List.of(new String[]{
+                "/api/auth/password",
+                "/api/auth/validate-business-number",
+                "/api/auth/verify-email",
+                "/api/auth/signup",
+                "/api/auth/signin",
+                "/api/auth/check-duplication",
+                "/api/auth/signup/seller",
+                "/api/auth/reissue",
+                "/auth/kakaologin",
+                "/api/auth/regenerate-token"
+        }));
 
-        if (isExistAccessToken(token) && isExistRefreshToken(token)) {
+        if (permittedUrl.contains(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        Token token = tokenManager.extractBearerToken(request);
+
 
         if (isExistAccessToken(token)) {
             if (tokenManager.validateAccessToken(token.getAccessToken())) {
                 setContextHolder(token.getAccessToken());
                 filterChain.doFilter(request, response);
-                return;
             }
         }
 
-        if (isExistRefreshToken(token)) {
-            if (isValidRefreshToken(token.getRefreshToken())) {
-                Long id = tokenManager.getIdFromToken(token.getRefreshToken());
-                Role role = tokenManager.getRoleFromToken(token.getRefreshToken());
-                TokenPayload tokenPayload = TokenPayload.builder()
-                        .id(id)
-                        .role(role)
-                        .build();
-                String newAccessToken = tokenManager.generateAccessToken(tokenPayload);
-                response.setHeader("accessToken", newAccessToken);
-                log.info("newAccessToken => {}", newAccessToken);
-                setContextHolder(newAccessToken);
-                filterChain.doFilter(request, response);
-                return;
-            } else {
-                throw new InvalidJwtTokenException(TokenErrorCode.INVALID_REFRESH_TOKEN);
-            }
-        }
-
-        filterChain.doFilter(request, response);
-
+//        if (isExistRefreshToken(token)) {
+//            if (isValidRefreshToken(token.getRefreshToken())) {
+//                Long id = tokenManager.getIdFromToken(token.getRefreshToken());
+//                Role role = tokenManager.getRoleFromToken(token.getRefreshToken());
+//                TokenPayload tokenPayload = TokenPayload.builder()
+//                        .id(id)
+//                        .role(role)
+//                        .build();
+//                String newAccessToken = tokenManager.generateAccessToken(tokenPayload);
+//                response.setHeader("accessToken", newAccessToken);
+//                log.info("newAccessToken => {}", newAccessToken);
+//                setContextHolder(newAccessToken);
+//                filterChain.doFilter(request, response);
+//                return;
+//            } else {
+//                throw new InvalidJwtTokenException(TokenErrorCode.INVALID_REFRESH_TOKEN);
+//            }
+//        }
     }
 
     private boolean isValidRefreshToken(String refreshToken) {

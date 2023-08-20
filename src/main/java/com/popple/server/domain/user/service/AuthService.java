@@ -3,6 +3,7 @@ package com.popple.server.domain.user.service;
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Member;
+import com.popple.server.domain.entity.Seller;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.exception.InvalidRequestParameterException;
 import com.popple.server.domain.user.exception.UserErrorCode;
@@ -30,6 +31,9 @@ public class AuthService {
 
     private final RandomPasswordGenerator randomPasswordGenerator;
 
+    public String reIssueAccessToken(String refreshToken) {
+        return tokenService.generateAccessToken(refreshToken);
+    }
 
     public void checkProceedEmail(String email) {
         memberService.checkExistProceed(email);
@@ -117,6 +121,7 @@ public class AuthService {
 
             return LoginResponseDto.builder()
                     .userId(member.getId())
+                    .role(role)
                     .email(member.getEmail())
                     .profileImgUrl(member.getProfileImgUrl())
                     .accessToken(accessToken)
@@ -124,8 +129,20 @@ public class AuthService {
                     .nickname(member.getNickname())
                     .build();
         }
-        //TODO Seller 로그인 구현 후 User 로그인과 하나로 합칠 것
-        return null;
+
+        Seller seller = sellerService.getUser(email, password);
+        TokenPayload tokenPayload = seller.toPayload();
+        String accessToken = tokenService.generateAccessToken(tokenPayload);
+        String refreshToken = tokenService.generateRefreshToken(tokenPayload);
+        return LoginResponseDto.builder()
+                .userId(seller.getId())
+                .role(role)
+                .email(seller.getEmail())
+                .profileImgUrl(seller.getProfileImgUrl())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .nickname(seller.getNickname())
+                .build();
     }
 
     public APIDataResponse<?> verifyBusinessNumber(ValidateBusinessNumberRequestDto validateBusinessNumberRequestDto) throws IOException {

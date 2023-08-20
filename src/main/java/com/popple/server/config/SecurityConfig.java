@@ -51,6 +51,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+
+        String[] permitAllUrls = new String[]{
+                "/api/auth/password",
+                "/api/auth/validate-business-number",
+                "/api/auth/verify-email",
+                "/api/auth/signup",
+                "/api/auth/signin",
+                "/api/auth/check-duplication",
+                "/api/auth/signup/seller",
+                "/api/auth/reissue",
+                "/auth/kakaologin",
+                "/api/auth/regenerate-token"
+        };
+
         httpSecurity.csrf().disable(); // CSRF 해제
         httpSecurity.headers().frameOptions().disable(); // iframe 거부
         httpSecurity.cors().configurationSource(getConfigurationSource()); // cors 재설정
@@ -59,7 +73,7 @@ public class SecurityConfig {
         httpSecurity.httpBasic().disable(); // 로그인 인증창이 뜨지 않도록 비활성화
         httpSecurity.authorizeRequests()
                 //TODO 추후 모든 기능 완성되면 로그인 필요 없는 API들만 permit 시켜주기 ( => JWT Filter에 적용한 URL과 동일 )
-                .antMatchers("/**").permitAll()
+                .antMatchers(permitAllUrls).permitAll()
                 .anyRequest().authenticated();
         httpSecurity.exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)

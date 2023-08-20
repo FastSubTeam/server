@@ -7,6 +7,8 @@ import com.popple.server.domain.user.annotation.LoginActor;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.exception.InvalidJwtTokenException;
 import com.popple.server.domain.user.exception.TokenErrorCode;
+import com.popple.server.domain.user.exception.UserErrorCode;
+import com.popple.server.domain.user.exception.UserUnauthorizedException;
 import com.popple.server.domain.user.service.AuthService;
 import com.popple.server.domain.user.service.OAuthService;
 import com.popple.server.domain.user.vo.Actor;
@@ -35,6 +37,19 @@ public class AuthController {
     public Actor test(@LoginActor Actor actor) {
 
         return actor;
+    }
+
+    @GetMapping("/auth/reissue")
+    public APIDataResponse<?> reIssueAccessToken(@RequestHeader("RefreshToken") String refreshToken) {
+        if (refreshToken == null) {
+            throw new UserUnauthorizedException(UserErrorCode.NEED_REFRESH_TOKEN);
+        }
+        String accessToken = authService.reIssueAccessToken(refreshToken);
+        ReissueAccessTokenRequestDto response = ReissueAccessTokenRequestDto.builder()
+                .accessToken(accessToken)
+                .build();
+
+        return APIDataResponse.of(HttpStatus.OK, response);
     }
 
 

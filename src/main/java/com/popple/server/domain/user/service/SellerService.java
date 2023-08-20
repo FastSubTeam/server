@@ -2,11 +2,13 @@ package com.popple.server.domain.user.service;
 
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.Category;
+import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Seller;
 import com.popple.server.domain.entity.SellerCategory;
 import com.popple.server.domain.user.dto.CreateSellerRequestDto;
 import com.popple.server.domain.user.dto.ValidateBusinessNumberRequestDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
+import com.popple.server.domain.user.exception.UserBadRequestException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.CategoryRepository;
 import com.popple.server.domain.user.repository.SellerCategoryRepository;
@@ -87,5 +89,19 @@ public class SellerService {
 
         sellerCategoryRepository.saveAll(sellerCategories);
         sellerRepository.save(newSeller);
+    }
+
+    public Seller getUser(String email, String password) {
+
+        Seller findSeller = sellerRepository.findByEmail(email)
+                .orElseThrow(() -> new UserBadRequestException(UserErrorCode.NOT_FOUND));
+
+        if (!bCryptPasswordEncoder.matches(password, findSeller.getPassword())) {
+            throw new UserBadRequestException(UserErrorCode.INVALID_LOGIN_PAYLOAD);
+
+        }
+
+        return findSeller;
+
     }
 }
