@@ -2,11 +2,11 @@ package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.KakaoLoginRequestDto;
+import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.MemberRepository;
 import com.popple.server.domain.user.dto.CreateUserRequestDto;
 import com.popple.server.domain.user.dto.CreateUserResponseDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
-import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.RegisterTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +30,12 @@ public class MemberService {
     public void checkExistProceed(String email) {
         Member findMember = memberRepository.findByEmail(email);
 
-        if (findMember != null) {
+        if (memberRepository.existsByEmail(email) || registerTokenRepository.existsByEmail(email)) {
             throw new AlreadyExistException(UserErrorCode.PROCEEDING_EMAIL);
+        }
+
+        if (findMember != null) {
+            throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
         }
     }
 
@@ -51,9 +55,12 @@ public class MemberService {
     public CreateUserResponseDto createWithPassword(final CreateUserRequestDto createUserRequestDto) {
 
         String email = createUserRequestDto.getEmail();
-        Member findMember = memberRepository.findByEmail(email);
-        if (findMember != null) {
+        if (memberRepository.existsByEmail(email)) {
             throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
+        }
+
+        if (memberRepository.existsByNickname(createUserRequestDto.getNickname())) {
+            throw new AlreadyExistException(UserErrorCode.EXIST_NICKNAME);
         }
 
         String encodedPassword = bCryptPasswordEncoder.encode(createUserRequestDto.getPassword());
