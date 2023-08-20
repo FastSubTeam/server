@@ -1,5 +1,6 @@
 package com.popple.server.domain.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.user.annotation.LoginActor;
@@ -143,6 +144,12 @@ public class AuthController {
     @GetMapping("/auth/kakaologin")
     public void kakaoSignIn(HttpServletResponse httpServletResponse) throws IOException {
         oAuthService.redirectToKakaoLoginPage(httpServletResponse);
+    }
+
+    @PostMapping("/auth/kakaologin")
+    public APIDataResponse<?> kakaologin(@RequestBody KakaoLoginAccessTokenRequestDto kakaoLoginAccessTokenRequestDto) throws JsonProcessingException {
+        LoginResponseDto loginResponseDto = oAuthService.loginWithKakaoAccessToken(kakaoLoginAccessTokenRequestDto.getAccessToken());
+        return APIDataResponse.of(HttpStatus.OK, loginResponseDto);
     }
 
     @GetMapping("/auth/kakaologin/callback")
