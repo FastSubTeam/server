@@ -65,14 +65,14 @@ public class AuthController {
         AddressStore.validate(createUserRequestDto.getCity(), createUserRequestDto.getDistrict());
 
         // =============== TODO 배포시에 void로 수정 ==================
-        CreateUserResponseDto createUserResponseDto = authService.register(createUserRequestDto);
+        CreateUserResponseDto createUserResponseDto = authService.registerMember(createUserRequestDto);
         // ==========================================================
         return APIDataResponse.of(HttpStatus.OK, createUserResponseDto);
     }
 
     @PostMapping("/auth/signup/seller")
     public APIDataResponse<?> registerSeller(@RequestBody CreateSellerRequestDto createSellerRequestDto) {
-
+        authService.registerSeller(createSellerRequestDto);
         return null;
     }
 
