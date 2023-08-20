@@ -55,7 +55,7 @@ public class AuthService {
     }
 
 
-    public CreateUserResponseDto register(CreateUserRequestDto createUserRequestDto) {
+    public CreateUserResponseDto registerMember(CreateUserRequestDto createUserRequestDto) {
         CreateUserResponseDto createUserResponseDto = memberService.createWithPassword(createUserRequestDto);
         RegisterToken registerToken = generateRegisterTokenAndSendEmail(createUserResponseDto.getEmail());
 
@@ -64,6 +64,11 @@ public class AuthService {
         // =====================================================
 
         return createUserResponseDto;
+    }
+
+    public void registerSeller(CreateSellerRequestDto createSellerRequestDto) {
+        sellerService.checkDuplication(createSellerRequestDto.getNickname(), createSellerRequestDto.getEmail());
+        sellerService.create(createSellerRequestDto);
     }
 
     public String verifyRegisterToken(String email, String registerToken) {
@@ -130,6 +135,4 @@ public class AuthService {
     public void logout(String accessToken, String refreshToken) {
         tokenService.invalidateToken(refreshToken);
     }
-
-
 }
