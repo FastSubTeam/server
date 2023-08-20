@@ -23,13 +23,16 @@ public class AuthExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public APIErrorResponse constraintViolationExceptionHandle(ConstraintViolationException e) {
+        log.error("constraintViolationExceptionHandle", e);
+        e.printStackTrace();
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public APIErrorResponse methodArgumentNotValidExceptionHandle(MethodArgumentNotValidException e) {
-
+        log.error("methodArgumentNotValidExceptionHandle", e);
+        e.printStackTrace();
         // TODO 수정 필요, APIErrorResponse를 바꾸기
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
     }
@@ -38,19 +41,24 @@ public class AuthExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public APIErrorResponse bindExceptionHandle(BindException e) {
-
+        log.error("bindExceptionHandle", e);
+        e.printStackTrace();
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, Objects.requireNonNull(e.getBindingResult().getFieldError()).getDefaultMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public APIErrorResponse alreadySignUpExceptionHandle(AlreadySignUpException e) {
+        log.error("alreadySignUpExceptionHandle", e);
+        e.printStackTrace();
         return APIErrorResponse.of(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public APIErrorResponse userBusinessExceptionHandle(UserBusinessException e) {
+        log.error("userBusinessExceptionHandle", e);
+        e.printStackTrace();
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
@@ -58,13 +66,16 @@ public class AuthExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public APIErrorResponse alreadyExistExceptionHandle(AlreadyExistException e) {
+        log.error("alreadyExistExceptionHandle", e);
+        e.printStackTrace();
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public APIErrorResponse unknownExceptionHandle(RuntimeException e) {
-        log.error(e.toString());
+        log.error("unknownExceptionHandle", e);
+        e.printStackTrace();
         return APIErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
