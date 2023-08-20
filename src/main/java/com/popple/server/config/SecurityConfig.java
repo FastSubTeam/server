@@ -61,7 +61,7 @@ public class SecurityConfig {
                 "/api/auth/check-duplication",
                 "/api/auth/signup/seller",
                 "/api/auth/reissue",
-                "/auth/kakaologin",
+                "/api/auth/kakaologin",
                 "/api/auth/regenerate-token"
         };
 
