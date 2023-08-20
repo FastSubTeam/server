@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -13,10 +15,14 @@ import org.springframework.data.redis.core.RedisHash;
 @Getter
 @Builder
 @ToString
+@DynamicInsert
 public class RefreshToken {
 
     @Id
-    private String refreshToken;
+    private String token;
     private Long memberId;
     private Role role;
+
+    @ColumnDefault("'false'")
+    private boolean isBlackList;
 }

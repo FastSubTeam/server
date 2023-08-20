@@ -201,4 +201,10 @@ public class TokenManager {
         Claims parsedClaims = parseClaims(token);
         return parsedClaims.get("id", Long.class);
     }
+
+    public long getExpiredTime(String accessToken) {
+        return parseClaims(accessToken)
+                .getExpiration()
+                .getTime();
+    }
 }
