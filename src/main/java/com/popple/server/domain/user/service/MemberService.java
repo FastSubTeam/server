@@ -3,6 +3,7 @@ package com.popple.server.domain.user.service;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.KakaoLoginRequestDto;
 import com.popple.server.domain.user.exception.AlreadySignUpException;
+import com.popple.server.domain.user.exception.UserBadRequestException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.MemberRepository;
 import com.popple.server.domain.user.dto.CreateUserRequestDto;
@@ -98,7 +99,7 @@ public class MemberService {
         Member findMember = memberRepository.findByEmail(email);
 
         if (findMember == null) {
-            throw new RuntimeException();
+            throw new UserBadRequestException(UserErrorCode.NOT_FOUND);
         }
 
         return findMember;
@@ -108,11 +109,13 @@ public class MemberService {
         Member findMember = memberRepository.findByEmail(email);
 
         if (findMember == null) {
-            throw new RuntimeException();
+            throw new UserBadRequestException(UserErrorCode.NOT_FOUND);
+
         }
 
         if (!bCryptPasswordEncoder.matches(password, findMember.getPassword())) {
-            throw new RuntimeException();
+            throw new UserBadRequestException(UserErrorCode.INVALID_LOGIN_PAYLOAD);
+
         }
 
         return findMember;

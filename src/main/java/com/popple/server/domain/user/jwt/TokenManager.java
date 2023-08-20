@@ -71,7 +71,7 @@ public class TokenManager {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException();
+            throw new InvalidJwtTokenException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
         }
     }
     public boolean validateAccessToken(String token) {
