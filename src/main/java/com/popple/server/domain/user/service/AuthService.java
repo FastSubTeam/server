@@ -6,13 +6,12 @@ import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.exception.InvalidRequestParameterException;
 import com.popple.server.domain.user.exception.UserErrorCode;
-import com.popple.server.domain.user.repository.RefreshTokenRepository;
+import com.popple.server.domain.user.vo.EmailMessage;
 import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
 import com.popple.server.domain.user.vo.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +28,8 @@ public class AuthService {
     private final RegisterTokenService registerTokenService;
     private final TokenService tokenService;
 
+    private final RandomPasswordGenerator randomPasswordGenerator;
+
 
     public void checkProceedEmail(String email) {
         memberService.checkExistProceed(email);
@@ -37,11 +38,20 @@ public class AuthService {
     public RegisterToken generateRegisterTokenAndSendEmail(String email) {
 
         RegisterToken generateToken = registerTokenService.generateToken(email);
-        EmailSource emailSource = emailService.getEmailSource(email);
+        EmailSource emailSource = emailService.getEmailSource(email, EmailMessage.REGISTER_SUBJECT);
 
-        emailService.sendMail(emailSource, generateToken.getRegisterToken());
+        emailService.sendRegisterMail(emailSource, generateToken.getRegisterToken());
 
         return generateToken;
+    }
+
+    public void generateRandomPassword(String email) {
+        EmailSource emailSource = emailService.getEmailSource(email, EmailMessage.RANDOM_PASSWORD_SUBJECT);
+        String randomPassword = randomPasswordGenerator.generateRandomPassword(10);
+        System.out.println(randomPassword);
+        emailService.sendRandomPasswordMail(emailSource, randomPassword);
+
+        memberService.updatePassword(email, randomPassword);
     }
 
 
@@ -120,4 +130,6 @@ public class AuthService {
     public void logout(String accessToken, String refreshToken) {
         tokenService.invalidateToken(refreshToken);
     }
+
+
 }

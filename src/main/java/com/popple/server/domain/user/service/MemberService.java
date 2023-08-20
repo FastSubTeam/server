@@ -120,4 +120,10 @@ public class MemberService {
 
         return findMember;
     }
+
+    public void updatePassword(String email, String randomPassword) {
+        Member member = getUser(email);
+        String encodedPassword = bCryptPasswordEncoder.encode(randomPassword);
+        member.setPassword(encodedPassword);
+    }
 }

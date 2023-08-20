@@ -26,6 +26,7 @@ import java.io.IOException;
 @RequestMapping("/api")
 public class AuthController {
 
+
     private final AuthService authService;
     private final OAuthService oAuthService;
 
@@ -48,6 +49,13 @@ public class AuthController {
     public APIDataResponse<?> regenerateRegisterToken(@Valid @RequestBody CheckEmailRequestDto checkEmailRequestDto) {
         RegisterToken registerToken = authService.generateRegisterTokenAndSendEmail(checkEmailRequestDto.getEmail());
         return APIDataResponse.of(HttpStatus.OK, registerToken.getRegisterToken());
+    }
+
+    @PostMapping("/auth/forgotpassword")
+    public APIDataResponse<?> generateRandomPassword(@Valid @RequestBody FindPasswordRequestDto findPasswordRequestDto) {
+        authService.generateRandomPassword(findPasswordRequestDto.getEmail());
+
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @PostMapping("/auth/signup")
