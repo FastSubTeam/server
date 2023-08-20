@@ -2,6 +2,7 @@ package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.KakaoLoginRequestDto;
+import com.popple.server.domain.user.exception.AlreadySignUpException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.MemberRepository;
 import com.popple.server.domain.user.dto.CreateUserRequestDto;
@@ -33,7 +34,7 @@ public class MemberService {
         }
 
         if (memberRepository.existsByEmail(email)) {
-            throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
+            throw new AlreadySignUpException(UserErrorCode.EXIST_EMAIL);
         }
     }
 
