@@ -28,13 +28,11 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void checkExistProceed(String email) {
-        Member findMember = memberRepository.findByEmail(email);
-
-        if (memberRepository.existsByEmail(email) || registerTokenRepository.existsByEmail(email)) {
+        if (memberRepository.existsByEmail(email) && registerTokenRepository.existsByEmail(email)) {
             throw new AlreadyExistException(UserErrorCode.PROCEEDING_EMAIL);
         }
 
-        if (findMember != null) {
+        if (memberRepository.existsByEmail(email)) {
             throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
         }
     }
