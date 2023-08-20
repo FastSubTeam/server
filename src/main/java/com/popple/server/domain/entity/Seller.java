@@ -1,5 +1,7 @@
 package com.popple.server.domain.entity;
 
+import com.popple.server.domain.user.vo.Role;
+import com.popple.server.domain.user.vo.TokenPayload;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
@@ -46,4 +48,11 @@ public class Seller {
     private String businessNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public TokenPayload toPayload() {
+        return TokenPayload.builder()
+                .id(id)
+                .role(Role.USER)
+                .build();
+    }
 }

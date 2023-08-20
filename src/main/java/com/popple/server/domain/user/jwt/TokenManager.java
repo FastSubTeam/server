@@ -3,6 +3,7 @@ package com.popple.server.domain.user.jwt;
 import com.popple.server.domain.user.exception.InvalidJwtTokenException;
 import com.popple.server.domain.user.exception.TokenErrorCode;
 import com.popple.server.domain.user.repository.RefreshTokenRepository;
+import com.popple.server.domain.user.service.UserDetailServiceImpl;
 import com.popple.server.domain.user.vo.Role;
 import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 @Component
@@ -33,7 +36,7 @@ public class TokenManager {
 
     private final Long accessTokenExpires;
     private final Long refreshTokenExpires;
-    private final UserDetailsService userDetailsService;
+    private final UserDetailServiceImpl userDetailService;
     private final RefreshTokenRepository refreshTokenRepository;
 
     public TokenManager(
@@ -41,23 +44,29 @@ public class TokenManager {
             @Value("${jwt.refresh-secret}") String refreshSecretKey,
             @Value("${jwt.access-token-expires}") String accessTokenExpires,
             @Value("${jwt.refresh-token-expires}") String refreshTokenExpires,
-            UserDetailsService userDetailsService,
+            UserDetailServiceImpl userDetailService,
             RefreshTokenRepository refreshTokenRepository
     ) {
         this.accessSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
         this.refreshSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpires = Long.parseLong(accessTokenExpires);
         this.refreshTokenExpires = Long.parseLong(refreshTokenExpires);
-        this.userDetailsService = userDetailsService;
+        this.userDetailService = userDetailService;
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
 
-        GrantedAuthority authority = new SimpleGrantedAuthority(claims.get("role").toString());
+        if (claims.get("role").equals(Role.USER.name())) {
+            UserDetails principal = userDetailService.loadUserByUsername(claims.get("id").toString());
 
-        UserDetails principal = userDetailsService.loadUserByUsername(claims.get("id").toString());
+            return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
+        }
+
+
+
+        UserDetails principal = userDetailService.loadSellerByUsername(claims.get("id").toString());
 
         return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
 
