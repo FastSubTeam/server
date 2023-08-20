@@ -35,7 +35,7 @@ public class TokenService {
             throw new InvalidJwtTokenException(TokenErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
-        Claims claims = tokenManager.parseClaims(refreshToken);
+        Claims claims = tokenManager.parseRefreshToken(refreshToken);
 
         String id = claims.get("id").toString();
         String role = claims.get("role").toString();

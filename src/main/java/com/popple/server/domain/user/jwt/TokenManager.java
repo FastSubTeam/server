@@ -48,7 +48,7 @@ public class TokenManager {
             RefreshTokenRepository refreshTokenRepository
     ) {
         this.accessSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
-        this.refreshSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
+        this.refreshSecretKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpires = Long.parseLong(accessTokenExpires);
         this.refreshTokenExpires = Long.parseLong(refreshTokenExpires);
         this.userDetailService = userDetailService;
@@ -56,7 +56,7 @@ public class TokenManager {
     }
 
     public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
+        Claims claims = parseClaims(accessToken, accessSecretKey);
 
         if (claims.get("role").equals(Role.USER.name())) {
             UserDetails principal = userDetailService.loadUserByUsername(claims.get("id").toString());
@@ -72,15 +72,18 @@ public class TokenManager {
 
     }
 
-    public Claims parseClaims(String token) {
+    public Claims parseClaims(String token, SecretKey secretKey) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(accessSecretKey)
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
-            throw new InvalidJwtTokenException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
+            if (secretKey.equals(accessSecretKey)) {
+                throw new InvalidJwtTokenException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
+            }
+            throw new InvalidJwtTokenException(TokenErrorCode.EXPIRED_REFRESH_TOKEN);
         }
     }
     public boolean validateAccessToken(String token) {
@@ -202,18 +205,22 @@ public class TokenManager {
     }
 
     public Role getRoleFromToken(String token) {
-        Claims parsedClaims = parseClaims(token);
+        Claims parsedClaims = parseClaims(token, accessSecretKey);
         return Role.of(parsedClaims.get("role").toString());
     }
 
     public Long getIdFromToken(String token) {
-        Claims parsedClaims = parseClaims(token);
+        Claims parsedClaims = parseClaims(token, accessSecretKey);
         return parsedClaims.get("id", Long.class);
     }
 
     public long getExpiredTime(String accessToken) {
-        return parseClaims(accessToken)
+        return parseClaims(accessToken, accessSecretKey)
                 .getExpiration()
                 .getTime();
+    }
+
+    public Claims parseRefreshToken(String refreshToken) {
+        return parseClaims(refreshToken, refreshSecretKey);
     }
 }
