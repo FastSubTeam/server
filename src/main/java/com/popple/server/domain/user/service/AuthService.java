@@ -6,6 +6,7 @@ import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.exception.InvalidRequestParameterException;
 import com.popple.server.domain.user.exception.UserErrorCode;
+import com.popple.server.domain.user.repository.RefreshTokenRepository;
 import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
 import com.popple.server.domain.user.vo.Role;
@@ -114,5 +115,9 @@ public class AuthService {
 
     public APIDataResponse<?> verifyBusinessNumber(ValidateBusinessNumberRequestDto validateBusinessNumberRequestDto) throws IOException {
         return sellerService.checkExistBusinessNumberWithOpenAPI(validateBusinessNumberRequestDto);
+    }
+
+    public void logout(String accessToken, String refreshToken) {
+        tokenService.invalidateToken(refreshToken);
     }
 }

@@ -63,13 +63,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 //        }
 
 
-        if (true) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+//        if (true) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
         //TODO 추후 RTR로 수정하기 (Redis key값 = 유저 id, value값 = refreshtoken + accessToken 만료시마다 refreshtoken도 재발급 하기)
 
         Token token = tokenManager.extractBearerToken(request);
+
+        if (isExistAccessToken(token) && isExistRefreshToken(token)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (isExistAccessToken(token)) {
             if (tokenManager.validateAccessToken(token.getAccessToken())) {
@@ -98,7 +103,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
-        throw new InvalidJwtTokenException(TokenErrorCode.NOT_EXIST_TOKEN);
+        filterChain.doFilter(request, response);
 
     }
 

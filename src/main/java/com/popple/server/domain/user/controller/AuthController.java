@@ -4,6 +4,8 @@ import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.user.annotation.LoginActor;
 import com.popple.server.domain.user.dto.*;
+import com.popple.server.domain.user.exception.InvalidJwtTokenException;
+import com.popple.server.domain.user.exception.TokenErrorCode;
 import com.popple.server.domain.user.service.AuthService;
 import com.popple.server.domain.user.service.OAuthService;
 import com.popple.server.domain.user.vo.Actor;
@@ -63,6 +65,16 @@ public class AuthController {
     public APIDataResponse<?> registerSeller(@RequestBody CreateSellerRequestDto createSellerRequestDto) {
 
         return null;
+    }
+
+    @GetMapping("/auth/logout")
+    public APIDataResponse<?> logout(@RequestHeader(name = "Authorization") String accessToken, @RequestHeader(name = "RefreshToken") String refreshToken) {
+        if (!accessToken.startsWith("Bearer ")) {
+            throw new InvalidJwtTokenException(TokenErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        String parsedAccessToken = accessToken.split("Bearer ")[1];
+        authService.logout(parsedAccessToken, refreshToken);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @PostMapping("/auth/validate-business-number")
