@@ -28,7 +28,6 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void checkExistProceed(String email) {
-
         if (memberRepository.existsByEmail(email) && registerTokenRepository.existsByEmail(email)) {
             throw new AlreadyExistException(UserErrorCode.PROCEEDING_EMAIL);
         }
