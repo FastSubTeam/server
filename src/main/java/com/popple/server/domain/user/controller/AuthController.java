@@ -108,6 +108,10 @@ public class AuthController {
             @RequestBody LoginRequestDto loginRequestDto,
             @RequestParam(defaultValue = "USER") Role role
     ) {
+        if (role.equals(Role.ROLE_USER) && authService.isAdmin(loginRequestDto)) {
+            LoginResponseDto loginResponseDto = authService.adminLogin(loginRequestDto);
+            return APIDataResponse.of(HttpStatus.OK, loginResponseDto);
+        }
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto.getEmail(), loginRequestDto.getPassword(), role);
         return APIDataResponse.of(HttpStatus.OK, loginResponseDto);
     }
