@@ -9,6 +9,7 @@ import com.popple.server.domain.event.dto.EventRespDto;
 import com.popple.server.domain.event.dto.EventUpdateReqDto;
 import com.popple.server.domain.event.exception.EventException;
 import com.popple.server.domain.event.repository.EventRepository;
+import com.popple.server.domain.event.repository.SellerEventRepository;
 import com.popple.server.domain.user.repository.SellerRepository;
 import com.popple.server.domain.user.vo.Actor;
 import com.popple.server.domain.user.vo.Role;
@@ -27,6 +28,7 @@ import static com.popple.server.domain.event.exception.EventExceptionMessage.*;
 @Service
 public class EventService {
     private final EventRepository eventRepository;
+    private final SellerEventRepository sellerEventRepository;
     private final SellerRepository sellerRepository;
 
     @Transactional
@@ -45,6 +47,21 @@ public class EventService {
                 .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
         checkEventOwner(event, loginSeller.getId());
         updateEvent(event, dto);
+    }
+
+    @Transactional
+    public void delete(Long id, Actor loginSeller) {
+        checkSeller(loginSeller);
+
+        Event event = eventRepository.findEventByIdJoinFetchSeller(id)
+                .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
+        checkEventOwner(event, loginSeller.getId());
+        deleteEvent(event);
+    }
+
+    private void deleteEvent(Event event) {
+        sellerEventRepository.deleteAllByEventId(event.getId());
+        eventRepository.delete(event);
     }
 
     private void updateEvent(Event event, EventUpdateReqDto dto) {
