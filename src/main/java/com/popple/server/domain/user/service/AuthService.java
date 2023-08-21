@@ -1,16 +1,16 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.common.dto.APIDataResponse;
-import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Member;
+import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Seller;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.exception.InvalidRequestParameterException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.vo.EmailMessage;
+import com.popple.server.domain.user.vo.Role;
 import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
-import com.popple.server.domain.user.vo.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -84,7 +84,7 @@ public class AuthService {
             throw new InvalidRequestParameterException(UserErrorCode.INVALID_CHECK_DUPLICATION_PARAMETER);
         }
 
-        if (role.equals(Role.SELLER)) {
+        if (role.equals(Role.ROLE_SELLER)) {
             // TODO Seller 완성하고 구현하기
 //            sellerService.checkDuplication(nickname, email);
             return;
@@ -109,7 +109,7 @@ public class AuthService {
 
     public LoginResponseDto login(String email, String password, Role role) {
 
-        if (role.equals(Role.USER)) {
+        if (role.equals(Role.ROLE_USER)) {
 
             registerTokenService.checkRegisteredEmail(email);
 

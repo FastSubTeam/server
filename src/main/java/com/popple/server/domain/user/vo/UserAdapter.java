@@ -9,10 +9,10 @@ import java.util.List;
 
 public class UserAdapter extends User {
     public UserAdapter(Member member) {
-        super(member.getId().toString(), member.getPassword(), List.of(new SimpleGrantedAuthority(Role.USER.name())));
+        super(member.getId().toString(), member.getPassword(), List.of(new SimpleGrantedAuthority(Role.ROLE_USER.name())));
     }
 
     public UserAdapter(Seller seller) {
-        super(seller.getId().toString(), seller.getPassword(), List.of(new SimpleGrantedAuthority(Role.SELLER.name())));
+        super(seller.getId().toString(), seller.getPassword(), List.of(new SimpleGrantedAuthority(Role.ROLE_SELLER.name())));
     }
 }

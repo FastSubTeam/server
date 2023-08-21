@@ -6,7 +6,7 @@ import com.popple.server.common.filter.JwtRequestFilter;
 import com.popple.server.domain.user.jwt.TokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -62,8 +62,26 @@ public class SecurityConfig {
                 "/api/auth/signup/seller",
                 "/api/auth/reissue",
                 "/api/auth/kakaologin",
-                "/api/auth/regenerate-token"
+                "/api/auth/regenerate-token",
+                "/api/survey/active",
+                "/api/survey/result",
+                "/api/survey/result/**"
         };
+
+        String[] permitUserUrls = new String[]{
+                "/api/survey",
+                "/api/board/**"
+        };
+
+        String[] permitSellerUrls = new String[]{
+
+        };
+
+        String[] permitAdminUrls = new String[]{
+                "/api/admin/**"
+        };
+
+
 
         httpSecurity.csrf().disable(); // CSRF 해제
         httpSecurity.headers().frameOptions().disable(); // iframe 거부
@@ -72,7 +90,11 @@ public class SecurityConfig {
         httpSecurity.formLogin().disable(); // form 로그인 해제 (UsernamePasswordAuthenticationFilter 비활성화)
         httpSecurity.httpBasic().disable(); // 로그인 인증창이 뜨지 않도록 비활성화
         httpSecurity.authorizeRequests()
-                //TODO 추후 모든 기능 완성되면 로그인 필요 없는 API들만 permit 시켜주기 ( => JWT Filter에 적용한 URL과 동일 )
+                .antMatchers(HttpMethod.GET, "/api/events/**", "/api/events", "/api/board").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/events").hasRole("SELLER")
+                .antMatchers(HttpMethod.PUT, "/api/events/**").hasRole("SELLER")
+                .antMatchers(HttpMethod.DELETE, "/api/events/**").hasRole("SELLER")
+                .antMatchers(permitUserUrls).hasRole("USER")
                 .antMatchers(permitAllUrls).permitAll()
                 .anyRequest().authenticated();
         httpSecurity.exceptionHandling()
