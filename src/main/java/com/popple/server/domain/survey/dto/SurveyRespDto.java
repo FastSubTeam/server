@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -14,8 +15,8 @@ import java.time.LocalDateTime;
 public class SurveyRespDto {
     private Integer id;
     private String title;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private SurveyStatus status;
 
     public static SurveyRespDto fromEntity(Survey survey) {

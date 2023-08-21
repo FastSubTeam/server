@@ -39,11 +39,11 @@ public class SurveyScheduler {
         }
     }
 
-    private boolean isEnd(LocalDateTime endDate, LocalDate now) {
-        return endDate.toLocalDate().isBefore(now);
+    private boolean isEnd(LocalDate endDate, LocalDate now) {
+        return endDate.isBefore(now);
     }
 
-    private boolean isStart(LocalDateTime startDate, LocalDate now) {
-        return startDate.toLocalDate().isEqual(now);
+    private boolean isStart(LocalDate startDate, LocalDate now) {
+        return startDate.isEqual(now);
     }
 }

@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,8 +18,8 @@ import java.util.stream.Collectors;
 public class ActiveSurveyRespDto {
     private Integer id;
     private String title;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Boolean isDone;
     private SurveyStatus status;
     private List<ActiveSurveyRespDto.OptionRespDto> options;
