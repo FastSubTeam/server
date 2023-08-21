@@ -149,7 +149,7 @@ public class AuthService {
         return sellerService.checkExistBusinessNumberWithOpenAPI(validateBusinessNumberRequestDto);
     }
 
-    public void logout(String accessToken, String refreshToken) {
+    public void logout(String refreshToken) {
         tokenService.invalidateToken(refreshToken);
     }
 }
