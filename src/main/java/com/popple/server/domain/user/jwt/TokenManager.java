@@ -59,6 +59,12 @@ public class TokenManager {
             return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
         }
 
+        if (claims.get("role").equals(Role.ROLE_ADMIN.name())) {
+            UserDetails principal = userDetailService.loadAdminByUsername(claims.get("id").toString());
+
+            return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
+        }
+
 
 
         UserDetails principal = userDetailService.loadSellerByUsername(claims.get("id").toString());
