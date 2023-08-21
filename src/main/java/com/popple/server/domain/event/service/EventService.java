@@ -2,9 +2,11 @@ package com.popple.server.domain.event.service;
 
 import com.popple.server.domain.entity.Event;
 import com.popple.server.domain.entity.Seller;
+import com.popple.server.domain.event.EventStatus;
 import com.popple.server.domain.event.dto.EventCreateReqDto;
 import com.popple.server.domain.event.dto.EventDetailRespDto;
 import com.popple.server.domain.event.dto.EventRespDto;
+import com.popple.server.domain.event.dto.EventUpdateReqDto;
 import com.popple.server.domain.event.exception.EventException;
 import com.popple.server.domain.event.repository.EventRepository;
 import com.popple.server.domain.user.repository.SellerRepository;
@@ -16,6 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import static com.popple.server.domain.event.exception.EventExceptionMessage.*;
 
 @RequiredArgsConstructor
@@ -26,12 +31,50 @@ public class EventService {
 
     @Transactional
     public void save(EventCreateReqDto dto, Actor loginSeller) {
-
-        // TODO: 토큰 기능 완료되면 그때 활성화
         checkSeller(loginSeller);
         Seller seller = getSellerByLoginSeller(loginSeller);
         Event event = dto.toEntity(seller);
         eventRepository.save(event);
+    }
+
+    @Transactional
+    public void update(Long id, EventUpdateReqDto dto, Actor loginSeller) {
+        checkSeller(loginSeller);
+
+        Event event = eventRepository.findEventByIdJoinFetchSeller(id)
+                .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
+        checkEventOwner(event, loginSeller.getId());
+        updateEvent(event, dto);
+    }
+
+    private void updateEvent(Event event, EventUpdateReqDto dto) {
+        event.setName(dto.getName());
+        event.setDescription(dto.getDescription());
+        event.setCity(dto.getCity());
+        event.setDistrict(dto.getDistrict());
+        event.setThumbnailUrl(dto.getThumbnailUrl());
+        event.setStartDate(dto.getStartDate());
+        event.setEndDate(dto.getEndDate());
+        event.setStatus(getCurrentStatus(dto.getStartDate(), dto.getEndDate()));
+    }
+
+    private EventStatus getCurrentStatus(LocalDateTime startDate, LocalDateTime endDate) {
+        LocalDateTime now = LocalDateTime.now();
+        if (endDate.isBefore(now)) {
+            return EventStatus.END;
+        }
+
+        if (endDate.isAfter(now) && startDate.isBefore(now)) {
+            return EventStatus.PROCEEDING;
+        }
+
+        return EventStatus.WAIT;
+    }
+
+    private void checkEventOwner(Event event, Long sellerId) {
+        if (!event.getHost().getId().equals(sellerId)) {
+            throw new EventException(NOT_MATCH_OWNER_OF_EVENT);
+        }
     }
 
     private void checkSeller(Actor loginSeller) {
