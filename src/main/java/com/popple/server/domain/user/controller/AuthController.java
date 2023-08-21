@@ -92,12 +92,8 @@ public class AuthController {
     }
 
     @GetMapping("/auth/logout")
-    public APIDataResponse<?> logout(@RequestHeader(name = "Authorization") String accessToken, @RequestHeader(name = "RefreshToken") String refreshToken) {
-        if (!accessToken.startsWith("Bearer ")) {
-            throw new InvalidJwtTokenException(TokenErrorCode.INVALID_ACCESS_TOKEN);
-        }
-        String parsedAccessToken = accessToken.split("Bearer ")[1];
-        authService.logout(parsedAccessToken, refreshToken);
+    public APIDataResponse<?> logout(@RequestHeader(name = "RefreshToken") String refreshToken) {
+        authService.logout(refreshToken);
         return APIDataResponse.empty(HttpStatus.OK);
     }
 

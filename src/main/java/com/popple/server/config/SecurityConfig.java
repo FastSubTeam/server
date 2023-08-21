@@ -53,7 +53,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         String[] permitAllUrls = new String[]{
-                "/api/auth/password",
+                "/api/auth/forgotpassword",
+                "/api/auth/check-proceed",
                 "/api/auth/validate-business-number",
                 "/api/auth/verify-email",
                 "/api/auth/signup",
@@ -65,16 +66,19 @@ public class SecurityConfig {
                 "/api/auth/regenerate-token",
                 "/api/survey/active",
                 "/api/survey/result",
-                "/api/survey/result/**"
+                "/api/survey/result/**",
+                "/api/auth/admin/signin",
+                "/api/auth/logout"
         };
 
         String[] permitUserUrls = new String[]{
                 "/api/survey",
-                "/api/board/**"
+                "/api/board/**",
+                "/api/profile"
         };
 
         String[] permitSellerUrls = new String[]{
-
+            "/api/profile/seller"
         };
 
         String[] permitAdminUrls = new String[]{
@@ -96,6 +100,9 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.DELETE, "/api/events/**").hasRole("SELLER")
                 .antMatchers(permitUserUrls).hasRole("USER")
                 .antMatchers(permitAllUrls).permitAll()
+                // TODO 추후 Admin 구현 시
+//                .antMatchers(permitAdminUrls).hasRole("ADMIN")
+                .antMatchers(permitAdminUrls).permitAll()
                 .anyRequest().authenticated();
         httpSecurity.exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
