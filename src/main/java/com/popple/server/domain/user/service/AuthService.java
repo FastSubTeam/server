@@ -1,6 +1,7 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.common.dto.APIDataResponse;
+import com.popple.server.domain.entity.Admin;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Seller;
@@ -28,6 +29,7 @@ public class AuthService {
     private final EmailService emailService;
     private final RegisterTokenService registerTokenService;
     private final TokenService tokenService;
+    private final AdminService adminService;
 
     private final RandomPasswordGenerator randomPasswordGenerator;
 
@@ -150,5 +152,25 @@ public class AuthService {
 
     public void logout(String refreshToken) {
         tokenService.invalidateToken(refreshToken);
+    }
+
+    public boolean isAdmin(LoginRequestDto loginRequestDto) {
+        return adminService.checkAdmin(loginRequestDto);
+    }
+
+    public LoginResponseDto adminLogin(LoginRequestDto loginRequestDto) {
+        Admin admin = adminService.getAdmin(loginRequestDto.getEmail());
+        TokenPayload tokenPayload = admin.toPayload();
+        String accessToken = tokenService.generateAccessToken(tokenPayload);
+        String refreshToken = tokenService.generateRefreshToken(tokenPayload);
+        return LoginResponseDto.builder()
+                .userId(Long.valueOf(admin.getId()))
+                .role(tokenPayload.getRole())
+                .email(admin.getEmail())
+                .profileImgUrl("관리자는 사진따위 없음")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .nickname("관리자")
+                .build();
     }
 }
