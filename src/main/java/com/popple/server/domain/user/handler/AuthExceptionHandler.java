@@ -4,6 +4,7 @@ import com.popple.server.common.dto.APIErrorResponse;
 import com.popple.server.domain.user.controller.AuthController;
 import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.AlreadySignUpException;
+import com.popple.server.domain.user.exception.InvalidJwtTokenException;
 import com.popple.server.domain.user.exception.UserBusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -69,6 +70,14 @@ public class AuthExceptionHandler {
         log.error("alreadyExistExceptionHandle", e);
         e.printStackTrace();
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public APIErrorResponse invalidJwtTokenExceptionHandle(InvalidJwtTokenException e) {
+        log.error("invalidJwtTokenExceptionHandle", e);
+        e.printStackTrace();
+        return APIErrorResponse.of(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler
