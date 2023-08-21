@@ -14,8 +14,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostReqDto {
-    private String email;
-    //Todo 추후 message properties로 다룰 것
     @NotBlank(message = "제목은 공백일 수 없습니다.")
     private String title;
 
