@@ -2,6 +2,7 @@ package com.popple.server.domain.board.service;
 
 import com.popple.server.domain.board.dto.CommentDto;
 import com.popple.server.domain.board.dto.CommentTableProjection;
+import com.popple.server.domain.board.dto.PostReqDto;
 import com.popple.server.domain.board.repository.BoardRepository;
 import com.popple.server.domain.board.repository.CommentRepository;
 import com.popple.server.domain.entity.Member;
@@ -105,6 +106,11 @@ public class BoardService {
 
     public void deleteComment(Long commentId) throws IllegalArgumentException{
         commentRepository.deleteById(commentId);
+    }
+
+    public void updatePost(Long postId, PostReqDto postReqDto){
+        Post post = getPostById(postId);
+        post.modifyPost(postReqDto);
     }
 
     public Member getMember(Long id){
