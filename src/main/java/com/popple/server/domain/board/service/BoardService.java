@@ -106,4 +106,8 @@ public class BoardService {
     public void deleteComment(Long commentId) throws IllegalArgumentException{
         commentRepository.deleteById(commentId);
     }
+
+    public Member getMember(Long id){
+        return memberRepository.findById(id).orElse(null);
+    }
 }
