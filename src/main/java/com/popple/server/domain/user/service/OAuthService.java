@@ -71,6 +71,7 @@ public class OAuthService {
 
         return LoginResponseDto.builder()
                 .userId(findMember.getId())
+                .role(tokenPayload.getRole())
                 .email(findMember.getEmail())
                 .profileImgUrl(findMember.getProfileImgUrl())
                 .nickname(findMember.getNickname())
