@@ -5,6 +5,8 @@ import com.popple.server.domain.board.dto.*;
 import com.popple.server.domain.board.service.BoardService;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Post;
+import com.popple.server.domain.user.annotation.LoginActor;
+import com.popple.server.domain.user.vo.Actor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -62,11 +64,14 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public APIDataResponse<?> savePost(PostReqDto postReqDto, BindingResult bindingResult) {
-        Member member = boardService.findMemberByEmail(postReqDto.getEmail());
+    public APIDataResponse<?> savePost(PostReqDto postReqDto, BindingResult bindingResult, @LoginActor Actor loginMember) {
+        if (loginMember == null || loginMember.getId() == null) {
+            throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
+        }
+        Member member = boardService.getMember(loginMember.getId());
         Post post = postReqDto.toEntity(member);
         boardService.savePost(post);
-        return APIDataResponse.of(HttpStatus.OK, null);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts) {
@@ -93,7 +98,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/comment/{commentId}")
-    public APIDataResponse<?> deleteComment(@PathVariable Long commentId) throws IllegalArgumentException{
+    public APIDataResponse<?> deleteComment(@PathVariable Long commentId) throws IllegalArgumentException {
         boardService.deleteComment(commentId);
         return APIDataResponse.empty(HttpStatus.OK);
     }
