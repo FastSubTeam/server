@@ -74,6 +74,16 @@ public class BoardController {
         return APIDataResponse.empty(HttpStatus.OK);
     }
 
+    @PutMapping("/{postId}")
+    public APIDataResponse<?> updatePost(PostReqDto postReqDto, @PathVariable Long postId, @LoginActor Actor loginMember) {
+        if (loginMember == null || loginMember.getId() == null) {
+            throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
+        }
+        Member member = boardService.getMember(loginMember.getId());
+        boardService.updatePost(postId, postReqDto);
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
     private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts) {
         List<BoardListRespDto> boardListRespDtoList = new ArrayList<>();
         for (Post post : posts) {
