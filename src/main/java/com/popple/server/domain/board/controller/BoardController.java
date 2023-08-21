@@ -52,6 +52,7 @@ public class BoardController {
             PostRespDto postRespDto = PostRespDto.builder()
                     .id(post.getId())
                     .nickname(post.getMember().getNickname())
+                    .title(post.getTitle())
                     .content(post.getContent())
                     .comments(commentDtos)
                     .build();
