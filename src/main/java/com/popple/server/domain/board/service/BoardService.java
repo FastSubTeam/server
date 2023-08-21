@@ -2,6 +2,7 @@ package com.popple.server.domain.board.service;
 
 import com.popple.server.domain.board.dto.CommentDto;
 import com.popple.server.domain.board.dto.CommentTableProjection;
+import com.popple.server.domain.board.dto.MemberResponseDto;
 import com.popple.server.domain.board.dto.PostReqDto;
 import com.popple.server.domain.board.repository.BoardRepository;
 import com.popple.server.domain.board.repository.CommentRepository;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-@Transactional
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -29,10 +29,13 @@ public class BoardService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public List<Post> getAllPosts() {
         return boardRepository.findAll();
     }
 
+
+    @Transactional
     public List<CommentDto> getAllCommentsByPostId(Long postId) {
         List<CommentTableProjection> commentProjections = commentRepository.findByPost_id(postId);
         List<CommentDto> commentDtos = new ArrayList<>();
@@ -45,12 +48,13 @@ public class BoardService {
 
     private void addCommentDto(List<CommentDto> commentDtos, CommentTableProjection c, Optional<Member> member) {
         if (member.isPresent()) {
+            MemberResponseDto memberResponseDto = MemberResponseDto.of(member.get());
             CommentDto commentDto = CommentDto.builder()
                     .id(c.getId())
                     .content(c.getContent())
                     .createdAt(c.getCreatedAt())
                     .updatedAt(c.getUpdatedAt())
-                    .member(member.get())
+                    .member(memberResponseDto)
                     .build();
             commentDtos.add(commentDto);
             return;
@@ -66,11 +70,13 @@ public class BoardService {
         log.error("comment_id = {}의 Member정보가 존재하지 않습니다.", c.getId());
     }
 
+    @Transactional
     public Page<Post> getPostsByPage(Pageable pageable) {
         log.info("service접근");
         return boardRepository.findAll(pageable);
     }
 
+    @Transactional
     public Post getPostById(Long postId) {
         Optional<Post> post = boardRepository.findById(postId);
         if (post.isPresent()) {
@@ -87,10 +93,12 @@ public class BoardService {
         throw new NoSuchElementException("해당 이메일을 가진 회원이 존재하지 않습니다.");
     }
 
+    @Transactional
     public void savePost(Post post) {
         boardRepository.save(post);
     }
 
+    @Transactional
     public void deletePost(Long postId) throws IllegalArgumentException{
         if(!hasPost(postId)){
             throw new NoSuchElementException("해당 게시물이 존재하지 않습니다.");
@@ -99,6 +107,7 @@ public class BoardService {
         boardRepository.deleteById(postId);
     }
 
+    @Transactional
     public boolean hasPost(Long postId) {
         Optional<Post> post = boardRepository.findById(postId);
         return post.isPresent();
@@ -108,11 +117,13 @@ public class BoardService {
         commentRepository.deleteById(commentId);
     }
 
+    @Transactional
     public void updatePost(Long postId, PostReqDto postReqDto){
         Post post = getPostById(postId);
         post.modifyPost(postReqDto);
     }
 
+    @Transactional
     public Member getMember(Long id){
         return memberRepository.findById(id).orElse(null);
     }
