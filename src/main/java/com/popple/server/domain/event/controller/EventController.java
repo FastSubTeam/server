@@ -4,6 +4,8 @@ import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.event.dto.EventCreateReqDto;
 import com.popple.server.domain.event.dto.EventDetailRespDto;
 import com.popple.server.domain.event.dto.EventRespDto;
+import com.popple.server.domain.event.dto.EventUpdateReqDto;
+import com.popple.server.domain.event.exception.EventException;
 import com.popple.server.domain.event.service.EventService;
 import com.popple.server.domain.user.annotation.LoginActor;
 import com.popple.server.domain.user.vo.Actor;
@@ -12,7 +14,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+import static com.popple.server.domain.event.exception.EventExceptionMessage.FAIL_VALIDATION_CHECK;
 
 
 @RestController
@@ -24,10 +31,28 @@ public class EventController {
 
     @PostMapping("/events")
     public APIDataResponse<EventRespDto> createEvent(@RequestBody EventCreateReqDto dto, @LoginActor Actor loginSeller){
-        // TODO: 토큰에서 유저를 뽑아내야 한다. + 존재하는 셀러인지 확인
         eventService.save(dto, loginSeller);
 
         return APIDataResponse.of(HttpStatus.CREATED, null);
+    }
+
+    @PutMapping("/events/{id}")
+    public APIDataResponse<?> updateEvent(
+            @PathVariable Long id,
+            @Valid @RequestBody EventUpdateReqDto dto,
+            BindingResult bindingResult,
+            @LoginActor Actor loginSeller
+    ) {
+        checkValidation(bindingResult);
+        eventService.update(id, dto, loginSeller);
+
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
+    private void checkValidation(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new EventException(FAIL_VALIDATION_CHECK);
+        }
     }
 
     @GetMapping("/events")
