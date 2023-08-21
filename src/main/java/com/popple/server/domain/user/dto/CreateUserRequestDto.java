@@ -6,7 +6,6 @@ import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -41,7 +40,6 @@ public class CreateUserRequestDto {
                 .district(district)
                 .email(email)
                 .password(password)
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 

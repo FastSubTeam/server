@@ -19,6 +19,7 @@ public class EventExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public APIErrorResponse exceptionHandler(Exception exception) {
+        exception.printStackTrace();
         return APIErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
     }
 }

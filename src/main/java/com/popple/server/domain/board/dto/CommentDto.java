@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class CommentDto {
     private Long id;
     private String content;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private Member member;
 }

@@ -4,14 +4,14 @@ import com.popple.server.domain.survey.type.SurveyStatus;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
 @Entity
-public class Survey {
+public class Survey extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -22,17 +22,14 @@ public class Survey {
 
     @Setter
     @Column(nullable = false)
-    private Timestamp startDate;
+    private LocalDateTime startDate;
 
     @Setter
     @Column(nullable = false)
-    private Timestamp endDate;
+    private LocalDateTime endDate;
 
     @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private SurveyStatus status;
-
-    @Column(nullable = false, updatable = false)
-    private Timestamp createdAt;
 }

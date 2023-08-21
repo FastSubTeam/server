@@ -1,14 +1,14 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.domain.entity.Member;
+import com.popple.server.domain.user.dto.CreateUserRequestDto;
+import com.popple.server.domain.user.dto.CreateUserResponseDto;
 import com.popple.server.domain.user.dto.KakaoLoginRequestDto;
+import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.exception.AlreadySignUpException;
 import com.popple.server.domain.user.exception.UserBadRequestException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.repository.MemberRepository;
-import com.popple.server.domain.user.dto.CreateUserRequestDto;
-import com.popple.server.domain.user.dto.CreateUserResponseDto;
-import com.popple.server.domain.user.exception.AlreadyExistException;
 import com.popple.server.domain.user.repository.RegisterTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -45,7 +44,6 @@ public class MemberService {
                 .email(kakaoLoginRequestDto.getEmail())
                 .nickname(kakaoLoginRequestDto.getNickname())
                 .password(UUID.randomUUID().toString())
-                .createdAt(LocalDateTime.now())
                 .build();
 
         return memberRepository.save(kakaoMember);

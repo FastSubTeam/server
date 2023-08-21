@@ -7,8 +7,6 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -16,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @DynamicInsert
-public class Seller {
+public class Seller extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,13 +44,11 @@ public class Seller {
 
     @Column(nullable = false, unique = true)
     private String businessNumber;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
     public TokenPayload toPayload() {
         return TokenPayload.builder()
                 .id(id)
-                .role(Role.USER)
+                .role(Role.ROLE_SELLER)
                 .build();
     }
 }

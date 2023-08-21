@@ -2,12 +2,10 @@ package com.popple.server.domain.event.dto;
 
 import com.popple.server.domain.entity.Event;
 import com.popple.server.domain.entity.Seller;
-import com.popple.server.domain.event.EventApproval;
 import com.popple.server.domain.event.EventStatus;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -15,7 +13,8 @@ import java.time.LocalDateTime;
 public class EventCreateReqDto {
     private String name;
     private String description;
-    private String location;
+    private String city;
+    private String district;
     private String category;
     private String thumbnailUrl;
     private LocalDateTime startDate;
@@ -23,32 +22,26 @@ public class EventCreateReqDto {
 
     public Event toEntity(Seller seller) {
         return Event.builder()
-                .name(this.name)
-                .description(this.description)
-                .location(this.location)
-                .category(this.category)
-                .thumbnailUrl(this.thumbnailUrl)
-                .startDate(toTimestamp(this.startDate))
-                .endDate(toTimestamp(this.endDate))
-                .approval(EventApproval.WAIT)
+                .name(name)
+                .description(description)
+                .city(city)
+                .district(district)
+                .category(category)
+                .thumbnailUrl(thumbnailUrl)
+                .startDate(startDate)
+                .endDate(endDate)
                 .status(getCurrentStatus())
                 .host(seller)
                 .build();
     }
 
-    private Timestamp toTimestamp(LocalDateTime localDateTime) {
-        return Timestamp.valueOf(localDateTime);
-    }
-
     private EventStatus getCurrentStatus() {
         LocalDateTime now = LocalDateTime.now();
-        System.out.println(this.endDate);
-        System.out.println(now);
-        if (this.endDate.isBefore(now)) {
+        if (endDate.isBefore(now)) {
             return EventStatus.END;
         }
 
-        if (this.endDate.isAfter(now) && this.startDate.isBefore(now)) {
+        if (endDate.isAfter(now) && startDate.isBefore(now)) {
             return EventStatus.PROCEEDING;
         }
 

@@ -28,14 +28,14 @@ public class EventService {
     public void save(EventCreateReqDto dto, Actor loginSeller) {
 
         // TODO: 토큰 기능 완료되면 그때 활성화
-//        checkSeller(loginSeller);
-//        Seller seller = getSellerByLoginSeller(loginSeller);
-        Event event = dto.toEntity(null);
+        checkSeller(loginSeller);
+        Seller seller = getSellerByLoginSeller(loginSeller);
+        Event event = dto.toEntity(seller);
         eventRepository.save(event);
     }
 
     private void checkSeller(Actor loginSeller) {
-        if (loginSeller == null || loginSeller.getRole() != Role.SELLER) {
+        if (loginSeller == null || loginSeller.getRole() != Role.ROLE_SELLER) {
             throw new EventException(NONE_VALID_LOGIN_SELLER);
         }
     }

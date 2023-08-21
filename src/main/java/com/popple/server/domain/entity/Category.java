@@ -3,7 +3,7 @@ package com.popple.server.domain.entity;
 import javax.persistence.*;
 
 @Entity
-public class Category {
+public class Category extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
