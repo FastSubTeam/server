@@ -10,15 +10,15 @@ import lombok.ToString;
 @Getter
 @ToString
 @Builder
-public class MemberResponseDto {
+public class MemberRespDto {
     private Long id;
     private String email;
     private String nickname;
     private String profileUrl;
     private Boolean inactive;
 
-    public static MemberResponseDto of(Member member){
-        return MemberResponseDto.builder()
+    public static MemberRespDto of(Member member){
+        return MemberRespDto.builder()
                 .id(member.getId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())

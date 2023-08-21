@@ -2,7 +2,7 @@ package com.popple.server.domain.board.service;
 
 import com.popple.server.domain.board.dto.CommentDto;
 import com.popple.server.domain.board.dto.CommentTableProjection;
-import com.popple.server.domain.board.dto.MemberResponseDto;
+import com.popple.server.domain.board.dto.MemberRespDto;
 import com.popple.server.domain.board.dto.PostReqDto;
 import com.popple.server.domain.board.repository.BoardRepository;
 import com.popple.server.domain.board.repository.CommentRepository;
@@ -48,13 +48,13 @@ public class BoardService {
 
     private void addCommentDto(List<CommentDto> commentDtos, CommentTableProjection c, Optional<Member> member) {
         if (member.isPresent()) {
-            MemberResponseDto memberResponseDto = MemberResponseDto.of(member.get());
+            MemberRespDto memberRespDto = MemberRespDto.of(member.get());
             CommentDto commentDto = CommentDto.builder()
                     .id(c.getId())
                     .content(c.getContent())
                     .createdAt(c.getCreatedAt())
                     .updatedAt(c.getUpdatedAt())
-                    .member(memberResponseDto)
+                    .member(memberRespDto)
                     .build();
             commentDtos.add(commentDto);
             return;
