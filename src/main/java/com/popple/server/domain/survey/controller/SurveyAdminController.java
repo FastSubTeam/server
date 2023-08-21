@@ -13,7 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -77,7 +77,7 @@ public class SurveyAdminController {
         return APIDataResponse.of(HttpStatus.OK, null);
     }
 
-    private boolean isValidEndDateAndStartDate(Timestamp startDate, Timestamp endDate) {
-        return endDate.after(startDate);
+    private boolean isValidEndDateAndStartDate(LocalDateTime startDate, LocalDateTime endDate) {
+        return endDate.isAfter(startDate);
     }
 }

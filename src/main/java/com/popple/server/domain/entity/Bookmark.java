@@ -1,18 +1,26 @@
 package com.popple.server.domain.entity;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Entity
-public class Bookmark {
+@Table(
+        name = "bookmark",
+        uniqueConstraints =
+        @UniqueConstraint(
+                name = "MEMBER_BOOKMARK_UNIQUE_IDX",
+                columnNames = {"member_id", "event_id"}
+        )
+)
+public class Bookmark extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private Event event;
-    private Timestamp createdAt;
 }

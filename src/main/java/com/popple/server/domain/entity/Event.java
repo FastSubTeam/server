@@ -1,13 +1,10 @@
 package com.popple.server.domain.entity;
 
-import com.popple.server.domain.event.EventApproval;
 import com.popple.server.domain.event.EventStatus;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,12 +12,13 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Event {
+public class Event extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private Seller host;
 
     @Column(nullable = false, length = 300)
@@ -29,17 +27,20 @@ public class Event {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false, length = 200 )
-    private String location;
+    @Column(nullable = false, length = 20)
+    private String city;
+
+    @Column(nullable = false, length = 20)
+    private String district;
 
     @Column(nullable = false, length = 1000)
     private String thumbnailUrl;
 
     @Column(nullable = false)
-    private Timestamp startDate;
+    private LocalDateTime startDate;
 
     @Column(nullable = false)
-    private Timestamp endDate;
+    private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10, nullable = false)
@@ -47,16 +48,4 @@ public class Event {
 
     @Column(length = 20, nullable = false)
     private String category;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable = false)
-    private EventApproval approval;
-
-    @Column(nullable = false)
-    @CreationTimestamp
-    private Timestamp createdAt;
-
-    @Column(nullable = false)
-    @UpdateTimestamp
-    private Timestamp updatedAt;
 }

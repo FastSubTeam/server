@@ -1,14 +1,8 @@
 package com.popple.server.domain.entity;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.sql.Timestamp;
 
 @Entity
 @Builder
@@ -16,26 +10,18 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Getter
 @ToString
-public class Post {
+public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private Member member;
 
-    @NotBlank
-    @Size(max = 50)
+    @Column(nullable = false)
     private String title;
 
-    @NotBlank
+    @Column(nullable = false)
     private String content;
-
-    @Column(updatable = false)
-    @CreationTimestamp
-    private Timestamp createdAt;
-
-    @UpdateTimestamp
-    private Timestamp updatedAt;
 }

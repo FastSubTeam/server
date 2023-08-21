@@ -2,11 +2,13 @@ package com.popple.server.domain.survey.dto;
 
 import com.popple.server.domain.entity.Survey;
 import com.popple.server.domain.entity.SurveyOption;
-import com.popple.server.domain.entity.SurveyResult;
 import com.popple.server.domain.survey.type.SurveyStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,8 +17,8 @@ import java.util.stream.Collectors;
 public class SurveyResultDetailRespDto {
     private Integer id;
     private String title;
-    private Timestamp startDate;
-    private Timestamp endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private SurveyStatus status;
     private List<OptionRespDto> options;
     private List<SurveyAnswer> answers;

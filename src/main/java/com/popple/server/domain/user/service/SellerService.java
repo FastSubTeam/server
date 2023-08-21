@@ -73,8 +73,6 @@ public class SellerService {
                 .address(createSellerRequestDto.getAddress())
                 .shopName(createSellerRequestDto.getShopName())
                 .businessNumber(createSellerRequestDto.getBusinessNumber())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
 
 

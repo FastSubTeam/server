@@ -51,8 +51,6 @@ public class BoardController {
                     .id(post.getId())
                     .nickname(post.getMember().getNickname())
                     .content(post.getContent())
-                    .createdAt(post.getCreatedAt())
-                    .updatedAt(post.getUpdatedAt())
                     .comments(commentDtos)
                     .build();
             return APIDataResponse.of(HttpStatus.OK, postRespDto);
@@ -81,8 +79,6 @@ public class BoardController {
                     .nickname(post.getMember().getNickname())
                     .title(post.getTitle())
                     .content(post.getContent())
-                    .createdAt(post.getCreatedAt())
-                    .updatedAt(post.getUpdatedAt())
                     .commentCount(commentCount)
                     .build();
             boardListRespDtoList.add(boardListRespDto);

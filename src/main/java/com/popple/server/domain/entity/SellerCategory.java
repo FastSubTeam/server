@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(
@@ -21,7 +19,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SellerCategory {
+public class SellerCategory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,7 +31,4 @@ public class SellerCategory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
 }
