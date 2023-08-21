@@ -65,7 +65,7 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public APIDataResponse<?> savePost(PostReqDto postReqDto, BindingResult bindingResult, @LoginActor Actor loginMember) {
+    public APIDataResponse<?> savePost(@RequestBody PostReqDto postReqDto, BindingResult bindingResult, @LoginActor Actor loginMember) {
         if (loginMember == null || loginMember.getId() == null) {
             throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
         }
@@ -75,11 +75,12 @@ public class BoardController {
         return APIDataResponse.empty(HttpStatus.OK);
     }
 
-    @PutMapping("/{postId}")
-    public APIDataResponse<?> updatePost(PostReqDto postReqDto, @PathVariable Long postId, @LoginActor Actor loginMember) {
+    @PatchMapping("/{postId}")
+    public APIDataResponse<?> updatePost(@RequestBody PostReqDto postReqDto, @PathVariable Long postId, @LoginActor Actor loginMember) {
         if (loginMember == null || loginMember.getId() == null) {
             throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
         }
+        //todo 로그인된 유저와 게시글의 작성자가 일치하는지 로직 작성
         Member member = boardService.getMember(loginMember.getId());
         boardService.updatePost(postId, postReqDto);
         return APIDataResponse.empty(HttpStatus.OK);
