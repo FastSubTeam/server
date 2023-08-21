@@ -6,7 +6,7 @@ import com.popple.server.domain.entity.Survey;
 import com.popple.server.domain.entity.SurveyOption;
 import com.popple.server.domain.entity.SurveyResult;
 import com.popple.server.domain.survey.dto.*;
-import com.popple.server.domain.survey.dto.SurveyResultDetailRespDto.*;
+import com.popple.server.domain.survey.dto.SurveyResultDetailRespDto.SurveyAnswer;
 import com.popple.server.domain.survey.exception.RequestInvalidException;
 import com.popple.server.domain.survey.exception.SurveyException;
 import com.popple.server.domain.survey.repository.SurveyOptionRepository;
@@ -20,8 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +40,6 @@ public class SurveyService {
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
                 .status(WAIT) // TODO: 날짜에 따라서 상태를 어떻게 저장할지 결정
-                .createdAt(Timestamp.valueOf(LocalDateTime.now())) // TODO: Auditing 변경
                 .build();
 
         surveyRepository.save(survey);
@@ -51,7 +48,6 @@ public class SurveyService {
             SurveyOption option = SurveyOption.builder()
                     .content(optionDto.getContent())
                     .survey(survey)
-                    .createdAt(Timestamp.valueOf(LocalDateTime.now())) // TODO: Auditing 변경
                     .build();
 
             surveyOptionRepository.save(option);
@@ -126,7 +122,6 @@ public class SurveyService {
                 SurveyOption surveyOption = SurveyOption.builder()
                         .content(optionDto.getContent())
                         .survey(survey)
-                        .createdAt(Timestamp.valueOf(LocalDateTime.now())) // TODO: Auditing 변경
                         .build();
                 surveyOptionRepository.save(surveyOption);
             }
