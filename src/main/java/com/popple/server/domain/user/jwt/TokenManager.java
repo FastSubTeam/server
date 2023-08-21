@@ -3,6 +3,7 @@ package com.popple.server.domain.user.jwt;
 import com.popple.server.domain.user.exception.InvalidJwtTokenException;
 import com.popple.server.domain.user.exception.TokenErrorCode;
 import com.popple.server.domain.user.repository.RefreshTokenRepository;
+import com.popple.server.domain.user.service.UserDetailServiceImpl;
 import com.popple.server.domain.user.vo.Role;
 import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
@@ -12,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -33,7 +31,7 @@ public class TokenManager {
 
     private final Long accessTokenExpires;
     private final Long refreshTokenExpires;
-    private final UserDetailsService userDetailsService;
+    private final UserDetailServiceImpl userDetailService;
     private final RefreshTokenRepository refreshTokenRepository;
 
     public TokenManager(
@@ -41,37 +39,46 @@ public class TokenManager {
             @Value("${jwt.refresh-secret}") String refreshSecretKey,
             @Value("${jwt.access-token-expires}") String accessTokenExpires,
             @Value("${jwt.refresh-token-expires}") String refreshTokenExpires,
-            UserDetailsService userDetailsService,
+            UserDetailServiceImpl userDetailService,
             RefreshTokenRepository refreshTokenRepository
     ) {
         this.accessSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
-        this.refreshSecretKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes(StandardCharsets.UTF_8));
+        this.refreshSecretKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpires = Long.parseLong(accessTokenExpires);
         this.refreshTokenExpires = Long.parseLong(refreshTokenExpires);
-        this.userDetailsService = userDetailsService;
+        this.userDetailService = userDetailService;
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
     public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
+        Claims claims = parseClaims(accessToken, accessSecretKey);
 
-        GrantedAuthority authority = new SimpleGrantedAuthority(claims.get("role").toString());
+        if (claims.get("role").equals(Role.ROLE_USER.name())) {
+            UserDetails principal = userDetailService.loadUserByUsername(claims.get("id").toString());
 
-        UserDetails principal = userDetailsService.loadUserByUsername(claims.get("id").toString());
+            return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
+        }
+
+
+
+        UserDetails principal = userDetailService.loadSellerByUsername(claims.get("id").toString());
 
         return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());
 
     }
 
-    public Claims parseClaims(String token) {
+    public Claims parseClaims(String token, SecretKey secretKey) {
         try {
             return Jwts.parserBuilder()
-                    .setSigningKey(accessSecretKey)
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
-            throw new RuntimeException();
+            if (secretKey.equals(accessSecretKey)) {
+                throw new InvalidJwtTokenException(TokenErrorCode.EXPIRED_ACCESS_TOKEN);
+            }
+            throw new InvalidJwtTokenException(TokenErrorCode.EXPIRED_REFRESH_TOKEN);
         }
     }
     public boolean validateAccessToken(String token) {
@@ -193,12 +200,22 @@ public class TokenManager {
     }
 
     public Role getRoleFromToken(String token) {
-        Claims parsedClaims = parseClaims(token);
+        Claims parsedClaims = parseClaims(token, accessSecretKey);
         return Role.of(parsedClaims.get("role").toString());
     }
 
     public Long getIdFromToken(String token) {
-        Claims parsedClaims = parseClaims(token);
+        Claims parsedClaims = parseClaims(token, accessSecretKey);
         return parsedClaims.get("id", Long.class);
+    }
+
+    public long getExpiredTime(String accessToken) {
+        return parseClaims(accessToken, accessSecretKey)
+                .getExpiration()
+                .getTime();
+    }
+
+    public Claims parseRefreshToken(String refreshToken) {
+        return parseClaims(refreshToken, refreshSecretKey);
     }
 }

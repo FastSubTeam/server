@@ -1,9 +1,14 @@
 package com.popple.server.domain.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.user.annotation.LoginActor;
 import com.popple.server.domain.user.dto.*;
+import com.popple.server.domain.user.exception.InvalidJwtTokenException;
+import com.popple.server.domain.user.exception.TokenErrorCode;
+import com.popple.server.domain.user.exception.UserErrorCode;
+import com.popple.server.domain.user.exception.UserUnauthorizedException;
 import com.popple.server.domain.user.service.AuthService;
 import com.popple.server.domain.user.service.OAuthService;
 import com.popple.server.domain.user.vo.Actor;
@@ -24,6 +29,7 @@ import java.io.IOException;
 @RequestMapping("/api")
 public class AuthController {
 
+
     private final AuthService authService;
     private final OAuthService oAuthService;
 
@@ -31,6 +37,19 @@ public class AuthController {
     public Actor test(@LoginActor Actor actor) {
 
         return actor;
+    }
+
+    @GetMapping("/auth/reissue")
+    public APIDataResponse<?> reIssueAccessToken(@RequestHeader("RefreshToken") String refreshToken) {
+        if (refreshToken == null) {
+            throw new UserUnauthorizedException(UserErrorCode.NEED_REFRESH_TOKEN);
+        }
+        String accessToken = authService.reIssueAccessToken(refreshToken);
+        ReissueAccessTokenRequestDto response = ReissueAccessTokenRequestDto.builder()
+                .accessToken(accessToken)
+                .build();
+
+        return APIDataResponse.of(HttpStatus.OK, response);
     }
 
 
@@ -48,21 +67,38 @@ public class AuthController {
         return APIDataResponse.of(HttpStatus.OK, registerToken.getRegisterToken());
     }
 
+    @PostMapping("/auth/forgotpassword")
+    public APIDataResponse<?> generateRandomPassword(@Valid @RequestBody FindPasswordRequestDto findPasswordRequestDto) {
+        authService.generateRandomPassword(findPasswordRequestDto.getEmail());
+
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
     @PostMapping("/auth/signup")
     public APIDataResponse<?> registerUser(@RequestBody CreateUserRequestDto createUserRequestDto) {
 
         AddressStore.validate(createUserRequestDto.getCity(), createUserRequestDto.getDistrict());
 
         // =============== TODO 배포시에 void로 수정 ==================
-        CreateUserResponseDto createUserResponseDto = authService.register(createUserRequestDto);
+        CreateUserResponseDto createUserResponseDto = authService.registerMember(createUserRequestDto);
         // ==========================================================
         return APIDataResponse.of(HttpStatus.OK, createUserResponseDto);
     }
 
     @PostMapping("/auth/signup/seller")
     public APIDataResponse<?> registerSeller(@RequestBody CreateSellerRequestDto createSellerRequestDto) {
-
+        authService.registerSeller(createSellerRequestDto);
         return null;
+    }
+
+    @GetMapping("/auth/logout")
+    public APIDataResponse<?> logout(@RequestHeader(name = "Authorization") String accessToken, @RequestHeader(name = "RefreshToken") String refreshToken) {
+        if (!accessToken.startsWith("Bearer ")) {
+            throw new InvalidJwtTokenException(TokenErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        String parsedAccessToken = accessToken.split("Bearer ")[1];
+        authService.logout(parsedAccessToken, refreshToken);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @PostMapping("/auth/validate-business-number")
@@ -123,6 +159,12 @@ public class AuthController {
     @GetMapping("/auth/kakaologin")
     public void kakaoSignIn(HttpServletResponse httpServletResponse) throws IOException {
         oAuthService.redirectToKakaoLoginPage(httpServletResponse);
+    }
+
+    @PostMapping("/auth/kakaologin")
+    public APIDataResponse<?> kakaologin(@RequestBody KakaoLoginAccessTokenRequestDto kakaoLoginAccessTokenRequestDto) throws JsonProcessingException {
+        LoginResponseDto loginResponseDto = oAuthService.loginWithKakaoAccessToken(kakaoLoginAccessTokenRequestDto.getAccessToken());
+        return APIDataResponse.of(HttpStatus.OK, loginResponseDto);
     }
 
     @GetMapping("/auth/kakaologin/callback")

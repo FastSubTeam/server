@@ -1,6 +1,7 @@
 package com.popple.server.domain.entity;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,7 +12,7 @@ import java.util.Random;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-public class RegisterToken {
+public class RegisterToken extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -22,6 +23,8 @@ public class RegisterToken {
     @Column(nullable = false, unique = true)
     private String registerToken;
 
+    @CreatedDate
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public static RegisterToken of(String email) {

@@ -1,8 +1,6 @@
 package com.popple.server.domain.user.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
@@ -10,8 +8,9 @@ import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateSellerRequestDto {
 
     private static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
@@ -37,5 +36,5 @@ public class CreateSellerRequestDto {
     private String businessNumber;
 
     @NotNull
-    private List<Integer> categories;
+    private List<Long> categories;
 }

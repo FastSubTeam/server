@@ -1,15 +1,13 @@
 package com.popple.server.domain.entity;
 
-import com.popple.server.domain.user.vo.TokenPayload;
 import com.popple.server.domain.user.vo.Role;
+import com.popple.server.domain.user.vo.TokenPayload;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -18,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @DynamicInsert
-public class Member {
+public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -48,14 +46,10 @@ public class Member {
     @Column(nullable = false)
     private Boolean inactive;
 
-    @CreatedDate
-    @NotNull
-    private LocalDateTime createdAt;
-
     public TokenPayload toPayload() {
         return TokenPayload.builder()
                 .id(id)
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .build();
     }
 }

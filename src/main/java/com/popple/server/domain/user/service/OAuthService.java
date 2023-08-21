@@ -41,6 +41,46 @@ public class OAuthService {
     }
 
     @Transactional
+    public LoginResponseDto loginWithKakaoAccessToken(String kakaoAccessToken) throws JsonProcessingException {
+//        MultiValueMap<String, String> body = createBodyForKakaoToken(code);
+//
+//        ResponseEntity<String> kakaoTokenFromKakao = Fetch.getKakaoTokenWithKakaoAPI("https://kauth.kakao.com/oauth/token", HttpMethod.POST, body);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+//        KakaoToken kakaoToken = objectMapper.readValue(kakaoTokenFromKakao.getBody(), KakaoToken.class);
+
+        ResponseEntity<String> userInformationWithKakaoAccessToken = Fetch.getUserInformationWithKakaoAccessToken("https://kapi.kakao.com/v2/user/me", HttpMethod.POST, kakaoAccessToken);
+
+        OAuthProfile oAuthProfile = objectMapper.readValue(userInformationWithKakaoAccessToken.getBody(), OAuthProfile.class);
+
+        Member findMember = memberService.getOptionalUserByEmail(oAuthProfile.getKakaoAcount().getEmail());
+
+        if (findMember == null) {
+            KakaoLoginRequestDto kakaoLoginRequestDto = KakaoLoginRequestDto.builder()
+                    .email(oAuthProfile.getKakaoAcount().getEmail())
+                    .nickname("kakao_" + oAuthProfile.getId())
+                    .build();
+
+
+            findMember = memberService.createKakaoMember(kakaoLoginRequestDto);
+        }
+
+        TokenPayload tokenPayload = findMember.toPayload();
+        String accessToken = tokenService.generateAccessToken(tokenPayload);
+        String refreshToken = tokenService.generateRefreshToken(tokenPayload);
+
+        return LoginResponseDto.builder()
+                .userId(findMember.getId())
+                .email(findMember.getEmail())
+                .profileImgUrl(findMember.getProfileImgUrl())
+                .nickname(findMember.getNickname())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+
+    }
+
+    @Transactional
     public LoginResponseDto loginWithKakaoCode(String code) throws JsonProcessingException {
         MultiValueMap<String, String> body = createBodyForKakaoToken(code);
 

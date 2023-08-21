@@ -1,7 +1,6 @@
 package com.popple.server.domain.event.dto;
 
 import com.popple.server.domain.entity.Event;
-import com.popple.server.domain.entity.Seller;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,8 +12,9 @@ public class EventDetailRespDto {
     private Long id;
     private String thumbnailUrl;
     private String name;
-    private String hostName;
-    private String location;
+    private String nickname;
+    private String city;
+    private String district;
     private String description;
     private String category;
     private LocalDateTime startDate;
@@ -28,15 +28,15 @@ public class EventDetailRespDto {
                 .id(event.getId())
                 .thumbnailUrl(event.getThumbnailUrl())
                 .name(event.getName())
-                // .hostname(event.getHost().getNickname()) // TODO: 토큰 완료시 활성화
-                .hostName("토큰 없는 익명 판매자")
-                .location(event.getLocation())
+                .nickname(event.getHost().getNickname())
+                .city(event.getCity())
+                .district(event.getDistrict())
                 .description(event.getDescription())
                 .category(event.getCategory())
-                .startDate(event.getStartDate().toLocalDateTime())
-                .endDate(event.getEndDate().toLocalDateTime())
-                .createdAt(event.getCreatedAt().toLocalDateTime())
-                .updatedAt(event.getUpdatedAt().toLocalDateTime())
+                .startDate(event.getStartDate())
+                .endDate(event.getEndDate())
+                .createdAt(event.getCreatedAt())
+                .updatedAt(event.getUpdatedAt())
                 .status(event.getStatus().getValue())
                 .build();
     }

@@ -51,8 +51,6 @@ public class BoardController {
                     .id(post.getId())
                     .nickname(post.getMember().getNickname())
                     .content(post.getContent())
-                    .createdAt(post.getCreatedAt())
-                    .updatedAt(post.getUpdatedAt())
                     .comments(commentDtos)
                     .build();
             return APIDataResponse.of(HttpStatus.OK, postRespDto);
@@ -64,7 +62,7 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public APIDataResponse<?> savePost(PostReqDto postReqDto, BindingResult bindingResult){
+    public APIDataResponse<?> savePost(PostReqDto postReqDto, BindingResult bindingResult) {
         Member member = boardService.findMemberByEmail(postReqDto.getEmail());
         Post post = postReqDto.toEntity(member);
         boardService.savePost(post);
@@ -81,12 +79,22 @@ public class BoardController {
                     .nickname(post.getMember().getNickname())
                     .title(post.getTitle())
                     .content(post.getContent())
-                    .createdAt(post.getCreatedAt())
-                    .updatedAt(post.getUpdatedAt())
                     .commentCount(commentCount)
                     .build();
             boardListRespDtoList.add(boardListRespDto);
         }
         return boardListRespDtoList;
+    }
+
+    @DeleteMapping("/{postId}")
+    public APIDataResponse<?> deletePost(@PathVariable Long postId) throws IllegalArgumentException {
+        boardService.deletePost(postId);
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/comment/{commentId}")
+    public APIDataResponse<?> deleteComment(@PathVariable Long commentId) throws IllegalArgumentException{
+        boardService.deleteComment(commentId);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 }

@@ -21,8 +21,8 @@ public class SurveyResultRespDto {
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .status(entity.getStatus())
-                .startDate(entity.getStartDate().toLocalDateTime().toLocalDate())
-                .endDate(entity.getEndDate().toLocalDateTime().toLocalDate())
+                .startDate(entity.getStartDate().toLocalDate())
+                .endDate(entity.getEndDate().toLocalDate())
                 .build();
     }
 }

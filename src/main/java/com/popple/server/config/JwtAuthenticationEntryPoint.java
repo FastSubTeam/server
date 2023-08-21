@@ -29,6 +29,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ErrorCode errorCode = (ErrorCode) request.getAttribute("exception");
 
+        authException.printStackTrace();
+
         setResponse(response, Objects.requireNonNullElse(errorCode, TokenErrorCode.UNKNOWN_ACCESS_TOKEN_ERROR));
     }
 

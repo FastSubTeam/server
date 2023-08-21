@@ -30,10 +30,10 @@ public class SurveyScheduler {
         List<Survey> surveys = surveyRepository.findAllByStatusIsNot(SurveyStatus.REVERT);
 
         for (Survey survey : surveys) {
-            if (isEnd(survey.getEndDate().toLocalDateTime(), now)) {
+            if (isEnd(survey.getEndDate(), now)) {
                 survey.setStatus(SurveyStatus.REVERT);
             }
-            if (isStart(survey.getStartDate().toLocalDateTime(), now)) {
+            if (isStart(survey.getStartDate(), now)) {
                 survey.setStatus(SurveyStatus.IN_PROGRESS);
             }
         }
