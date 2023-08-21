@@ -4,6 +4,7 @@ import com.popple.server.domain.survey.type.SurveyStatus;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -22,11 +23,11 @@ public class Survey extends BaseEntity {
 
     @Setter
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Setter
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @Setter
     @Enumerated(EnumType.STRING)
