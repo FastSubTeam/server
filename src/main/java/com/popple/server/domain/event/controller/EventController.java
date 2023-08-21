@@ -49,6 +49,12 @@ public class EventController {
         return APIDataResponse.empty(HttpStatus.OK);
     }
 
+    @DeleteMapping("/events/{id}")
+    public APIDataResponse<?> deleteEvent(@PathVariable Long id, @LoginActor Actor loginSeller) {
+        eventService.delete(id, loginSeller);
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
     private void checkValidation(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new EventException(FAIL_VALIDATION_CHECK);
