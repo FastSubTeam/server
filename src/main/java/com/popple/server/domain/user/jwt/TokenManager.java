@@ -13,17 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 
 @Component
@@ -58,7 +53,7 @@ public class TokenManager {
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken, accessSecretKey);
 
-        if (claims.get("role").equals(Role.USER.name())) {
+        if (claims.get("role").equals(Role.ROLE_USER.name())) {
             UserDetails principal = userDetailService.loadUserByUsername(claims.get("id").toString());
 
             return new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities());

@@ -18,7 +18,8 @@ public enum UserErrorCode implements ErrorCode {
     SEND_MAIL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "이메일 전송 과정에서 오류가 발생하였습니다."),
     INVALID_BUSINESS_NUMBER(HttpStatus.BAD_REQUEST, "올바르지 않은 사업자 번호입니다"),
     INVALID_LOGIN_PAYLOAD(HttpStatus.BAD_REQUEST, "로그인 정보가 올바르지 않습니다."),
-    NEED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "엑세스 토큰을 재발급 받으려면 리프레시 토큰이 필요합니다");
+    NEED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "엑세스 토큰을 재발급 받으려면 리프레시 토큰이 필요합니다"),
+    FORBIDDEN(HttpStatus.FORBIDDEN, "해당 API에 대한 권한이 존재하지 않습니다");
 
     private final HttpStatus httpStatus;
     private final String errorMessage;
@@ -27,4 +28,4 @@ public enum UserErrorCode implements ErrorCode {
         this.httpStatus = httpStatus;
         this.errorMessage = errorMessage;
     }
-    }
+}

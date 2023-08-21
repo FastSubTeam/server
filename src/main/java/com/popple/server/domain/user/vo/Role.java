@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum Role {
-    USER(new ArrayList<>(List.of("USER", "user", "User"))),
-    SELLER(new ArrayList<>(List.of("SELLER", "seller", "Seller")));
+    ROLE_USER(new ArrayList<>(List.of("USER", "user", "User", "ROLE_USER"))),
+    ROLE_SELLER(new ArrayList<>(List.of("SELLER", "seller", "Seller", "ROLE_SELLER")));
 
     private final ArrayList<String> symbols;
 

@@ -25,13 +25,18 @@ public class UserDetailServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
         Member findMember = memberRepository.findById(Long.parseLong(id))
                 .orElseThrow(() -> new UserUnauthorizedException(UserErrorCode.NOT_FOUND));
-        return new UserAdapter(findMember);
+
+        UserAdapter userAdapter = new UserAdapter(findMember);
+        userAdapter.getAuthorities().forEach(System.out::println);
+        return userAdapter;
     }
 
     public UserDetails loadSellerByUsername(String id) {
         Seller seller = sellerRepository.findById(Long.parseLong(id))
                 .orElseThrow(() -> new UserUnauthorizedException(UserErrorCode.NOT_FOUND));
 
+        UserAdapter userAdapter = new UserAdapter(seller);
+        userAdapter.getAuthorities().forEach(System.out::println);
         return new UserAdapter(seller);
     }
 }
