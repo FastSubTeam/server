@@ -15,6 +15,7 @@ import java.util.List;
 public class PostRespDto {
     private Long id;
     private String nickname;
+    private String title;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
