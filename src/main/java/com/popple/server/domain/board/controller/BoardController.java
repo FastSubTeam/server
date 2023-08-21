@@ -55,6 +55,8 @@ public class BoardController {
                     .title(post.getTitle())
                     .content(post.getContent())
                     .comments(commentDtos)
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
                     .build();
             return APIDataResponse.of(HttpStatus.OK, postRespDto);
         } catch (NoSuchElementException e) {
@@ -97,6 +99,8 @@ public class BoardController {
                     .title(post.getTitle())
                     .content(post.getContent())
                     .commentCount(commentCount)
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
                     .build();
             boardListRespDtoList.add(boardListRespDto);
         }
