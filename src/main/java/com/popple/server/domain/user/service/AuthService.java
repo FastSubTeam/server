@@ -87,8 +87,7 @@ public class AuthService {
         }
 
         if (role.equals(Role.ROLE_SELLER)) {
-            // TODO Seller 완성하고 구현하기
-//            sellerService.checkDuplication(nickname, email);
+            sellerService.checkDuplication(nickname, email);
             return;
         }
 
