@@ -73,7 +73,7 @@ public class AuthService {
     }
 
     public void registerSeller(CreateSellerRequestDto createSellerRequestDto) {
-        sellerService.checkDuplication(createSellerRequestDto.getNickname(), createSellerRequestDto.getEmail());
+        sellerService.checkDuplication(createSellerRequestDto.getNickname(), createSellerRequestDto.getEmail(), createSellerRequestDto.getBusinessNumber());
         sellerService.create(createSellerRequestDto);
     }
 
@@ -87,7 +87,8 @@ public class AuthService {
         }
 
         if (role.equals(Role.ROLE_SELLER)) {
-            sellerService.checkDuplication(nickname, email);
+            sellerService.validateDuplicatedEmail(email);
+            sellerService.validateDuplicatedNickname(nickname);
             return;
         }
 
@@ -172,5 +173,13 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .nickname("관리자")
                 .build();
+    }
+
+    public void checkDuplicatedBusinessNumber(String businessNumber) {
+        sellerService.validateDuplicatedBusinessNumber(businessNumber);
+    }
+
+    public void checkBusinessNumberValidity(String businessNumber) throws IOException {
+        sellerService.checkBusinessNumberValidity(businessNumber);
     }
 }
