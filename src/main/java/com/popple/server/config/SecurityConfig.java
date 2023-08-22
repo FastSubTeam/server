@@ -53,6 +53,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         String[] permitAllUrls = new String[]{
+                "/api/auth/seller/check-businessNumber",
                 "/api/auth/forgotpassword",
                 "/api/auth/check-proceed",
                 "/api/auth/validate-business-number",
