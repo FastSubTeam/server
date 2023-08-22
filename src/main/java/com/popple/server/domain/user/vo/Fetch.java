@@ -45,10 +45,21 @@ public interface Fetch {
     static APIDataResponse<?> isValidBusinessNumber(
             String baseApiUrl, String apiKey, ValidateBusinessNumberRequestDto validateBusinessNumberRequestDto
     ) throws IOException, java.io.IOException {
+        checkBusinessNumberValidity(baseApiUrl, apiKey, validateBusinessNumberRequestDto);
+
+
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
+    static void checkBusinessNumberValidity(String baseApiUrl, String apiKey, ValidateBusinessNumberRequestDto validateBusinessNumberRequestDto) throws java.io.IOException {
+        ValidateBusinessNumberResponseDto result = fetchBusinessNumber(baseApiUrl, apiKey, validateBusinessNumberRequestDto);
+        validateBusinessNumber(result);
+    }
+
+    private static ValidateBusinessNumberResponseDto fetchBusinessNumber(String baseApiUrl, String apiKey, ValidateBusinessNumberRequestDto validateBusinessNumberRequestDto) throws java.io.IOException {
         OkHttpClient okHttpClient = new OkHttpClient();
         ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        System.out.println(validateBusinessNumberRequestDto);
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), objectMapper.writeValueAsString(validateBusinessNumberRequestDto));
         Request request = new Request.Builder()
                 .url(baseApiUrl + "?serviceKey=" + apiKey)
@@ -62,13 +73,13 @@ public interface Fetch {
                 .readUtf8();
 
         ValidateBusinessNumberResponseDto result = objectMapper.readValue(responseBody, ValidateBusinessNumberResponseDto.class);
+        return result;
+    }
 
+    static void validateBusinessNumber(ValidateBusinessNumberResponseDto result) {
         if (result.getMatchCount() == null) {
             throw new UserBadRequestException(UserErrorCode.INVALID_BUSINESS_NUMBER);
         }
-
-
-        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     static void isValidAddress(String kakaoApiKey, String address) {
@@ -82,7 +93,9 @@ public interface Fetch {
         HttpEntity<Object> httpEntity = new HttpEntity<>(httpHeaders);
         KakaoAddressApiResponseDto response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, KakaoAddressApiResponseDto.class).getBody();
 
-        System.out.println(response);
+        if (response.getDocuments().size() == 0) {
+            throw new UserBadRequestException(SellerErrorCode.INVALID_ADDRESS);
+        }
         if (response.getDocuments().get(0).getAddress() == null) {
             throw new UserBadRequestException(SellerErrorCode.INVALID_ADDRESS);
         }
