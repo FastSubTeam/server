@@ -124,4 +124,25 @@ public class EventService {
 
         return EventDetailRespDto.fromEntity(event);
     }
+
+    @Transactional
+    public void joinEvent(Long id, Actor loginSeller) {
+        checkSeller(loginSeller);
+
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
+        Seller seller = getSellerByLoginSeller(loginSeller);
+        isAlreadyJoinSeller(event, seller);
+
+        SellerEvent sellerEvent = new SellerEvent(seller, event);
+        sellerEventRepository.save(sellerEvent);
+    }
+
+    private void isAlreadyJoinSeller(Event event, Seller seller) {
+        boolean isAlreadyJoin = sellerEventRepository.existsByEventAndSeller(event, seller);
+
+        if (isAlreadyJoin) {
+            throw new EventException("이미 해당 행사에 참여하는 개인 판매자입니다.");
+        }
+    }
 }
