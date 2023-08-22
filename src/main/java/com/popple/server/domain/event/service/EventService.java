@@ -4,10 +4,7 @@ import com.popple.server.domain.entity.Event;
 import com.popple.server.domain.entity.Seller;
 import com.popple.server.domain.entity.SellerEvent;
 import com.popple.server.domain.event.EventStatus;
-import com.popple.server.domain.event.dto.EventCreateReqDto;
-import com.popple.server.domain.event.dto.EventDetailRespDto;
-import com.popple.server.domain.event.dto.EventRespDto;
-import com.popple.server.domain.event.dto.EventUpdateReqDto;
+import com.popple.server.domain.event.dto.*;
 import com.popple.server.domain.event.exception.EventException;
 import com.popple.server.domain.event.repository.EventRepository;
 import com.popple.server.domain.event.repository.SellerEventRepository;
@@ -20,8 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.popple.server.domain.event.exception.EventExceptionMessage.*;
 
@@ -118,11 +115,34 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public EventDetailRespDto findEventDetail(Long id) {
+    public EventDetailRespDto findEventDetail(Long id, Actor loginActor) {
         Event event = eventRepository.findEventByIdJoinFetchSeller(id)
                 .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
+        List<EventParticipantRepDto> participants = sellerEventRepository.findParticipantsByEvent(event);
+        Boolean isOwner = getIsOwner(event, loginActor);
+        Boolean isParticipants = getIsParticipant(participants, loginActor);
 
-        return EventDetailRespDto.fromEntity(event);
+        return EventDetailRespDto.fromEntity(event, isOwner, isParticipants, participants);
+    }
+
+    private Boolean getIsOwner(Event event, Actor loginActor) {
+        if (loginActor != null && loginActor.getRole() == Role.ROLE_SELLER) {
+            return loginActor.getId().equals(event.getHost().getId());
+        }
+
+        return false;
+    }
+
+    private Boolean getIsParticipant(List<EventParticipantRepDto> participants, Actor loginActor) {
+        if (loginActor != null && loginActor.getRole() == Role.ROLE_SELLER) {
+            for (EventParticipantRepDto participant : participants) {
+                if (participant.getSellerId().equals(loginActor.getId())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Transactional
