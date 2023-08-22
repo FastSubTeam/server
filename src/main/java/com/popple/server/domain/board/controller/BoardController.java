@@ -119,6 +119,7 @@ public class BoardController {
     public APIDataResponse<?> updateComment(@RequestBody CommentReqDto commentReqDto,
                                             @PathVariable Long commentId,
                                             @LoginActor Actor loginMember) throws IllegalArgumentException {
+        checkCommentAuthor(loginMember, commentId);
         validateLoginMember(loginMember);
         Member member = boardService.getMember(loginMember.getId());
         CommentDto commentDto = boardService.updateComment(commentId, commentReqDto);
@@ -138,6 +139,12 @@ public class BoardController {
     private void validateLoginMember(Actor loginMember){
         if (loginMember == null || loginMember.getId() == null) {
             throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
+        }
+    }
+
+    private void checkCommentAuthor(Actor loginMember, Long commentId) {
+        if (!loginMember.getId().equals(boardService.getCommentAuthor(commentId))) {
+            throw new IllegalArgumentException("댓글 작성자와 로그인된 멤버와 일치하지 않습니다.");
         }
     }
 }
