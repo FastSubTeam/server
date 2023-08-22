@@ -7,7 +7,6 @@ import com.popple.server.domain.entity.Comment;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Post;
 import com.popple.server.domain.user.repository.MemberRepository;
-import com.popple.server.domain.user.vo.Actor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -139,6 +138,20 @@ public class BoardService {
                 .createdAt(savedComment.getCreatedAt())
                 .updatedAt(savedComment.getUpdatedAt())
                 .member(MemberRespDto.of(savedComment.getMember()))
+                .build();
+    }
+
+    @Transactional
+    public CommentDto updateComment(Long commentId, CommentReqDto commentReqDto) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+        comment.modifyComment(commentReqDto);
+        Comment updatedComment = commentRepository.findById(commentId).orElse(null);
+        return CommentDto.builder()
+                .id(updatedComment.getId())
+                .content(updatedComment.getContent())
+                .createdAt(updatedComment.getCreatedAt())
+                .updatedAt(updatedComment.getUpdatedAt())
+                .member(MemberRespDto.of(updatedComment.getMember()))
                 .build();
     }
 }
