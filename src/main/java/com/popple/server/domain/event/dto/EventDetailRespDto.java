@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -22,8 +23,12 @@ public class EventDetailRespDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String status;
+    private Boolean isOwner;
+    private Boolean isParticipant;
+    private List<EventParticipantRepDto> participants;
 
-    public static EventDetailRespDto fromEntity(Event event) {
+    public static EventDetailRespDto fromEntity(
+            Event event, Boolean isOwner, Boolean isParticipant, List<EventParticipantRepDto> participants) {
         return EventDetailRespDto.builder()
                 .id(event.getId())
                 .thumbnailUrl(event.getThumbnailUrl())
@@ -38,6 +43,9 @@ public class EventDetailRespDto {
                 .createdAt(event.getCreatedAt())
                 .updatedAt(event.getUpdatedAt())
                 .status(event.getStatus().getValue())
+                .isOwner(isOwner)
+                .isParticipant(isParticipant)
+                .participants(participants)
                 .build();
     }
 }
