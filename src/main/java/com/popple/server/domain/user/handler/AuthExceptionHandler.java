@@ -88,4 +88,12 @@ public class AuthExceptionHandler {
         return APIErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public APIErrorResponse exceptionHandle(Exception e) {
+        log.error("exceptionHandle", e);
+        e.printStackTrace();
+        return APIErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
 }
