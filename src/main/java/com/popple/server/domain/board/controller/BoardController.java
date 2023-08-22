@@ -147,4 +147,9 @@ public class BoardController {
             throw new IllegalArgumentException("댓글 작성자와 로그인된 멤버와 일치하지 않습니다.");
         }
     }
+    private void checkPostAuthor(Actor loginMember, Long postId) {
+        if (!loginMember.getId().equals(boardService.getPostAuthor(postId))) {
+            throw new IllegalArgumentException("게시글 작성자와 로그인된 멤버와 일치하지 않습니다.");
+        }
+    }
 }
