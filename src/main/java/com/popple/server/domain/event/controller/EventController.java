@@ -69,8 +69,8 @@ public class EventController {
     }
 
     @GetMapping("/events/{id}")
-    public APIDataResponse<EventDetailRespDto> eventById(@PathVariable Long id) {
-        EventDetailRespDto eventDetailDto = eventService.findEventDetail(id);
+    public APIDataResponse<EventDetailRespDto> eventById(@PathVariable Long id, @LoginActor Actor loginActor) {
+        EventDetailRespDto eventDetailDto = eventService.findEventDetail(id, loginActor);
 
         return APIDataResponse.of(HttpStatus.OK, eventDetailDto);
     }
