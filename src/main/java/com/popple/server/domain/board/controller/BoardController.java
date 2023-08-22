@@ -77,6 +77,7 @@ public class BoardController {
 
     @PatchMapping("/{postId}")
     public APIDataResponse<?> updatePost(@RequestBody PostReqDto postReqDto, @PathVariable Long postId, @LoginActor Actor loginMember) {
+        checkPostAuthor(loginMember, postId);
         validateLoginMember(loginMember);
         //todo 로그인된 유저와 게시글의 작성자가 일치하는지 로직 작성
         Member member = boardService.getMember(loginMember.getId());
@@ -104,13 +105,16 @@ public class BoardController {
     }
 
     @DeleteMapping("/{postId}")
-    public APIDataResponse<?> deletePost(@PathVariable Long postId) throws IllegalArgumentException {
+    public APIDataResponse<?> deletePost(@PathVariable Long postId, @LoginActor Actor loginMember) throws IllegalArgumentException {
+        checkPostAuthor(loginMember, postId);
         boardService.deletePost(postId);
         return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @DeleteMapping("/comment/{commentId}")
-    public APIDataResponse<?> deleteComment(@PathVariable Long commentId) throws IllegalArgumentException {
+    public APIDataResponse<?> deleteComment(@PathVariable Long commentId, @LoginActor Actor loginMember) throws IllegalArgumentException {
+        checkCommentAuthor(loginMember, commentId);
+        validateLoginMember(loginMember);
         boardService.deleteComment(commentId);
         return APIDataResponse.empty(HttpStatus.OK);
     }
@@ -129,14 +133,14 @@ public class BoardController {
     @PostMapping("/{postId}/comment")
     public APIDataResponse<?> saveComment(@RequestBody CommentReqDto commentReqDto,
                                           @PathVariable Long postId,
-                                          @LoginActor Actor loginMember){
+                                          @LoginActor Actor loginMember) {
         validateLoginMember(loginMember);
         Member member = boardService.getMember(loginMember.getId());
         CommentDto commentDto = boardService.saveComment(postId, member, commentReqDto);
         return APIDataResponse.of(HttpStatus.OK, commentDto);
     }
 
-    private void validateLoginMember(Actor loginMember){
+    private void validateLoginMember(Actor loginMember) {
         if (loginMember == null || loginMember.getId() == null) {
             throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
         }
