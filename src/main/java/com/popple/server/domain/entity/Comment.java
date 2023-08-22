@@ -1,5 +1,6 @@
 package com.popple.server.domain.entity;
 
+import com.popple.server.domain.board.dto.CommentReqDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +28,11 @@ public class Comment extends BaseEntity {
     @JoinColumn(nullable = false)
     private Post post;
 
-    @Size(max=200)
+    @Size(max = 200)
     @NotBlank
     private String content;
+
+    public void modifyComment(CommentReqDto commentReqDto) {
+        content = commentReqDto.getContent();
+    }
 }
