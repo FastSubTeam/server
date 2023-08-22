@@ -154,4 +154,16 @@ public class BoardService {
                 .member(MemberRespDto.of(updatedComment.getMember()))
                 .build();
     }
+
+    @Transactional
+    public Long getCommentAuthor(Long commentId){
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+        return MemberRespDto.of(comment.getMember()).getId();
+    }
+
+    @Transactional
+    public Long getPostAuthor(Long postId){
+        Post post = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        return MemberRespDto.of(post.getMember()).getId();
+    }
 }
