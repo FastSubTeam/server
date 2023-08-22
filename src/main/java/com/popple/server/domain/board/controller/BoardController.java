@@ -68,9 +68,7 @@ public class BoardController {
 
     @PostMapping("/write")
     public APIDataResponse<?> savePost(@RequestBody PostReqDto postReqDto, BindingResult bindingResult, @LoginActor Actor loginMember) {
-        if (loginMember == null || loginMember.getId() == null) {
-            throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
-        }
+        validateLoginMember(loginMember);
         Member member = boardService.getMember(loginMember.getId());
         Post post = postReqDto.toEntity(member);
         boardService.savePost(post);
@@ -79,9 +77,7 @@ public class BoardController {
 
     @PatchMapping("/{postId}")
     public APIDataResponse<?> updatePost(@RequestBody PostReqDto postReqDto, @PathVariable Long postId, @LoginActor Actor loginMember) {
-        if (loginMember == null || loginMember.getId() == null) {
-            throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
-        }
+        validateLoginMember(loginMember);
         //todo 로그인된 유저와 게시글의 작성자가 일치하는지 로직 작성
         Member member = boardService.getMember(loginMember.getId());
         boardService.updatePost(postId, postReqDto);
@@ -123,11 +119,15 @@ public class BoardController {
     public APIDataResponse<?> saveComment(@RequestBody CommentReqDto commentReqDto,
                                           @PathVariable Long postId,
                                           @LoginActor Actor loginMember){
-        if (loginMember == null || loginMember.getId() == null) {
-            throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
-        }
+        validateLoginMember(loginMember);
         Member member = boardService.getMember(loginMember.getId());
         CommentDto commentDto = boardService.saveComment(postId, member, commentReqDto);
         return APIDataResponse.of(HttpStatus.OK, commentDto);
+    }
+
+    private void validateLoginMember(Actor loginMember){
+        if (loginMember == null || loginMember.getId() == null) {
+            throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
+        }
     }
 }
