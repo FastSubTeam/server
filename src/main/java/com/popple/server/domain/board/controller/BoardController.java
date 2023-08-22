@@ -115,6 +115,16 @@ public class BoardController {
         return APIDataResponse.empty(HttpStatus.OK);
     }
 
+    @PatchMapping("comment/{commentId}")
+    public APIDataResponse<?> updateComment(@RequestBody CommentReqDto commentReqDto,
+                                            @PathVariable Long commentId,
+                                            @LoginActor Actor loginMember) throws IllegalArgumentException {
+        validateLoginMember(loginMember);
+        Member member = boardService.getMember(loginMember.getId());
+        CommentDto commentDto = boardService.updateComment(commentId, commentReqDto);
+        return APIDataResponse.of(HttpStatus.OK, commentDto);
+    }
+
     @PostMapping("/{postId}/comment")
     public APIDataResponse<?> saveComment(@RequestBody CommentReqDto commentReqDto,
                                           @PathVariable Long postId,
