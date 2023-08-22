@@ -118,4 +118,16 @@ public class BoardController {
         boardService.deleteComment(commentId);
         return APIDataResponse.empty(HttpStatus.OK);
     }
+
+    @PostMapping("/{postId}/comment")
+    public APIDataResponse<?> saveComment(@RequestBody CommentReqDto commentReqDto,
+                                          @PathVariable Long postId,
+                                          @LoginActor Actor loginMember){
+        if (loginMember == null || loginMember.getId() == null) {
+            throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
+        }
+        Member member = boardService.getMember(loginMember.getId());
+        CommentDto commentDto = boardService.saveComment(postId, member, commentReqDto);
+        return APIDataResponse.of(HttpStatus.OK, commentDto);
+    }
 }
