@@ -1,10 +1,7 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.common.dto.APIDataResponse;
-import com.popple.server.domain.entity.Category;
-import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Seller;
-import com.popple.server.domain.entity.SellerCategory;
 import com.popple.server.domain.user.dto.CreateSellerRequestDto;
 import com.popple.server.domain.user.dto.ValidateBusinessNumberRequestDto;
 import com.popple.server.domain.user.exception.AlreadyExistException;
@@ -20,9 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,18 +41,41 @@ public class SellerService {
     private final SellerCategoryRepository sellerCategoryRepository;
     private final SellerRepository sellerRepository;
 
-    public void checkDuplication(String nickname, String email) {
-        if (email != null) {
-            if (sellerRepository.existsByEmail(email)) {
-                throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
+    public void checkDuplication(String nickname, String email, String businessNumber) {
+        validateDuplicatedEmail(email);
+        validateDuplicatedNickname(nickname);
+        validateDuplicatedBusinessNumber(businessNumber);
+    }
+
+    public void validateDuplicatedBusinessNumber(String businessNumber) {
+        if (businessNumber != null) {
+            if (sellerRepository.existsByBusinessNumber(businessNumber)) {
+                throw new AlreadyExistException(UserErrorCode.EXIST_BUSINESS_NUMBER);
             }
         }
+    }
 
+    public void validateDuplicatedNickname(String nickname) {
         if (nickname != null) {
             if (sellerRepository.existsByNickname(nickname)) {
                 throw new AlreadyExistException(UserErrorCode.EXIST_NICKNAME);
             }
         }
+    }
+
+    public void validateDuplicatedEmail(String email) {
+        if (email != null) {
+            if (sellerRepository.existsByEmail(email)) {
+                throw new AlreadyExistException(UserErrorCode.EXIST_EMAIL);
+            }
+        }
+    }
+
+    public void checkBusinessNumberValidity(String businessNumber) throws IOException {
+        ValidateBusinessNumberRequestDto validateBusinessNumberRequestDto = ValidateBusinessNumberRequestDto.builder()
+                .b_no(new ArrayList<>(List.of(businessNumber)))
+                .build();
+        Fetch.checkBusinessNumberValidity(validateBusinessNumberApiUrl, validateBusinessNumberApikey, validateBusinessNumberRequestDto);
     }
 
     public APIDataResponse<?> checkExistBusinessNumberWithOpenAPI(ValidateBusinessNumberRequestDto validateBusinessNumberRequestDto) throws IOException {
