@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SellerEventRepository extends JpaRepository<SellerEvent, Long> {
     void deleteAllByEventId(Long eventId);
     boolean existsByEventAndSeller(Event event, Seller seller);
+    void deleteByEventAndSeller(Event event, Seller seller);
 }
