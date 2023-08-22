@@ -76,16 +76,16 @@ public class SellerService {
                 .build();
 
 
-        List<SellerCategory> sellerCategories = categoryRepository.findByIdIn(createSellerRequestDto.getCategories()).stream()
-                .map(category -> {
-                    return SellerCategory.builder()
-                            .seller(newSeller)
-                            .category(category)
-                            .build();
-                })
-                .collect(Collectors.toList());
+//        List<SellerCategory> sellerCategories = categoryRepository.findByIdIn(createSellerRequestDto.getCategories()).stream()
+//                .map(category -> {
+//                    return SellerCategory.builder()
+//                            .seller(newSeller)
+//                            .category(category)
+//                            .build();
+//                })
+//                .collect(Collectors.toList());
 
-        sellerCategoryRepository.saveAll(sellerCategories);
+//        sellerCategoryRepository.saveAll(sellerCategories);
         sellerRepository.save(newSeller);
     }
 
