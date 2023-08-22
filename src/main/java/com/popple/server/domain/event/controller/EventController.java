@@ -81,4 +81,11 @@ public class EventController {
 
         return APIDataResponse.empty(HttpStatus.OK);
     }
+
+    @DeleteMapping("/events/join/{id}")
+    public APIDataResponse<?> cancelJoinEvent(@PathVariable Long id, @LoginActor Actor loginSeller) {
+        eventService.cancelJoinEvent(id, loginSeller);
+
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
 }
