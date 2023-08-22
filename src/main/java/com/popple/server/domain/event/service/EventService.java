@@ -2,6 +2,7 @@ package com.popple.server.domain.event.service;
 
 import com.popple.server.domain.entity.Event;
 import com.popple.server.domain.entity.Seller;
+import com.popple.server.domain.entity.SellerEvent;
 import com.popple.server.domain.event.EventStatus;
 import com.popple.server.domain.event.dto.EventCreateReqDto;
 import com.popple.server.domain.event.dto.EventDetailRespDto;
@@ -37,6 +38,9 @@ public class EventService {
         Seller seller = getSellerByLoginSeller(loginSeller);
         Event event = dto.toEntity(seller);
         eventRepository.save(event);
+
+        SellerEvent sellerEvent = new SellerEvent(seller, event);
+        sellerEventRepository.save(sellerEvent);
     }
 
     @Transactional
