@@ -75,11 +75,10 @@ public class EventController {
         return APIDataResponse.of(HttpStatus.OK, eventDetailDto);
     }
 
+    @PostMapping("/events/join/{id}")
+    public APIDataResponse<?> joinEvent(@PathVariable Long id, @LoginActor Actor loginSeller) {
+        eventService.joinEvent(id, loginSeller);
 
-
-
-
-
-
-
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
 }
