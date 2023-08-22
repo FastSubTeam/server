@@ -142,7 +142,24 @@ public class EventService {
         boolean isAlreadyJoin = sellerEventRepository.existsByEventAndSeller(event, seller);
 
         if (isAlreadyJoin) {
-            throw new EventException("이미 해당 행사에 참여하는 개인 판매자입니다.");
+            throw new EventException(ALREADY_JOIN_EVENT);
         }
+    }
+
+    @Transactional
+    public void cancelJoinEvent(Long id, Actor loginSeller) {
+        checkSeller(loginSeller);
+
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
+        Seller seller = getSellerByLoginSeller(loginSeller);
+        deleteSellerEvent(seller, event);
+    }
+
+    private void deleteSellerEvent(Seller seller, Event event) {
+        if (!sellerEventRepository.existsByEventAndSeller(event, seller)) {
+            throw new EventException(NOT_JOIN_EVENT);
+        }
+        sellerEventRepository.deleteByEventAndSeller(event, seller);
     }
 }
