@@ -1,14 +1,13 @@
 package com.popple.server.domain.board.service;
 
-import com.popple.server.domain.board.dto.CommentDto;
-import com.popple.server.domain.board.dto.CommentTableProjection;
-import com.popple.server.domain.board.dto.MemberRespDto;
-import com.popple.server.domain.board.dto.PostReqDto;
+import com.popple.server.domain.board.dto.*;
 import com.popple.server.domain.board.repository.BoardRepository;
 import com.popple.server.domain.board.repository.CommentRepository;
+import com.popple.server.domain.entity.Comment;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Post;
 import com.popple.server.domain.user.repository.MemberRepository;
+import com.popple.server.domain.user.vo.Actor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -99,8 +98,8 @@ public class BoardService {
     }
 
     @Transactional
-    public void deletePost(Long postId) throws IllegalArgumentException{
-        if(!hasPost(postId)){
+    public void deletePost(Long postId) throws IllegalArgumentException {
+        if (!hasPost(postId)) {
             throw new NoSuchElementException("해당 게시물이 존재하지 않습니다.");
         }
         commentRepository.deleteAllByPost_id(postId);
@@ -113,18 +112,33 @@ public class BoardService {
         return post.isPresent();
     }
 
-    public void deleteComment(Long commentId) throws IllegalArgumentException{
+    @Transactional
+    public void deleteComment(Long commentId) throws IllegalArgumentException {
         commentRepository.deleteById(commentId);
     }
 
     @Transactional
-    public void updatePost(Long postId, PostReqDto postReqDto){
+    public void updatePost(Long postId, PostReqDto postReqDto) {
         Post post = getPostById(postId);
         post.modifyPost(postReqDto);
     }
 
     @Transactional
-    public Member getMember(Long id){
+    public Member getMember(Long id) {
         return memberRepository.findById(id).orElse(null);
+    }
+
+    @Transactional
+    public CommentDto saveComment(Long postId, Member loginMember, CommentReqDto commentReqDto) {
+        Post post = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시물이 존재하지 않습니다."));
+        Comment comment = commentReqDto.toEntity(post, loginMember);
+        Comment savedComment = commentRepository.save(comment);
+        return CommentDto.builder()
+                .id(savedComment.getId())
+                .content(savedComment.getContent())
+                .createdAt(savedComment.getCreatedAt())
+                .updatedAt(savedComment.getUpdatedAt())
+                .member(MemberRespDto.of(savedComment.getMember()))
+                .build();
     }
 }
