@@ -14,6 +14,7 @@ import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import java.io.IOException;
 @Transactional
 @Slf4j
 public class AuthService {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberService memberService;
     private final SellerService sellerService;
     private final EmailService emailService;
@@ -213,5 +215,18 @@ public class AuthService {
     public void updateSellerProfile(Long id, UpdateSellerProfileRequestDto updateSellerProfileRequestDto) {
         Seller seller = sellerService.getSellerById(id);
         seller.updateProfile(updateSellerProfileRequestDto);
+    }
+
+    public void updatePassword(Long id, Role role, String password) {
+        if (role.equals(Role.ROLE_USER)) {
+            Member member = memberService.getMemberById(id);
+            String newPassword = bCryptPasswordEncoder.encode(password);
+            member.updatePassword(newPassword);
+            return;
+        }
+
+        Seller seller = sellerService.getSellerById(id);
+        String newPassword = bCryptPasswordEncoder.encode(password);
+        seller.updatePassword(newPassword);
     }
 }

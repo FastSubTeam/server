@@ -60,4 +60,8 @@ public class Seller extends BaseEntity {
         this.shopName = updateSellerProfileRequestDto.getShopName();
         this.profileImgUrl = updateSellerProfileRequestDto.getProfileImgUrl();
     }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
