@@ -121,4 +121,9 @@ public class SellerService {
         return findSeller;
 
     }
+
+    public Seller getSellerById(Long id) {
+        return sellerRepository.findById(id)
+                .orElseThrow(() -> new UserBadRequestException(UserErrorCode.NOT_FOUND));
+    }
 }

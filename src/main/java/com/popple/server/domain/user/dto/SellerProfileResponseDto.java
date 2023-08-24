@@ -5,8 +5,10 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class MemberProfileResponseDto {
+public class SellerProfileResponseDto {
 
     private String nickname;
     private String profileImgUrl;
+    private String shopName;
+    private String bio;
 }

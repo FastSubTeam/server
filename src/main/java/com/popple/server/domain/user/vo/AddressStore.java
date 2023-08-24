@@ -111,7 +111,7 @@ public enum AddressStore {
         AddressStore findAddress = Arrays.stream(AddressStore.values())
                 .filter(address -> address.city.equals(city))
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new UserBusinessException(UserErrorCode.INVALID_ADDRESS));
 
         if (!findAddress.district.contains(district)) {
             throw new UserBusinessException(UserErrorCode.INVALID_ADDRESS);
