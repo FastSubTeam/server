@@ -82,6 +82,12 @@ public class AuthController {
         return APIDataResponse.of(HttpStatus.OK, response);
     }
 
+    @PatchMapping("/auth/password")
+    public APIDataResponse<?> updatePassword(@LoginActor Actor actor, @RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto) {
+        authService.updatePassword(actor.getId(), actor.getRole(), updatePasswordRequestDto.getPassword());
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
 
     @PostMapping("/auth/check-proceed")
     public APIDataResponse<?> checkProceedEmail(@Valid @RequestBody CheckEmailRequestDto checkEmailRequestDto) {

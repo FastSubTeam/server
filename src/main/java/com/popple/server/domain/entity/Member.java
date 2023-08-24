@@ -60,4 +60,8 @@ public class Member extends BaseEntity {
         this.nickname = dto.getNickname();
         this.profileImgUrl = dto.getProfileImgUrl();
     }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
