@@ -35,9 +35,26 @@ public class AuthController {
     }
 
     @GetMapping("/profile")
-    public APIDataResponse<?> getLoginUserProfile(@LoginActor Actor actor) {
+    public APIDataResponse<?> getLoginMemberProfile(@LoginActor Actor actor) {
         MemberProfileResponseDto memberProfile = authService.getMemberProfile(actor.getId());
         return APIDataResponse.of(HttpStatus.OK, memberProfile);
+    }
+
+    @PutMapping("/profile")
+    public APIDataResponse<?> updateLoginMemberProfile(
+            @LoginActor Actor actor,
+            @RequestBody @Valid UpdateMemberProfileRequestDto updateMemberProfileRequestDto
+    ) {
+        AddressStore.validate(updateMemberProfileRequestDto.getCity(), updateMemberProfileRequestDto.getDistrict());
+        authService.updateMemberProfile(actor.getId(), updateMemberProfileRequestDto);
+
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
+    @GetMapping("/profile/seller")
+    public APIDataResponse<?> getLoginSellerProfile(@LoginActor Actor actor) {
+        SellerProfileResponseDto sellerProfile = authService.getSellerProfile(actor.getId());
+        return APIDataResponse.of(HttpStatus.OK, sellerProfile);
     }
 
     @GetMapping("/auth/reissue")
