@@ -7,6 +7,7 @@ import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Seller;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.exception.InvalidRequestParameterException;
+import com.popple.server.domain.user.exception.UserBadRequestException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.vo.EmailMessage;
 import com.popple.server.domain.user.vo.Role;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.io.IOException;
 
 @Service
@@ -228,5 +230,24 @@ public class AuthService {
         Seller seller = sellerService.getSellerById(id);
         String newPassword = bCryptPasswordEncoder.encode(password);
         seller.updatePassword(newPassword);
+    }
+
+    public void removeActor(Long id, Role role, RemoveActorRequestDto removeActorRequestDto) {
+        if (role.equals(Role.ROLE_USER)) {
+            Member member = memberService.getMemberById(id);
+
+            if (member.getEmail().equals(removeActorRequestDto.getEmail())
+                    && bCryptPasswordEncoder.matches(removeActorRequestDto.getPassword(), member.getPassword())) {
+                member.setInactive();
+                return;
+            }
+            throw new UserBadRequestException(UserErrorCode.INVALID_INPUT);
+        }
+
+        Seller seller = sellerService.getSellerById(id);
+        if (seller.getEmail().equals(removeActorRequestDto.getEmail())
+                && bCryptPasswordEncoder.matches(removeActorRequestDto.getPassword(), seller.getPassword())) {
+            sellerService.removeById(id);
+        }
     }
 }

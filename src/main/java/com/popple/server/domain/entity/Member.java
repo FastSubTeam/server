@@ -64,4 +64,8 @@ public class Member extends BaseEntity {
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
+
+    public void setInactive() {
+        this.inactive = true;
+    }
 }

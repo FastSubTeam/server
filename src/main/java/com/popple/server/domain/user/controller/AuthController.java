@@ -88,6 +88,12 @@ public class AuthController {
         return APIDataResponse.empty(HttpStatus.OK);
     }
 
+    @PostMapping("/auth/secession")
+    public APIDataResponse<?> secession(@LoginActor Actor actor, @RequestBody @Valid RemoveActorRequestDto removeActorRequestDto) {
+        authService.removeActor(actor.getId(), actor.getRole(), removeActorRequestDto);
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
 
     @PostMapping("/auth/check-proceed")
     public APIDataResponse<?> checkProceedEmail(@Valid @RequestBody CheckEmailRequestDto checkEmailRequestDto) {
