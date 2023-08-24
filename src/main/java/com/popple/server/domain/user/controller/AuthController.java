@@ -11,8 +11,10 @@ import com.popple.server.domain.user.service.AuthService;
 import com.popple.server.domain.user.service.OAuthService;
 import com.popple.server.domain.user.vo.Actor;
 import com.popple.server.domain.user.vo.AddressStore;
+import com.popple.server.domain.user.vo.Fetch;
 import com.popple.server.domain.user.vo.Role;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +57,16 @@ public class AuthController {
     public APIDataResponse<?> getLoginSellerProfile(@LoginActor Actor actor) {
         SellerProfileResponseDto sellerProfile = authService.getSellerProfile(actor.getId());
         return APIDataResponse.of(HttpStatus.OK, sellerProfile);
+    }
+
+    @PutMapping("/profile/seller")
+    public APIDataResponse<?> updateLoginSellerProfile(
+            @LoginActor Actor actor,
+            @RequestBody @Valid UpdateSellerProfileRequestDto updateSellerProfileRequestDto
+    ) {
+        authService.verifyRoadAddress(updateSellerProfileRequestDto.getAddress());
+        authService.updateSellerProfile(actor.getId(), updateSellerProfileRequestDto);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @GetMapping("/auth/reissue")

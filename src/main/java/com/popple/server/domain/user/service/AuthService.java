@@ -205,4 +205,13 @@ public class AuthService {
         Member member = memberService.getMemberById(id);
         member.updateProfile(updateMemberProfileRequestDto);
     }
+
+    public void verifyRoadAddress(String address) {
+        sellerService.verifyRoadAddress(address);
+    }
+
+    public void updateSellerProfile(Long id, UpdateSellerProfileRequestDto updateSellerProfileRequestDto) {
+        Seller seller = sellerService.getSellerById(id);
+        seller.updateProfile(updateSellerProfileRequestDto);
+    }
 }
