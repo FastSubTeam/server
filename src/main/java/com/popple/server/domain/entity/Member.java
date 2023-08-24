@@ -1,5 +1,6 @@
 package com.popple.server.domain.entity;
 
+import com.popple.server.domain.user.dto.UpdateMemberProfileRequestDto;
 import com.popple.server.domain.user.vo.Role;
 import com.popple.server.domain.user.vo.TokenPayload;
 import lombok.*;
@@ -51,5 +52,12 @@ public class Member extends BaseEntity {
                 .id(id)
                 .role(Role.ROLE_USER)
                 .build();
+    }
+
+    public void updateProfile(UpdateMemberProfileRequestDto dto) {
+        this.city = dto.getCity();
+        this.district = dto.getDistrict();
+        this.nickname = dto.getNickname();
+        this.profileImgUrl = dto.getProfileImgUrl();
     }
 }

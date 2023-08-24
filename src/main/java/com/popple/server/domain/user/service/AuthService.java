@@ -190,4 +190,19 @@ public class AuthService {
                 .profileImgUrl(member.getProfileImgUrl())
                 .build();
     }
+
+    public SellerProfileResponseDto getSellerProfile(Long id) {
+        Seller seller = sellerService.getSellerById(id);
+        return SellerProfileResponseDto.builder()
+                .bio(seller.getBio())
+                .shopName(seller.getShopName())
+                .profileImgUrl(seller.getProfileImgUrl())
+                .nickname(seller.getNickname())
+                .build();
+    }
+
+    public void updateMemberProfile(Long id, UpdateMemberProfileRequestDto updateMemberProfileRequestDto) {
+        Member member = memberService.getMemberById(id);
+        member.updateProfile(updateMemberProfileRequestDto);
+    }
 }
