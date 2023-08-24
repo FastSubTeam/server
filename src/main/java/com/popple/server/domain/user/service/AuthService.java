@@ -7,6 +7,7 @@ import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.entity.Seller;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.exception.InvalidRequestParameterException;
+import com.popple.server.domain.user.exception.UserBadRequestException;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.vo.EmailMessage;
 import com.popple.server.domain.user.vo.Role;
@@ -14,9 +15,11 @@ import com.popple.server.domain.user.vo.Token;
 import com.popple.server.domain.user.vo.TokenPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.Valid;
 import java.io.IOException;
 
 @Service
@@ -24,6 +27,7 @@ import java.io.IOException;
 @Transactional
 @Slf4j
 public class AuthService {
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberService memberService;
     private final SellerService sellerService;
     private final EmailService emailService;
@@ -73,7 +77,7 @@ public class AuthService {
     }
 
     public void registerSeller(CreateSellerRequestDto createSellerRequestDto) {
-        sellerService.checkDuplication(createSellerRequestDto.getNickname(), createSellerRequestDto.getEmail());
+        sellerService.checkDuplication(createSellerRequestDto.getNickname(), createSellerRequestDto.getEmail(), createSellerRequestDto.getBusinessNumber());
         sellerService.create(createSellerRequestDto);
     }
 
@@ -87,7 +91,8 @@ public class AuthService {
         }
 
         if (role.equals(Role.ROLE_SELLER)) {
-            sellerService.checkDuplication(nickname, email);
+            sellerService.validateDuplicatedEmail(email);
+            sellerService.validateDuplicatedNickname(nickname);
             return;
         }
 
@@ -172,5 +177,77 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .nickname("관리자")
                 .build();
+    }
+
+    public void checkDuplicatedBusinessNumber(String businessNumber) {
+        sellerService.validateDuplicatedBusinessNumber(businessNumber);
+    }
+
+    public void checkBusinessNumberValidity(String businessNumber) throws IOException {
+        sellerService.checkBusinessNumberValidity(businessNumber);
+    }
+
+    public MemberProfileResponseDto getMemberProfile(Long id) {
+        Member member = memberService.getMemberById(id);
+        return MemberProfileResponseDto.builder()
+                .nickname(member.getNickname())
+                .profileImgUrl(member.getProfileImgUrl())
+                .build();
+    }
+
+    public SellerProfileResponseDto getSellerProfile(Long id) {
+        Seller seller = sellerService.getSellerById(id);
+        return SellerProfileResponseDto.builder()
+                .bio(seller.getBio())
+                .shopName(seller.getShopName())
+                .profileImgUrl(seller.getProfileImgUrl())
+                .nickname(seller.getNickname())
+                .build();
+    }
+
+    public void updateMemberProfile(Long id, UpdateMemberProfileRequestDto updateMemberProfileRequestDto) {
+        Member member = memberService.getMemberById(id);
+        member.updateProfile(updateMemberProfileRequestDto);
+    }
+
+    public void verifyRoadAddress(String address) {
+        sellerService.verifyRoadAddress(address);
+    }
+
+    public void updateSellerProfile(Long id, UpdateSellerProfileRequestDto updateSellerProfileRequestDto) {
+        Seller seller = sellerService.getSellerById(id);
+        seller.updateProfile(updateSellerProfileRequestDto);
+    }
+
+    public void updatePassword(Long id, Role role, String password) {
+        if (role.equals(Role.ROLE_USER)) {
+            Member member = memberService.getMemberById(id);
+            String newPassword = bCryptPasswordEncoder.encode(password);
+            member.updatePassword(newPassword);
+            return;
+        }
+
+        Seller seller = sellerService.getSellerById(id);
+        String newPassword = bCryptPasswordEncoder.encode(password);
+        seller.updatePassword(newPassword);
+    }
+
+    public void removeActor(Long id, Role role, RemoveActorRequestDto removeActorRequestDto) {
+        if (role.equals(Role.ROLE_USER)) {
+            Member member = memberService.getMemberById(id);
+
+            if (member.getEmail().equals(removeActorRequestDto.getEmail())
+                    && bCryptPasswordEncoder.matches(removeActorRequestDto.getPassword(), member.getPassword())) {
+                member.setInactive();
+                return;
+            }
+            throw new UserBadRequestException(UserErrorCode.INVALID_INPUT);
+        }
+
+        Seller seller = sellerService.getSellerById(id);
+        if (seller.getEmail().equals(removeActorRequestDto.getEmail())
+                && bCryptPasswordEncoder.matches(removeActorRequestDto.getPassword(), seller.getPassword())) {
+            sellerService.removeById(id);
+        }
     }
 }

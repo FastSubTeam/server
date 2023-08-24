@@ -1,5 +1,6 @@
 package com.popple.server.domain.entity;
 
+import com.popple.server.domain.board.dto.PostReqDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,4 +25,9 @@ public class Post extends BaseEntity {
 
     @Column(nullable = false)
     private String content;
+
+    public void modifyPost(PostReqDto postReqDto){
+        title = postReqDto.getTitle();
+        content = postReqDto.getContent();
+    }
 }

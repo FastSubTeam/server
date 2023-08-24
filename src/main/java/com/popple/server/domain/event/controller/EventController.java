@@ -69,17 +69,23 @@ public class EventController {
     }
 
     @GetMapping("/events/{id}")
-    public APIDataResponse<EventDetailRespDto> eventById(@PathVariable Long id) {
-        EventDetailRespDto eventDetailDto = eventService.findEventDetail(id);
+    public APIDataResponse<EventDetailRespDto> eventById(@PathVariable Long id, @LoginActor Actor loginActor) {
+        EventDetailRespDto eventDetailDto = eventService.findEventDetail(id, loginActor);
 
         return APIDataResponse.of(HttpStatus.OK, eventDetailDto);
     }
 
+    @PostMapping("/events/join/{id}")
+    public APIDataResponse<?> joinEvent(@PathVariable Long id, @LoginActor Actor loginSeller) {
+        eventService.joinEvent(id, loginSeller);
 
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
 
+    @DeleteMapping("/events/join/{id}")
+    public APIDataResponse<?> cancelJoinEvent(@PathVariable Long id, @LoginActor Actor loginSeller) {
+        eventService.cancelJoinEvent(id, loginSeller);
 
-
-
-
-
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
 }

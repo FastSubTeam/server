@@ -2,11 +2,9 @@ package com.popple.server.domain.event.service;
 
 import com.popple.server.domain.entity.Event;
 import com.popple.server.domain.entity.Seller;
+import com.popple.server.domain.entity.SellerEvent;
 import com.popple.server.domain.event.EventStatus;
-import com.popple.server.domain.event.dto.EventCreateReqDto;
-import com.popple.server.domain.event.dto.EventDetailRespDto;
-import com.popple.server.domain.event.dto.EventRespDto;
-import com.popple.server.domain.event.dto.EventUpdateReqDto;
+import com.popple.server.domain.event.dto.*;
 import com.popple.server.domain.event.exception.EventException;
 import com.popple.server.domain.event.repository.EventRepository;
 import com.popple.server.domain.event.repository.SellerEventRepository;
@@ -19,8 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.popple.server.domain.event.exception.EventExceptionMessage.*;
 
@@ -37,6 +35,9 @@ public class EventService {
         Seller seller = getSellerByLoginSeller(loginSeller);
         Event event = dto.toEntity(seller);
         eventRepository.save(event);
+
+        SellerEvent sellerEvent = new SellerEvent(seller, event);
+        sellerEventRepository.save(sellerEvent);
     }
 
     @Transactional
@@ -114,10 +115,71 @@ public class EventService {
     }
 
     @Transactional(readOnly = true)
-    public EventDetailRespDto findEventDetail(Long id) {
+    public EventDetailRespDto findEventDetail(Long id, Actor loginActor) {
         Event event = eventRepository.findEventByIdJoinFetchSeller(id)
                 .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
+        List<EventParticipantRepDto> participants = sellerEventRepository.findParticipantsByEvent(event);
+        Boolean isOwner = getIsOwner(event, loginActor);
+        Boolean isParticipants = getIsParticipant(participants, loginActor);
 
-        return EventDetailRespDto.fromEntity(event);
+        return EventDetailRespDto.fromEntity(event, isOwner, isParticipants, participants);
+    }
+
+    private Boolean getIsOwner(Event event, Actor loginActor) {
+        if (loginActor != null && loginActor.getRole() == Role.ROLE_SELLER) {
+            return loginActor.getId().equals(event.getHost().getId());
+        }
+
+        return false;
+    }
+
+    private Boolean getIsParticipant(List<EventParticipantRepDto> participants, Actor loginActor) {
+        if (loginActor != null && loginActor.getRole() == Role.ROLE_SELLER) {
+            for (EventParticipantRepDto participant : participants) {
+                if (participant.getSellerId().equals(loginActor.getId())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Transactional
+    public void joinEvent(Long id, Actor loginSeller) {
+        checkSeller(loginSeller);
+
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
+        Seller seller = getSellerByLoginSeller(loginSeller);
+        isAlreadyJoinSeller(event, seller);
+
+        SellerEvent sellerEvent = new SellerEvent(seller, event);
+        sellerEventRepository.save(sellerEvent);
+    }
+
+    private void isAlreadyJoinSeller(Event event, Seller seller) {
+        boolean isAlreadyJoin = sellerEventRepository.existsByEventAndSeller(event, seller);
+
+        if (isAlreadyJoin) {
+            throw new EventException(ALREADY_JOIN_EVENT);
+        }
+    }
+
+    @Transactional
+    public void cancelJoinEvent(Long id, Actor loginSeller) {
+        checkSeller(loginSeller);
+
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new EventException(NON_EXIST_EVENT));
+        Seller seller = getSellerByLoginSeller(loginSeller);
+        deleteSellerEvent(seller, event);
+    }
+
+    private void deleteSellerEvent(Seller seller, Event event) {
+        if (!sellerEventRepository.existsByEventAndSeller(event, seller)) {
+            throw new EventException(NOT_JOIN_EVENT);
+        }
+        sellerEventRepository.deleteByEventAndSeller(event, seller);
     }
 }

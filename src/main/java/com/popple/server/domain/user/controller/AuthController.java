@@ -5,21 +5,19 @@ import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.entity.RegisterToken;
 import com.popple.server.domain.user.annotation.LoginActor;
 import com.popple.server.domain.user.dto.*;
-import com.popple.server.domain.user.exception.InvalidJwtTokenException;
-import com.popple.server.domain.user.exception.TokenErrorCode;
 import com.popple.server.domain.user.exception.UserErrorCode;
 import com.popple.server.domain.user.exception.UserUnauthorizedException;
 import com.popple.server.domain.user.service.AuthService;
 import com.popple.server.domain.user.service.OAuthService;
 import com.popple.server.domain.user.vo.Actor;
 import com.popple.server.domain.user.vo.AddressStore;
+import com.popple.server.domain.user.vo.Fetch;
 import com.popple.server.domain.user.vo.Role;
-import com.popple.server.domain.user.vo.Token;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -35,8 +33,40 @@ public class AuthController {
 
     @GetMapping("/test")
     public Actor test(@LoginActor Actor actor) {
-
         return actor;
+    }
+
+    @GetMapping("/profile")
+    public APIDataResponse<?> getLoginMemberProfile(@LoginActor Actor actor) {
+        MemberProfileResponseDto memberProfile = authService.getMemberProfile(actor.getId());
+        return APIDataResponse.of(HttpStatus.OK, memberProfile);
+    }
+
+    @PutMapping("/profile")
+    public APIDataResponse<?> updateLoginMemberProfile(
+            @LoginActor Actor actor,
+            @RequestBody @Valid UpdateMemberProfileRequestDto updateMemberProfileRequestDto
+    ) {
+        AddressStore.validate(updateMemberProfileRequestDto.getCity(), updateMemberProfileRequestDto.getDistrict());
+        authService.updateMemberProfile(actor.getId(), updateMemberProfileRequestDto);
+
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
+    @GetMapping("/profile/seller")
+    public APIDataResponse<?> getLoginSellerProfile(@LoginActor Actor actor) {
+        SellerProfileResponseDto sellerProfile = authService.getSellerProfile(actor.getId());
+        return APIDataResponse.of(HttpStatus.OK, sellerProfile);
+    }
+
+    @PutMapping("/profile/seller")
+    public APIDataResponse<?> updateLoginSellerProfile(
+            @LoginActor Actor actor,
+            @RequestBody @Valid UpdateSellerProfileRequestDto updateSellerProfileRequestDto
+    ) {
+        authService.verifyRoadAddress(updateSellerProfileRequestDto.getAddress());
+        authService.updateSellerProfile(actor.getId(), updateSellerProfileRequestDto);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @GetMapping("/auth/reissue")
@@ -52,12 +82,30 @@ public class AuthController {
         return APIDataResponse.of(HttpStatus.OK, response);
     }
 
+    @PatchMapping("/auth/password")
+    public APIDataResponse<?> updatePassword(@LoginActor Actor actor, @RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto) {
+        authService.updatePassword(actor.getId(), actor.getRole(), updatePasswordRequestDto.getPassword());
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
+    @PostMapping("/auth/secession")
+    public APIDataResponse<?> secession(@LoginActor Actor actor, @RequestBody @Valid RemoveActorRequestDto removeActorRequestDto) {
+        authService.removeActor(actor.getId(), actor.getRole(), removeActorRequestDto);
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
 
     @PostMapping("/auth/check-proceed")
     public APIDataResponse<?> checkProceedEmail(@Valid @RequestBody CheckEmailRequestDto checkEmailRequestDto) {
 
         authService.checkProceedEmail(checkEmailRequestDto.getEmail());
 
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
+    @PostMapping("/auth/seller/check-businessNumber")
+    public APIDataResponse<?> checkDuplicatedBusinessNumber(@RequestBody @Valid CheckDuplicatedBusinessNumberRequestDto checkDuplicatedBusinessNumberRequestDto) {
+        authService.checkDuplicatedBusinessNumber(checkDuplicatedBusinessNumberRequestDto.getBusinessNumber());
         return APIDataResponse.empty(HttpStatus.OK);
     }
 
@@ -86,9 +134,10 @@ public class AuthController {
     }
 
     @PostMapping("/auth/signup/seller")
-    public APIDataResponse<?> registerSeller(@RequestBody CreateSellerRequestDto createSellerRequestDto) {
+    public APIDataResponse<?> registerSeller(@RequestBody @Valid CreateSellerRequestDto createSellerRequestDto) throws IOException {
+        authService.checkBusinessNumberValidity(createSellerRequestDto.getBusinessNumber());
         authService.registerSeller(createSellerRequestDto);
-        return null;
+        return APIDataResponse.empty(HttpStatus.CREATED);
     }
 
     @GetMapping("/auth/logout")
@@ -128,23 +177,6 @@ public class AuthController {
 //        response.sendRedirect("http://localhost:3000");
     }
 
-    private void addTokenAtCookie(HttpServletResponse response, Token token) {
-        Cookie accessTokenCookie = new Cookie("accessToken", token.getAccessToken());
-        accessTokenCookie.setDomain("localhost");
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setMaxAge(60 * 30);
-        Cookie refreshTokenCookie = new Cookie("refreshToken", token.getRefreshToken());
-        response.addCookie(accessTokenCookie);
-
-        refreshTokenCookie.setDomain("localhost");
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setMaxAge(60 * 30);;
-        response.addCookie(refreshTokenCookie);
-    }
-
-
     @GetMapping("/auth/check-duplication")
     public APIDataResponse<?> duplicateNicknameAndEmail(
             @ModelAttribute @Valid CheckValidateRequestDto checkValidateRequestDto,
@@ -167,16 +199,31 @@ public class AuthController {
         return APIDataResponse.of(HttpStatus.OK, loginResponseDto);
     }
 
-    @GetMapping("/auth/kakaologin/callback")
-    public void kakaoSignInCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
-        LoginResponseDto loginResponseDto = oAuthService.loginWithKakaoCode(code);
-        Token token = Token.builder()
-                .accessToken(loginResponseDto.getAccessToken())
-                .refreshToken(loginResponseDto.getRefreshToken())
-                .build();
-
-        addTokenAtCookie(response, token);
-        response.sendRedirect("http://localhost:3000");
-    }
-
+//    @GetMapping("/auth/kakaologin/callback")
+//    public void kakaoSignInCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
+//        LoginResponseDto loginResponseDto = oAuthService.loginWithKakaoCode(code);
+//        Token token = Token.builder()
+//                .accessToken(loginResponseDto.getAccessToken())
+//                .refreshToken(loginResponseDto.getRefreshToken())
+//                .build();
+//
+//        addTokenAtCookie(response, token);
+//        response.sendRedirect("http://localhost:3000");
+//    }
+//
+//    private void addTokenAtCookie(HttpServletResponse response, Token token) {
+//        Cookie accessTokenCookie = new Cookie("accessToken", token.getAccessToken());
+//        accessTokenCookie.setDomain("localhost");
+//        accessTokenCookie.setPath("/");
+//        accessTokenCookie.setSecure(true);
+//        accessTokenCookie.setMaxAge(60 * 30);
+//        Cookie refreshTokenCookie = new Cookie("refreshToken", token.getRefreshToken());
+//        response.addCookie(accessTokenCookie);
+//
+//        refreshTokenCookie.setDomain("localhost");
+//        refreshTokenCookie.setPath("/");
+//        refreshTokenCookie.setSecure(true);
+//        refreshTokenCookie.setMaxAge(60 * 30);
+//        response.addCookie(refreshTokenCookie);
+//    }
 }

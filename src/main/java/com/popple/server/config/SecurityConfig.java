@@ -53,6 +53,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         String[] permitAllUrls = new String[]{
+                "/api/auth/seller/check-businessNumber",
                 "/api/auth/forgotpassword",
                 "/api/auth/check-proceed",
                 "/api/auth/validate-business-number",
@@ -95,8 +96,9 @@ public class SecurityConfig {
         httpSecurity.httpBasic().disable(); // 로그인 인증창이 뜨지 않도록 비활성화
         httpSecurity.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/api/events/**", "/api/events", "/api/board").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/profile/seller").hasRole("SELLER")
                 .antMatchers(HttpMethod.POST, "/api/events").hasRole("SELLER")
-                .antMatchers(HttpMethod.PUT, "/api/events/**").hasRole("SELLER")
+                .antMatchers(HttpMethod.PUT, "/api/events/**", "/api/profile/seller").hasRole("SELLER")
                 .antMatchers(HttpMethod.DELETE, "/api/events/**").hasRole("SELLER")
                 .antMatchers(permitUserUrls).hasRole("USER")
                 .antMatchers(permitAllUrls).permitAll()

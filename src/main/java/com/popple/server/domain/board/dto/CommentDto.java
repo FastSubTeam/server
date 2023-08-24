@@ -1,6 +1,5 @@
 package com.popple.server.domain.board.dto;
 
-import com.popple.server.domain.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,5 +16,5 @@ public class CommentDto {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Member member;
+    private MemberRespDto member;
 }

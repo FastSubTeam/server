@@ -5,6 +5,8 @@ import com.popple.server.domain.board.dto.*;
 import com.popple.server.domain.board.service.BoardService;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Post;
+import com.popple.server.domain.user.annotation.LoginActor;
+import com.popple.server.domain.user.vo.Actor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -50,8 +52,11 @@ public class BoardController {
             PostRespDto postRespDto = PostRespDto.builder()
                     .id(post.getId())
                     .nickname(post.getMember().getNickname())
+                    .title(post.getTitle())
                     .content(post.getContent())
                     .comments(commentDtos)
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
                     .build();
             return APIDataResponse.of(HttpStatus.OK, postRespDto);
         } catch (NoSuchElementException e) {
@@ -62,11 +67,22 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public APIDataResponse<?> savePost(PostReqDto postReqDto, BindingResult bindingResult) {
-        Member member = boardService.findMemberByEmail(postReqDto.getEmail());
+    public APIDataResponse<?> savePost(@RequestBody PostReqDto postReqDto, BindingResult bindingResult, @LoginActor Actor loginMember) {
+        validateLoginMember(loginMember);
+        Member member = boardService.getMember(loginMember.getId());
         Post post = postReqDto.toEntity(member);
         boardService.savePost(post);
-        return APIDataResponse.of(HttpStatus.OK, null);
+        return APIDataResponse.empty(HttpStatus.OK);
+    }
+
+    @PatchMapping("/{postId}")
+    public APIDataResponse<?> updatePost(@RequestBody PostReqDto postReqDto, @PathVariable Long postId, @LoginActor Actor loginMember) {
+        checkPostAuthor(loginMember, postId);
+        validateLoginMember(loginMember);
+        //todo 로그인된 유저와 게시글의 작성자가 일치하는지 로직 작성
+        Member member = boardService.getMember(loginMember.getId());
+        boardService.updatePost(postId, postReqDto);
+        return APIDataResponse.empty(HttpStatus.OK);
     }
 
     private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts) {
@@ -80,6 +96,8 @@ public class BoardController {
                     .title(post.getTitle())
                     .content(post.getContent())
                     .commentCount(commentCount)
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
                     .build();
             boardListRespDtoList.add(boardListRespDto);
         }
@@ -87,14 +105,55 @@ public class BoardController {
     }
 
     @DeleteMapping("/{postId}")
-    public APIDataResponse<?> deletePost(@PathVariable Long postId) throws IllegalArgumentException {
+    public APIDataResponse<?> deletePost(@PathVariable Long postId, @LoginActor Actor loginMember) throws IllegalArgumentException {
+        checkPostAuthor(loginMember, postId);
         boardService.deletePost(postId);
         return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @DeleteMapping("/comment/{commentId}")
-    public APIDataResponse<?> deleteComment(@PathVariable Long commentId) throws IllegalArgumentException{
+    public APIDataResponse<?> deleteComment(@PathVariable Long commentId, @LoginActor Actor loginMember) throws IllegalArgumentException {
+        checkCommentAuthor(loginMember, commentId);
+        validateLoginMember(loginMember);
         boardService.deleteComment(commentId);
         return APIDataResponse.empty(HttpStatus.OK);
+    }
+
+    @PatchMapping("comment/{commentId}")
+    public APIDataResponse<?> updateComment(@RequestBody CommentReqDto commentReqDto,
+                                            @PathVariable Long commentId,
+                                            @LoginActor Actor loginMember) throws IllegalArgumentException {
+        checkCommentAuthor(loginMember, commentId);
+        validateLoginMember(loginMember);
+        Member member = boardService.getMember(loginMember.getId());
+        CommentDto commentDto = boardService.updateComment(commentId, commentReqDto);
+        return APIDataResponse.of(HttpStatus.OK, commentDto);
+    }
+
+    @PostMapping("/{postId}/comment")
+    public APIDataResponse<?> saveComment(@RequestBody CommentReqDto commentReqDto,
+                                          @PathVariable Long postId,
+                                          @LoginActor Actor loginMember) {
+        validateLoginMember(loginMember);
+        Member member = boardService.getMember(loginMember.getId());
+        CommentDto commentDto = boardService.saveComment(postId, member, commentReqDto);
+        return APIDataResponse.of(HttpStatus.OK, commentDto);
+    }
+
+    private void validateLoginMember(Actor loginMember) {
+        if (loginMember == null || loginMember.getId() == null) {
+            throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
+        }
+    }
+
+    private void checkCommentAuthor(Actor loginMember, Long commentId) {
+        if (!loginMember.getId().equals(boardService.getCommentAuthor(commentId))) {
+            throw new IllegalArgumentException("댓글 작성자와 로그인된 멤버와 일치하지 않습니다.");
+        }
+    }
+    private void checkPostAuthor(Actor loginMember, Long postId) {
+        if (!loginMember.getId().equals(boardService.getPostAuthor(postId))) {
+            throw new IllegalArgumentException("게시글 작성자와 로그인된 멤버와 일치하지 않습니다.");
+        }
     }
 }
