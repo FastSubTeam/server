@@ -182,4 +182,12 @@ public class AuthService {
     public void checkBusinessNumberValidity(String businessNumber) throws IOException {
         sellerService.checkBusinessNumberValidity(businessNumber);
     }
+
+    public MemberProfileResponseDto getMemberProfile(Long id) {
+        Member member = memberService.getMemberById(id);
+        return MemberProfileResponseDto.builder()
+                .nickname(member.getNickname())
+                .profileImgUrl(member.getProfileImgUrl())
+                .build();
+    }
 }

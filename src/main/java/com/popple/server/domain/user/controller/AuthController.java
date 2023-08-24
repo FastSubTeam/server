@@ -34,6 +34,12 @@ public class AuthController {
         return actor;
     }
 
+    @GetMapping("/profile")
+    public APIDataResponse<?> getLoginUserProfile(@LoginActor Actor actor) {
+        MemberProfileResponseDto memberProfile = authService.getMemberProfile(actor.getId());
+        return APIDataResponse.of(HttpStatus.OK, memberProfile);
+    }
+
     @GetMapping("/auth/reissue")
     public APIDataResponse<?> reIssueAccessToken(@RequestHeader("RefreshToken") String refreshToken) {
         if (refreshToken == null) {

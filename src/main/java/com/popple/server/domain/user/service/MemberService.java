@@ -124,4 +124,9 @@ public class MemberService {
         String encodedPassword = bCryptPasswordEncoder.encode(randomPassword);
         member.setPassword(encodedPassword);
     }
+
+    public Member getMemberById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new UserBadRequestException(UserErrorCode.NOT_FOUND));
+    }
 }
