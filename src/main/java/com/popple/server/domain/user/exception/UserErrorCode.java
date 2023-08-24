@@ -20,7 +20,9 @@ public enum UserErrorCode implements ErrorCode {
     INVALID_LOGIN_PAYLOAD(HttpStatus.BAD_REQUEST, "로그인 정보가 올바르지 않습니다."),
     NEED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "엑세스 토큰을 재발급 받으려면 리프레시 토큰이 필요합니다"),
     FORBIDDEN(HttpStatus.FORBIDDEN, "해당 API에 대한 권한이 존재하지 않습니다"),
-    EXIST_BUSINESS_NUMBER(HttpStatus.BAD_REQUEST, "이미 존재하는 사업자 등록 번호입니다.");
+    EXIST_BUSINESS_NUMBER(HttpStatus.BAD_REQUEST, "이미 존재하는 사업자 등록 번호입니다."),
+    INVALID_INPUT(HttpStatus.BAD_REQUEST, "입력 정보가 올바르지 않습니다"),
+    ;
 
     private final HttpStatus httpStatus;
     private final String errorMessage;

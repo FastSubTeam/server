@@ -130,4 +130,8 @@ public class SellerService {
     public void verifyRoadAddress(String address) {
         Fetch.isValidAddress(kakaoApiKey, address);
     }
+
+    public void removeById(Long id) {
+        sellerRepository.delete(getSellerById(id));
+    }
 }
