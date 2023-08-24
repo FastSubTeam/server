@@ -14,6 +14,7 @@ public class EventRespDto {
     private String district;
     private String thumbnailUrl;
     private String status;
+    private String category;
     private Boolean bookmark;
 
     public static EventRespDto fromEntity(Event event){
@@ -24,6 +25,7 @@ public class EventRespDto {
                 .district(event.getDistrict())
                 .thumbnailUrl(event.getThumbnailUrl())
                 .status(event.getStatus().getValue())
+                .category(event.getCategory())
                 .bookmark(false) // TODO: 북마크 기능 구현 전 일단 false
                 .build();
     }
