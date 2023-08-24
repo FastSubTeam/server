@@ -8,11 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommentReqDto {
+    @NotBlank(message = "댓글은 공백일 수 없습니다.")
     private String content;
 
     public Comment toEntity(Post post, Member member) {
