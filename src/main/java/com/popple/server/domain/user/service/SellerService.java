@@ -126,4 +126,8 @@ public class SellerService {
         return sellerRepository.findById(id)
                 .orElseThrow(() -> new UserBadRequestException(UserErrorCode.NOT_FOUND));
     }
+
+    public void verifyRoadAddress(String address) {
+        Fetch.isValidAddress(kakaoApiKey, address);
+    }
 }
