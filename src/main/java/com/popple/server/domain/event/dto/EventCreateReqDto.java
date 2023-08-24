@@ -27,7 +27,7 @@ public class EventCreateReqDto {
                 .city(city)
                 .district(district)
                 .category(category)
-                .thumbnailUrl(thumbnailUrl)
+                .thumbnailUrl(thumbnailUrl == null ? "thumbnailDefaultImageUrl" : thumbnailUrl)
                 .startDate(startDate)
                 .endDate(endDate)
                 .status(getCurrentStatus())
