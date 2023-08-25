@@ -15,7 +15,7 @@ import javax.validation.constraints.Pattern;
 @ToString
 public class CreateUserRequestDto {
 
-    private static final String NICKNAME_REGEX = "^[a-z0-9._-]{2,10}$";
+    private static final String NICKNAME_REGEX = "^[a-z0-9._-]{2,16}$";
     @NotNull
     @Email
     private String email;
