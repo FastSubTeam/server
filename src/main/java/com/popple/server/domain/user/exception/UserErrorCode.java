@@ -22,7 +22,7 @@ public enum UserErrorCode implements ErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "해당 API에 대한 권한이 존재하지 않습니다"),
     EXIST_BUSINESS_NUMBER(HttpStatus.BAD_REQUEST, "이미 존재하는 사업자 등록 번호입니다."),
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "입력 정보가 올바르지 않습니다"),
-    ;
+    INACTIVE(HttpStatus.BAD_REQUEST, "탈퇴한 회원입니다");
 
     private final HttpStatus httpStatus;
     private final String errorMessage;
