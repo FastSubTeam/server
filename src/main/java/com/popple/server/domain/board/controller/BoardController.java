@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RequestMapping("/api/board")
 @RestController
@@ -47,24 +46,8 @@ public class BoardController {
 
     @GetMapping("/{postId}")
     public APIDataResponse<PostRespDto> getPostById(@PathVariable Long postId) {
-        try {
             Post post = boardService.getPostById(postId);
-            List<CommentDto> commentDtos = boardService.getAllCommentsByPostId(postId);
-            PostRespDto postRespDto = PostRespDto.builder()
-                    .id(post.getId())
-                    .nickname(post.getMember().getNickname())
-                    .title(post.getTitle())
-                    .content(post.getContent())
-                    .comments(commentDtos)
-                    .createdAt(post.getCreatedAt())
-                    .updatedAt(post.getUpdatedAt())
-                    .build();
-            return APIDataResponse.of(HttpStatus.OK, postRespDto);
-        } catch (NoSuchElementException e) {
-            //Error응답
-            log.error(e.getMessage());
-        }
-        return null;
+            return APIDataResponse.of(HttpStatus.OK, buildPostRespDto(post));
     }
 
     @PostMapping("/write")
@@ -72,8 +55,20 @@ public class BoardController {
         validateLoginMember(loginMember);
         Member member = boardService.getMember(loginMember.getId());
         Post post = postReqDto.toEntity(member);
-        boardService.savePost(post);
-        return APIDataResponse.empty(HttpStatus.OK);
+        Post savedPost = boardService.savePost(post);
+        return APIDataResponse.of(HttpStatus.OK, buildPostRespDto(savedPost));
+    }
+
+    private PostRespDto buildPostRespDto(Post post){
+        return PostRespDto.builder()
+                .id(post.getId())
+                .nickname(post.getMember().getNickname())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .comments(boardService.getAllCommentsByPostId(post.getId()))
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .build();
     }
 
     @PatchMapping("/{postId}")
@@ -81,7 +76,8 @@ public class BoardController {
         checkPostAuthor(loginMember, postId);
         validateLoginMember(loginMember);
         boardService.updatePost(postId, postReqDto);
-        return APIDataResponse.empty(HttpStatus.OK);
+        Post post = boardService.getPostById(postId);
+        return APIDataResponse.of(HttpStatus.OK, buildPostRespDto(post));
     }
 
     private List<BoardListRespDto> createListOfBoardListRespDto(List<Post> posts) {
