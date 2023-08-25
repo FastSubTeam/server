@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -67,7 +68,7 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public APIDataResponse<?> savePost(@RequestBody PostReqDto postReqDto, BindingResult bindingResult, @LoginActor Actor loginMember) {
+    public APIDataResponse<?> savePost(@RequestBody @Valid PostReqDto postReqDto, BindingResult bindingResult, @LoginActor Actor loginMember) {
         validateLoginMember(loginMember);
         Member member = boardService.getMember(loginMember.getId());
         Post post = postReqDto.toEntity(member);
@@ -76,11 +77,9 @@ public class BoardController {
     }
 
     @PatchMapping("/{postId}")
-    public APIDataResponse<?> updatePost(@RequestBody PostReqDto postReqDto, @PathVariable Long postId, @LoginActor Actor loginMember) {
+    public APIDataResponse<?> updatePost(@RequestBody @Valid PostReqDto postReqDto, @PathVariable Long postId, @LoginActor Actor loginMember) {
         checkPostAuthor(loginMember, postId);
         validateLoginMember(loginMember);
-        //todo 로그인된 유저와 게시글의 작성자가 일치하는지 로직 작성
-        Member member = boardService.getMember(loginMember.getId());
         boardService.updatePost(postId, postReqDto);
         return APIDataResponse.empty(HttpStatus.OK);
     }
@@ -120,7 +119,7 @@ public class BoardController {
     }
 
     @PatchMapping("comment/{commentId}")
-    public APIDataResponse<?> updateComment(@RequestBody CommentReqDto commentReqDto,
+    public APIDataResponse<?> updateComment(@RequestBody @Valid CommentReqDto commentReqDto,
                                             @PathVariable Long commentId,
                                             @LoginActor Actor loginMember) throws IllegalArgumentException {
         checkCommentAuthor(loginMember, commentId);
@@ -131,7 +130,7 @@ public class BoardController {
     }
 
     @PostMapping("/{postId}/comment")
-    public APIDataResponse<?> saveComment(@RequestBody CommentReqDto commentReqDto,
+    public APIDataResponse<?> saveComment(@RequestBody @Valid CommentReqDto commentReqDto,
                                           @PathVariable Long postId,
                                           @LoginActor Actor loginMember) {
         validateLoginMember(loginMember);
