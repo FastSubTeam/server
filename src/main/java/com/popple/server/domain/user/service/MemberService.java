@@ -90,29 +90,20 @@ public class MemberService {
     }
 
     public Member getOptionalUserByEmail(String email) {
-        return memberRepository.findByEmail(email);
+        return memberRepository.findByEmail(email)
+                .orElse(null);
     }
 
     public Member getUser(String email) {
-        Member findMember = memberRepository.findByEmail(email);
-
-        if (findMember == null) {
-            throw new UserBadRequestException(UserErrorCode.NOT_FOUND);
-        }
-
-        return findMember;
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UserBadRequestException(UserErrorCode.NOT_FOUND));
     }
 
     public Member getUser(String email, String password) {
-        Member findMember = memberRepository.findByEmail(email);
+        Member findMember = getUser(email);
 
         if (findMember.getInactive()) {
             throw new UserBadRequestException(UserErrorCode.NOT_FOUND);
-        }
-
-        if (findMember == null) {
-            throw new UserBadRequestException(UserErrorCode.NOT_FOUND);
-
         }
 
         if (!bCryptPasswordEncoder.matches(password, findMember.getPassword())) {
