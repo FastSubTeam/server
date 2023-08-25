@@ -22,20 +22,23 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     @Column(unique = true)
     private String email;
 
-    @NotNull
+    @Column(nullable = false)
     private String password;
 
     private String city;
 
     private String district;
 
-    @NotNull
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String nickname;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault(value = "'BASIC'")
+    private LoginPlatform platform;
 
 
     //TODO 이후 디폴트 이미지를 정하고, 해당 이미지의 주소로 디폴트 값 변경 필요
@@ -51,6 +54,7 @@ public class Member extends BaseEntity {
         return TokenPayload.builder()
                 .id(id)
                 .role(Role.ROLE_USER)
+                .platform(platform)
                 .build();
     }
 

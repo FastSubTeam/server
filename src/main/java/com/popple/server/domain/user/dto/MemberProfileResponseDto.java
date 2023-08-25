@@ -9,4 +9,6 @@ public class MemberProfileResponseDto {
 
     private String nickname;
     private String profileImgUrl;
+    private String city;
+    private String district;
 }

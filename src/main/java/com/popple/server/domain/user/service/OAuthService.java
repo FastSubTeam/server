@@ -3,6 +3,7 @@ package com.popple.server.domain.user.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.popple.server.domain.entity.LoginPlatform;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.user.dto.KakaoLoginRequestDto;
 import com.popple.server.domain.user.dto.LoginResponseDto;
@@ -73,6 +74,7 @@ public class OAuthService {
                 .userId(findMember.getId())
                 .role(tokenPayload.getRole())
                 .email(findMember.getEmail())
+                .platform(LoginPlatform.KAKAO)
                 .profileImgUrl(findMember.getProfileImgUrl())
                 .nickname(findMember.getNickname())
                 .accessToken(accessToken)
