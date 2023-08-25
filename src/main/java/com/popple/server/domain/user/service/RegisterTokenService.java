@@ -29,10 +29,8 @@ public class RegisterTokenService {
 
     @Transactional
     public RegisterToken generateToken(String email) {
-        Member findMember = memberRepository.findByEmail(email);
-        if (findMember == null) {
-            throw new AlreadyExistException(UserErrorCode.NOT_FOUND);
-        }
+        Member findMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new AlreadyExistException(UserErrorCode.NOT_FOUND));
 
         RegisterToken findRegisterToken = registerTokenRepository.findByEmail(email);
         if (findRegisterToken != null) {
