@@ -107,7 +107,7 @@ public class MemberService {
         Member findMember = memberRepository.findByEmail(email);
 
         if (findMember.getInactive()) {
-            throw new UserBadRequestException(UserErrorCode.INACTIVE);
+            throw new UserBadRequestException(UserErrorCode.NOT_FOUND);
         }
 
         if (findMember == null) {
