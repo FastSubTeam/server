@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class PostReqDto {
     @NotBlank(message = "제목은 공백일 수 없습니다.")
-    @Max(value = 100, message = "제목은 최대 100자까지 가능합니다.")
+    @Size(max = 100, message = "제목은 최대 100자까지 가능합니다.")
     private String title;
 
     @NotBlank(message = "본문은 공백일 수 없습니다.")
