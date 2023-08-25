@@ -38,16 +38,18 @@ public class BoardController {
 
     @GetMapping()
     public BoardAPIDataResponse<List<BoardListRespDto>> getPostsByPage(@PageableDefault Pageable pageable) {
+        log.info("페이지네이션 컨트롤러 진입");
         Page<Post> postsByPage = boardService.getPostsByPage(pageable);
         List<Post> contents = postsByPage.getContent();
+        log.info("contetns: {}", contents);
         List<BoardListRespDto> boardListRespDtoList = createListOfBoardListRespDto(contents);
         return BoardAPIDataResponse.of(HttpStatus.OK, boardListRespDtoList, postsByPage.getTotalElements());
     }
 
     @GetMapping("/{postId}")
     public APIDataResponse<PostRespDto> getPostById(@PathVariable Long postId) {
-            Post post = boardService.getPostById(postId);
-            return APIDataResponse.of(HttpStatus.OK, buildPostRespDto(post));
+        Post post = boardService.getPostById(postId);
+        return APIDataResponse.of(HttpStatus.OK, buildPostRespDto(post));
     }
 
     @PostMapping("/write")
@@ -59,7 +61,7 @@ public class BoardController {
         return APIDataResponse.of(HttpStatus.OK, buildPostRespDto(savedPost));
     }
 
-    private PostRespDto buildPostRespDto(Post post){
+    private PostRespDto buildPostRespDto(Post post) {
         return PostRespDto.builder()
                 .id(post.getId())
                 .nickname(post.getMember().getNickname())
@@ -121,8 +123,8 @@ public class BoardController {
         checkCommentAuthor(loginMember, commentId);
         validateLoginMember(loginMember);
         Member member = boardService.getMember(loginMember.getId());
-        CommentDto commentDto = boardService.updateComment(commentId, commentReqDto);
-        return APIDataResponse.of(HttpStatus.OK, commentDto);
+        CommentRespDto commentRespDto = boardService.updateComment(commentId, commentReqDto);
+        return APIDataResponse.of(HttpStatus.OK, commentRespDto);
     }
 
     @PostMapping("/{postId}/comment")
@@ -131,8 +133,8 @@ public class BoardController {
                                           @LoginActor Actor loginMember) {
         validateLoginMember(loginMember);
         Member member = boardService.getMember(loginMember.getId());
-        CommentDto commentDto = boardService.saveComment(postId, member, commentReqDto);
-        return APIDataResponse.of(HttpStatus.OK, commentDto);
+        CommentRespDto commentRespDto = boardService.saveComment(postId, member, commentReqDto);
+        return APIDataResponse.of(HttpStatus.OK, commentRespDto);
     }
 
     private void validateLoginMember(Actor loginMember) {
@@ -146,6 +148,7 @@ public class BoardController {
             throw new IllegalArgumentException("댓글 작성자와 로그인된 멤버와 일치하지 않습니다.");
         }
     }
+
     private void checkPostAuthor(Actor loginMember, Long postId) {
         if (!loginMember.getId().equals(boardService.getPostAuthor(postId))) {
             throw new IllegalArgumentException("게시글 작성자와 로그인된 멤버와 일치하지 않습니다.");
