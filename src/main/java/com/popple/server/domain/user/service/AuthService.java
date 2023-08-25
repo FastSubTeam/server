@@ -248,6 +248,8 @@ public class AuthService {
         if (seller.getEmail().equals(removeActorRequestDto.getEmail())
                 && bCryptPasswordEncoder.matches(removeActorRequestDto.getPassword(), seller.getPassword())) {
             sellerService.removeById(id);
+            return;
         }
+        throw new UserBadRequestException(UserErrorCode.INVALID_INPUT);
     }
 }
