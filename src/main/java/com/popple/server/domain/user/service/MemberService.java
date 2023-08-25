@@ -106,6 +106,10 @@ public class MemberService {
     public Member getUser(String email, String password) {
         Member findMember = memberRepository.findByEmail(email);
 
+        if (findMember.getInactive()) {
+            throw new UserBadRequestException(UserErrorCode.INACTIVE);
+        }
+
         if (findMember == null) {
             throw new UserBadRequestException(UserErrorCode.NOT_FOUND);
 
