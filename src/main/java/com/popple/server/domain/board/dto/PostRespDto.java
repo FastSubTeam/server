@@ -19,5 +19,5 @@ public class PostRespDto {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<CommentDto> comments;
+    private List<CommentRespDto> comments;
 }

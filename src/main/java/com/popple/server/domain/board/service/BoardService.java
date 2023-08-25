@@ -34,37 +34,37 @@ public class BoardService {
 
 
     @Transactional
-    public List<CommentDto> getAllCommentsByPostId(Long postId) {
+    public List<CommentRespDto> getAllCommentsByPostId(Long postId) {
         List<CommentTableProjection> commentProjections = commentRepository.findByPost_id(postId);
-        List<CommentDto> commentDtos = new ArrayList<>();
+        List<CommentRespDto> commentRespDtos = new ArrayList<>();
         for (CommentTableProjection c : commentProjections) {
             Optional<Member> member = memberRepository.findById(c.getMemberId());
-            addCommentDto(commentDtos, c, member);
+            addCommentDto(commentRespDtos, c, member);
         }
-        return commentDtos;
+        return commentRespDtos;
     }
 
-    private void addCommentDto(List<CommentDto> commentDtos, CommentTableProjection c, Optional<Member> member) {
+    private void addCommentDto(List<CommentRespDto> commentRespDtos, CommentTableProjection c, Optional<Member> member) {
         if (member.isPresent()) {
             MemberRespDto memberRespDto = MemberRespDto.of(member.get());
-            CommentDto commentDto = CommentDto.builder()
+            CommentRespDto commentRespDto = CommentRespDto.builder()
                     .id(c.getId())
                     .content(c.getContent())
                     .createdAt(c.getCreatedAt())
                     .updatedAt(c.getUpdatedAt())
                     .member(memberRespDto)
                     .build();
-            commentDtos.add(commentDto);
+            commentRespDtos.add(commentRespDto);
             return;
         }
-        CommentDto commentDto = CommentDto.builder()
+        CommentRespDto commentRespDto = CommentRespDto.builder()
                 .id(c.getId())
                 .content(c.getContent())
                 .createdAt(c.getCreatedAt())
                 .updatedAt(c.getUpdatedAt())
                 .member(null)// Todo 존재하지 않는 사용자에 대한 예외처리
                 .build();
-        commentDtos.add(commentDto);
+        commentRespDtos.add(commentRespDto);
         log.error("comment_id = {}의 Member정보가 존재하지 않습니다.", c.getId());
     }
 
@@ -84,8 +84,8 @@ public class BoardService {
     }
 
     @Transactional
-    public void savePost(Post post) {
-        boardRepository.save(post);
+    public Post savePost(Post post) {
+        return boardRepository.save(post);
     }
 
     @Transactional
@@ -120,11 +120,11 @@ public class BoardService {
     }
 
     @Transactional
-    public CommentDto saveComment(Long postId, Member loginMember, CommentReqDto commentReqDto) {
+    public CommentRespDto saveComment(Long postId, Member loginMember, CommentReqDto commentReqDto) {
         Post post = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시물이 존재하지 않습니다."));
         Comment comment = commentReqDto.toEntity(post, loginMember);
         Comment savedComment = commentRepository.save(comment);
-        return CommentDto.builder()
+        return CommentRespDto.builder()
                 .id(savedComment.getId())
                 .content(savedComment.getContent())
                 .createdAt(savedComment.getCreatedAt())
@@ -134,11 +134,11 @@ public class BoardService {
     }
 
     @Transactional
-    public CommentDto updateComment(Long commentId, CommentReqDto commentReqDto) {
+    public CommentRespDto updateComment(Long commentId, CommentReqDto commentReqDto) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
         comment.modifyComment(commentReqDto);
         Comment updatedComment = commentRepository.findById(commentId).orElse(null);
-        return CommentDto.builder()
+        return CommentRespDto.builder()
                 .id(updatedComment.getId())
                 .content(updatedComment.getContent())
                 .createdAt(updatedComment.getCreatedAt())
