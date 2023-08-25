@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
 
 @Getter
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class CommentReqDto {
     @NotBlank(message = "댓글은 공백일 수 없습니다.")
+    @Max(value = 200, message = "댓글은 최대 200자까지 입력가능합니다.")
     private String content;
 
     public Comment toEntity(Post post, Member member) {
