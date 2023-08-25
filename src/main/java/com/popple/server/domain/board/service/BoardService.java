@@ -84,8 +84,8 @@ public class BoardService {
     }
 
     @Transactional
-    public void savePost(Post post) {
-        boardRepository.save(post);
+    public Post savePost(Post post) {
+        return boardRepository.save(post);
     }
 
     @Transactional
