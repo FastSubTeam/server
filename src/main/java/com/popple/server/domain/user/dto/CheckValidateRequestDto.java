@@ -13,7 +13,8 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 public class CheckValidateRequestDto {
     private static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
-    private static final String NICKNAME_REGEX = "^[a-z0-9._-]{2,10}$";
+    private static final String NICKNAME_REGEX = "^[a-z0-9._-]{2,16}$";
+
 
     @Email
     private String email;

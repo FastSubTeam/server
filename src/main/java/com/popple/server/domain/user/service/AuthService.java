@@ -1,10 +1,7 @@
 package com.popple.server.domain.user.service;
 
 import com.popple.server.common.dto.APIDataResponse;
-import com.popple.server.domain.entity.Admin;
-import com.popple.server.domain.entity.Member;
-import com.popple.server.domain.entity.RegisterToken;
-import com.popple.server.domain.entity.Seller;
+import com.popple.server.domain.entity.*;
 import com.popple.server.domain.user.dto.*;
 import com.popple.server.domain.user.exception.InvalidRequestParameterException;
 import com.popple.server.domain.user.exception.UserBadRequestException;
@@ -128,6 +125,7 @@ public class AuthService {
             return LoginResponseDto.builder()
                     .userId(member.getId())
                     .role(role)
+                    .platform(LoginPlatform.BASIC)
                     .email(member.getEmail())
                     .profileImgUrl(member.getProfileImgUrl())
                     .accessToken(accessToken)
@@ -144,6 +142,7 @@ public class AuthService {
                 .userId(seller.getId())
                 .role(role)
                 .email(seller.getEmail())
+                .platform(LoginPlatform.BASIC)
                 .profileImgUrl(seller.getProfileImgUrl())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -191,6 +190,8 @@ public class AuthService {
         Member member = memberService.getMemberById(id);
         return MemberProfileResponseDto.builder()
                 .nickname(member.getNickname())
+                .city(member.getCity())
+                .district(member.getDistrict())
                 .profileImgUrl(member.getProfileImgUrl())
                 .build();
     }

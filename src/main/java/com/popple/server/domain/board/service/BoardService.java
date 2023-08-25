@@ -83,14 +83,6 @@ public class BoardService {
         throw new NoSuchElementException("게시물의 id가 존재하지 않습니다.");
     }
 
-    public Member findMemberByEmail(String email) {
-        Member member = memberRepository.findByEmail(email);
-        if (member != null) {
-            return member;
-        }
-        throw new NoSuchElementException("해당 이메일을 가진 회원이 존재하지 않습니다.");
-    }
-
     @Transactional
     public void savePost(Post post) {
         boardRepository.save(post);
