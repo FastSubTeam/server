@@ -53,8 +53,12 @@ public class BoardController {
     }
 
     @PostMapping("/write")
-    public APIDataResponse<?> savePost(@RequestBody @Valid PostReqDto postReqDto, BindingResult bindingResult, @LoginActor Actor loginMember) {
+    public APIDataResponse<?> savePost(@RequestBody @Valid PostReqDto postReqDto,
+                                       BindingResult bindingResult,
+                                       @LoginActor Actor loginMember) {
+
         validateLoginMember(loginMember);
+        checkValidationError(bindingResult);
         Member member = boardService.getMember(loginMember.getId());
         Post post = postReqDto.toEntity(member);
         Post savedPost = boardService.savePost(post);
@@ -74,9 +78,13 @@ public class BoardController {
     }
 
     @PatchMapping("/{postId}")
-    public APIDataResponse<?> updatePost(@RequestBody @Valid PostReqDto postReqDto, @PathVariable Long postId, @LoginActor Actor loginMember) {
+    public APIDataResponse<?> updatePost(@RequestBody @Valid PostReqDto postReqDto,
+                                         BindingResult bindingResult,
+                                         @PathVariable Long postId,
+                                         @LoginActor Actor loginMember) {
         checkPostAuthor(loginMember, postId);
         validateLoginMember(loginMember);
+        checkValidationError(bindingResult);
         boardService.updatePost(postId, postReqDto);
         Post post = boardService.getPostById(postId);
         return APIDataResponse.of(HttpStatus.OK, buildPostRespDto(post));
@@ -102,14 +110,16 @@ public class BoardController {
     }
 
     @DeleteMapping("/{postId}")
-    public APIDataResponse<?> deletePost(@PathVariable Long postId, @LoginActor Actor loginMember) throws IllegalArgumentException {
+    public APIDataResponse<?> deletePost(@PathVariable Long postId,
+                                         @LoginActor Actor loginMember) throws IllegalArgumentException {
         checkPostAuthor(loginMember, postId);
         boardService.deletePost(postId);
         return APIDataResponse.empty(HttpStatus.OK);
     }
 
     @DeleteMapping("/comment/{commentId}")
-    public APIDataResponse<?> deleteComment(@PathVariable Long commentId, @LoginActor Actor loginMember) throws IllegalArgumentException {
+    public APIDataResponse<?> deleteComment(@PathVariable Long commentId,
+                                            @LoginActor Actor loginMember) throws IllegalArgumentException {
         checkCommentAuthor(loginMember, commentId);
         validateLoginMember(loginMember);
         boardService.deleteComment(commentId);
@@ -118,10 +128,12 @@ public class BoardController {
 
     @PatchMapping("comment/{commentId}")
     public APIDataResponse<?> updateComment(@RequestBody @Valid CommentReqDto commentReqDto,
+                                            BindingResult bindingResult,
                                             @PathVariable Long commentId,
                                             @LoginActor Actor loginMember) throws IllegalArgumentException {
         checkCommentAuthor(loginMember, commentId);
         validateLoginMember(loginMember);
+        checkValidationError(bindingResult);
         Member member = boardService.getMember(loginMember.getId());
         CommentRespDto commentRespDto = boardService.updateComment(commentId, commentReqDto);
         return APIDataResponse.of(HttpStatus.OK, commentRespDto);
@@ -129,9 +141,11 @@ public class BoardController {
 
     @PostMapping("/{postId}/comment")
     public APIDataResponse<?> saveComment(@RequestBody @Valid CommentReqDto commentReqDto,
+                                          BindingResult bindingResult,
                                           @PathVariable Long postId,
                                           @LoginActor Actor loginMember) {
         validateLoginMember(loginMember);
+        checkValidationError(bindingResult);
         Member member = boardService.getMember(loginMember.getId());
         CommentRespDto commentRespDto = boardService.saveComment(postId, member, commentReqDto);
         return APIDataResponse.of(HttpStatus.OK, commentRespDto);
@@ -152,6 +166,12 @@ public class BoardController {
     private void checkPostAuthor(Actor loginMember, Long postId) {
         if (!loginMember.getId().equals(boardService.getPostAuthor(postId))) {
             throw new IllegalArgumentException("게시글 작성자와 로그인된 멤버와 일치하지 않습니다.");
+        }
+    }
+
+    private void checkValidationError(BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            throw new IllegalArgumentException("유효하지 않은 요청 파라미터입니다.");
         }
     }
 }
