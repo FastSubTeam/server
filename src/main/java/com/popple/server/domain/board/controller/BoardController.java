@@ -2,6 +2,7 @@ package com.popple.server.domain.board.controller;
 
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.board.dto.*;
+import com.popple.server.domain.board.exception.InvalidBoardParameterException;
 import com.popple.server.domain.board.exception.UnauthorizedAccessException;
 import com.popple.server.domain.board.service.BoardService;
 import com.popple.server.domain.entity.Member;
@@ -174,7 +175,8 @@ public class BoardController {
 
     private void checkValidationError(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new IllegalArgumentException("유효하지 않은 요청 파라미터입니다.");
+            //todo: 더 효율적인 방법으로 변경
+            throw new InvalidBoardParameterException(bindingResult.getFieldError().getDefaultMessage());
         }
     }
 }
