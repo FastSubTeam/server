@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.persistence.EntityNotFoundException;
+
 @RestControllerAdvice(basePackageClasses= BoardController.class)
 public class BoardExceptionHandler {
     @ExceptionHandler
@@ -28,4 +30,9 @@ public class BoardExceptionHandler {
         return APIErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public APIErrorResponse handleEntityNotFoundException(EntityNotFoundException e){
+        return APIErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage());
+    }
 }
