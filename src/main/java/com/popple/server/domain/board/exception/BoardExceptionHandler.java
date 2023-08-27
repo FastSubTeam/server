@@ -21,4 +21,11 @@ public class BoardExceptionHandler {
     public APIErrorResponse handleUsernameNotFoundException(UsernameNotFoundException e){
         return APIErrorResponse.of(HttpStatus.FORBIDDEN, e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public APIErrorResponse handleInvalidRequestParameterException(InvalidBoardParameterException e){
+        return APIErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
 }
