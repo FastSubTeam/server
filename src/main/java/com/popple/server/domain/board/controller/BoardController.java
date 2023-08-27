@@ -2,6 +2,7 @@ package com.popple.server.domain.board.controller;
 
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.board.dto.*;
+import com.popple.server.domain.board.exception.UnauthorizedAccessException;
 import com.popple.server.domain.board.service.BoardService;
 import com.popple.server.domain.entity.Member;
 import com.popple.server.domain.entity.Post;
@@ -161,17 +162,17 @@ public class BoardController {
 
     private void checkCommentAuthor(Actor loginMember, Long commentId) {
         if (!loginMember.getId().equals(boardService.getCommentAuthor(commentId))) {
-            throw new IllegalArgumentException("댓글 작성자와 로그인된 멤버와 일치하지 않습니다.");
+            throw new UnauthorizedAccessException("댓글 작성자와 로그인된 멤버와 일치하지 않습니다.");
         }
     }
 
     private void checkPostAuthor(Actor loginMember, Long postId) {
         if (!loginMember.getId().equals(boardService.getPostAuthor(postId))) {
-            throw new IllegalArgumentException("게시글 작성자와 로그인된 멤버와 일치하지 않습니다.");
+            throw new UnauthorizedAccessException("게시글 작성자와 로그인된 멤버와 일치하지 않습니다.");
         }
     }
 
-    private void checkValidationError(BindingResult bindingResult){
+    private void checkValidationError(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new IllegalArgumentException("유효하지 않은 요청 파라미터입니다.");
         }
