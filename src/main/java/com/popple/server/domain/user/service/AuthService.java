@@ -200,6 +200,7 @@ public class AuthService {
         Seller seller = sellerService.getSellerById(id);
         return SellerProfileResponseDto.builder()
                 .bio(seller.getBio())
+                .address(seller.getAddress())
                 .shopName(seller.getShopName())
                 .profileImgUrl(seller.getProfileImgUrl())
                 .nickname(seller.getNickname())

@@ -10,5 +10,6 @@ public class SellerProfileResponseDto {
     private String nickname;
     private String profileImgUrl;
     private String shopName;
+    private String address;
     private String bio;
 }
