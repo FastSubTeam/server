@@ -14,9 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -70,7 +70,6 @@ public class BoardService {
 
     @Transactional
     public Page<Post> getPostsByPage(Pageable pageable) {
-        log.info("service접근");
         return boardRepository.findAll(pageable);
     }
 
@@ -80,7 +79,7 @@ public class BoardService {
         if (post.isPresent()) {
             return post.get();
         }
-        throw new NoSuchElementException("게시물의 id가 존재하지 않습니다.");
+        throw new EntityNotFoundException("게시물이 존재하지 않습니다.");
     }
 
     @Transactional
@@ -91,7 +90,7 @@ public class BoardService {
     @Transactional
     public void deletePost(Long postId) throws IllegalArgumentException {
         if (!hasPost(postId)) {
-            throw new NoSuchElementException("해당 게시물이 존재하지 않습니다.");
+            throw new EntityNotFoundException("게시물이 존재하지 않습니다.");
         }
         commentRepository.deleteAllByPost_id(postId);
         boardRepository.deleteById(postId);
@@ -121,7 +120,7 @@ public class BoardService {
 
     @Transactional
     public CommentRespDto saveComment(Long postId, Member loginMember, CommentReqDto commentReqDto) {
-        Post post = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시물이 존재하지 않습니다."));
+        Post post = boardRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException("댓글을 추가할 게시물이 존재하지 않습니다."));
         Comment comment = commentReqDto.toEntity(post, loginMember);
         Comment savedComment = commentRepository.save(comment);
         return CommentRespDto.builder()
@@ -135,7 +134,7 @@ public class BoardService {
 
     @Transactional
     public CommentRespDto updateComment(Long commentId, CommentReqDto commentReqDto) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFoundException("댓글이 존재하지 않습니다."));
         comment.modifyComment(commentReqDto);
         Comment updatedComment = commentRepository.findById(commentId).orElse(null);
         return CommentRespDto.builder()
@@ -149,13 +148,13 @@ public class BoardService {
 
     @Transactional
     public Long getCommentAuthor(Long commentId){
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFoundException("댓글이 존재하지 않습니다."));
         return MemberRespDto.of(comment.getMember()).getId();
     }
 
     @Transactional
     public Long getPostAuthor(Long postId){
-        Post post = boardRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        Post post = boardRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException("게시물이 존재하지 않습니다."));
         return MemberRespDto.of(post.getMember()).getId();
     }
 }
