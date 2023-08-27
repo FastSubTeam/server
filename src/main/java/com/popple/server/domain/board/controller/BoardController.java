@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -137,7 +138,6 @@ public class BoardController {
         checkCommentAuthor(loginMember, commentId);
         validateLoginMember(loginMember);
         checkValidationError(bindingResult);
-        Member member = boardService.getMember(loginMember.getId());
         CommentRespDto commentRespDto = boardService.updateComment(commentId, commentReqDto);
         return APIDataResponse.of(HttpStatus.OK, commentRespDto);
     }
@@ -156,7 +156,7 @@ public class BoardController {
 
     private void validateLoginMember(Actor loginMember) {
         if (loginMember == null || loginMember.getId() == null) {
-            throw new IllegalArgumentException("유저정보가 유효하지 않습니다.");
+            throw new UsernameNotFoundException("유저정보가 존재하지 않습니다.");
         }
     }
 

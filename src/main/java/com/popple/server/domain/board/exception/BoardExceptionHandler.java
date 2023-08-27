@@ -15,4 +15,10 @@ public class BoardExceptionHandler {
     public APIErrorResponse handleUnAuthorizedException(UnauthorizedAccessException e){
         return APIErrorResponse.of(HttpStatus.FORBIDDEN, e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public APIErrorResponse handleUsernameNotFoundException(UsernameNotFoundException e){
+        return APIErrorResponse.of(HttpStatus.FORBIDDEN, e.getMessage());
+    }
 }
