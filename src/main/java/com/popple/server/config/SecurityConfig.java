@@ -102,9 +102,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.DELETE, "/api/events/**").hasRole("SELLER")
                 .antMatchers(permitUserUrls).hasRole("USER")
                 .antMatchers(permitAllUrls).permitAll()
-                // TODO 추후 Admin 구현 시
-//                .antMatchers(permitAdminUrls).hasRole("ADMIN")
-                .antMatchers(permitAdminUrls).permitAll()
+                .antMatchers(permitAdminUrls).hasRole("ADMIN")
+//                .antMatchers(permitAdminUrls).permitAll()
                 .anyRequest().authenticated();
         httpSecurity.exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
