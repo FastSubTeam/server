@@ -2,6 +2,7 @@ package com.popple.server.domain.board.controller;
 
 import com.popple.server.common.dto.APIDataResponse;
 import com.popple.server.domain.board.dto.*;
+import com.popple.server.domain.board.exception.BoardErrorMessages;
 import com.popple.server.domain.board.exception.InvalidBoardParameterException;
 import com.popple.server.domain.board.exception.UnauthorizedAccessException;
 import com.popple.server.domain.board.service.BoardService;
@@ -157,19 +158,19 @@ public class BoardController {
 
     private void validateLoginMember(Actor loginMember) {
         if (loginMember == null || loginMember.getId() == null) {
-            throw new UsernameNotFoundException("유저정보가 존재하지 않습니다.");
+            throw new UsernameNotFoundException(BoardErrorMessages.USERNAME_NOT_FOUND);
         }
     }
 
     private void checkCommentAuthor(Actor loginMember, Long commentId) {
         if (!loginMember.getId().equals(boardService.getCommentAuthor(commentId))) {
-            throw new UnauthorizedAccessException("댓글 작성자와 로그인된 멤버와 일치하지 않습니다.");
+            throw new UnauthorizedAccessException(BoardErrorMessages.COMMENT_AUTHOR_MISMATCH);
         }
     }
 
     private void checkPostAuthor(Actor loginMember, Long postId) {
         if (!loginMember.getId().equals(boardService.getPostAuthor(postId))) {
-            throw new UnauthorizedAccessException("게시글 작성자와 로그인된 멤버와 일치하지 않습니다.");
+            throw new UnauthorizedAccessException(BoardErrorMessages.POST_AUTHOR_MISMATCH);
         }
     }
 
