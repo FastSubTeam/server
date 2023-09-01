@@ -69,7 +69,10 @@ public class SecurityConfig {
                 "/api/survey/result",
                 "/api/survey/result/**",
                 "/api/auth/admin/signin",
-                "/api/auth/logout"
+                "/api/auth/logout",
+                /* Certbot 인증 경로 */
+                "/.well-known/acme-challenge",
+                "/.well-known/acme-challenge/**"
         };
 
         String[] permitUserUrls = new String[]{
