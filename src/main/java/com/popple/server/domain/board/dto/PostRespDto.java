@@ -14,6 +14,7 @@ import java.util.List;
 @ToString
 public class PostRespDto {
     private Long id;
+    private String email;
     private String nickname;
     private String title;
     private String content;
