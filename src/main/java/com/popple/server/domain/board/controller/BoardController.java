@@ -68,6 +68,7 @@ public class BoardController {
     private PostRespDto buildPostRespDto(Post post) {
         return PostRespDto.builder()
                 .id(post.getId())
+                .email(post.getMember().getEmail())
                 .nickname(post.getMember().getNickname())
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -97,6 +98,7 @@ public class BoardController {
             BoardListRespDto boardListRespDto = BoardListRespDto.builder()
                     //Todo builder사용하는 코드 -> 객체 내부에 정의해 코드 라인 수 줄이기
                     .id(post.getId())
+                    .email(post.getMember().getEmail())
                     .nickname(post.getMember().getNickname())
                     .title(post.getTitle())
                     .content(post.getContent())

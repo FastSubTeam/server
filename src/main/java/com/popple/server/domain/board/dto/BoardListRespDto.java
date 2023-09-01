@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @ToString
 public class BoardListRespDto {
     private Long id;
+    private String email;
     private String nickname;
     private String title;
     private String content;
