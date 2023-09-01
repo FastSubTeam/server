@@ -59,13 +59,12 @@ public class BoardService {
         }
         CommentRespDto commentRespDto = CommentRespDto.builder()
                 .id(c.getId())
-                .content(c.getContent())
+                .content("작성자 정보가 존재하지 않는 댓글입니다.")
                 .createdAt(c.getCreatedAt())
                 .updatedAt(c.getUpdatedAt())
-                .member(null)// Todo 존재하지 않는 사용자에 대한 예외처리
+                .member(null)
                 .build();
         commentRespDtos.add(commentRespDto);
-        log.error("comment_id = {}의 Member정보가 존재하지 않습니다.", c.getId());
     }
 
     @Transactional
