@@ -1,6 +1,7 @@
 package com.popple.server.domain.board.service;
 
 import com.popple.server.domain.board.dto.*;
+import com.popple.server.domain.board.exception.BoardErrorMessages;
 import com.popple.server.domain.board.repository.BoardRepository;
 import com.popple.server.domain.board.repository.CommentRepository;
 import com.popple.server.domain.entity.Comment;
@@ -78,7 +79,7 @@ public class BoardService {
         if (post.isPresent()) {
             return post.get();
         }
-        throw new EntityNotFoundException("게시물이 존재하지 않습니다.");
+        throw new EntityNotFoundException(BoardErrorMessages.POST_NOT_FOUND);
     }
 
     @Transactional
@@ -89,7 +90,7 @@ public class BoardService {
     @Transactional
     public void deletePost(Long postId) throws IllegalArgumentException {
         if (!hasPost(postId)) {
-            throw new EntityNotFoundException("게시물이 존재하지 않습니다.");
+            throw new EntityNotFoundException(BoardErrorMessages.POST_NOT_FOUND);
         }
         commentRepository.deleteAllByPost_id(postId);
         boardRepository.deleteById(postId);
@@ -119,7 +120,7 @@ public class BoardService {
 
     @Transactional
     public CommentRespDto saveComment(Long postId, Member loginMember, CommentReqDto commentReqDto) {
-        Post post = boardRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException("댓글을 추가할 게시물이 존재하지 않습니다."));
+        Post post = boardRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException(BoardErrorMessages.MISSING_POST));
         Comment comment = commentReqDto.toEntity(post, loginMember);
         Comment savedComment = commentRepository.save(comment);
         return CommentRespDto.builder()
@@ -133,7 +134,7 @@ public class BoardService {
 
     @Transactional
     public CommentRespDto updateComment(Long commentId, CommentReqDto commentReqDto) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFoundException("댓글이 존재하지 않습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFoundException(BoardErrorMessages.COMMENT_NOT_FOUND));
         comment.modifyComment(commentReqDto);
         Comment updatedComment = commentRepository.findById(commentId).orElse(null);
         return CommentRespDto.builder()
@@ -147,13 +148,13 @@ public class BoardService {
 
     @Transactional
     public Long getCommentAuthor(Long commentId){
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFoundException("댓글이 존재하지 않습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFoundException(BoardErrorMessages.COMMENT_NOT_FOUND));
         return MemberRespDto.of(comment.getMember()).getId();
     }
 
     @Transactional
     public Long getPostAuthor(Long postId){
-        Post post = boardRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException("게시물이 존재하지 않습니다."));
+        Post post = boardRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException(BoardErrorMessages.POST_NOT_FOUND));
         return MemberRespDto.of(post.getMember()).getId();
     }
 }
