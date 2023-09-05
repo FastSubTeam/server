@@ -116,6 +116,25 @@
 
 <br>
 
+## 📋 ERD 설계
+![image](https://github.com/FastSubTeam/server/assets/70641477/220d47b0-72fc-41e2-b741-0a13aad42936)
+
+<br>
+
+## 📚 API 명세서
+> [API 명세서 페이지로 이동](https://frosted-loan-a1d.notion.site/48a024320cb04c5b9c4431ba12dae6f1?v=0d19c76f9d774871a2e9a53b877f8431&pvs=4)
+
+### 행사 API
+<img width="672" alt="image" src="https://github.com/FastSubTeam/server/assets/70641477/94b03bfe-d2d9-405e-af15-1f8dadf03cf9">
+
+### 수요조사 API
+<img width="672" alt="image" src="https://github.com/FastSubTeam/server/assets/70641477/c6dbc9a3-ce64-41df-a090-08ca18822daf">
+
+### 인증/인가 API
+<img width="672" alt="image" src="https://github.com/FastSubTeam/server/assets/70641477/aec31f74-3a3b-482f-b452-aee4ac12cc1f">
+
+### 회원/커뮤니티 API
+<img width="672" alt="image" src="https://github.com/FastSubTeam/server/assets/70641477/5089a63a-89e2-4d3a-b403-fc070c58c13b">
 
 
 
