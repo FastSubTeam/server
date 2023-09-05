@@ -63,12 +63,47 @@
   - Junit5
   - JWT
  
-- **Tool**
+- **Tool & Collaboration**
 
   - IntelliJ IDEA
   - Postman
   - Notion
   - Discord
+  - Git / Github
+  - Figma
+
+<br>
+ 
+### 프론트엔드
+- **Language & Framework**
+
+  - Typescript
+  - React.js
+ 
+- **AWS**
+
+  - SDK
+
+- **Library**
+
+  - Tailwind CSS
+  - Recoil
+  - ViteJS
+  - Axios
+  - NPM
+ 
+- **Deployment**
+
+  - Netlify
+ 
+- **Tool**
+
+  - Visual Studio Code
+  - Postman
+  - Notion
+  - Discord
+  - Git / Github
+  - Figma
 
 <br>
 
