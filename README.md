@@ -75,7 +75,7 @@
 ## 🧑🏻‍💻 팀원 역할
 | 이름 | 역할 |
 | :-----------------: | -------------------------------- |
-| 최태윤<br>`팀장`   | - **큰 기능**<br>&nbsp;&nbsp;└ 소기능1<br>&nbsp;&nbsp;└ 소기능2<br>&nbsp;&nbsp;└ 소기능3<br>&nbsp;&nbsp;└ 소기능4<br>&nbsp;&nbsp;└ 소기능5<br>- Database ERD 설계<br>- API 명세 설계<br>- EC2 서버 배포   |
+| 최태윤<br>`팀장`   | - **일반 유저, 개인 판매자 인증 인가 구현**<br>&nbsp;&nbsp;└ 자체 서비스 로그인 구현<br>&nbsp;&nbsp;└ 카카오 로그인 구현<br>&nbsp;&nbsp;└ 이메일 인증 구현<br>&nbsp;&nbsp;└ 토큰 기반 인증(AccessToken + RefreshToken) + Redis 활용<br>&nbsp;&nbsp;└ 인증에 필요한 외부 API 사용<br>- Database ERD 설계<br>- API 명세 설계<br>- EC2 서버 배포   |
 | 김훈섭            | - **행사 수요조사 기능 구현**<br>&nbsp;&nbsp;└ 관리자 수요조사 등록, 수정, 삭제 기능 구현<br>&nbsp;&nbsp;└ 회원 수요조사 응답 제출 기능 구현<br>&nbsp;&nbsp;└ 매일 0시 정각에 작동 되는 수요조사 스케쥴러 구현<br>&nbsp;&nbsp;└ 수요조사 결과 통계 기능 구현<br>- **행사 기능 구현**<br>&nbsp;&nbsp;└ 판매자 행사 등록, 수정, 삭제 구현<br>&nbsp;&nbsp;└ 매일 0시 정각에 작동하여 행사 상태를 정리하는 스케쥴러 구현<br>&nbsp;&nbsp;└ 행사 목록 페이징 조회, 상세 조회 구현<br>- Database ERD 설계<br>- API 명세 설계<br>- EC2 서버 배포<br>- 배포 스크립트 작성   |
 | 오형석            | - **큰 기능**<br>&nbsp;&nbsp;└ 소기능1<br>&nbsp;&nbsp;└ 소기능2<br>&nbsp;&nbsp;└ 소기능3<br>&nbsp;&nbsp;└ 소기능4<br>&nbsp;&nbsp;└ 소기능5<br>- Database ERD 설계<br>- API 명세 설계<br>- EC2 서버 배포   |
 
